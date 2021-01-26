@@ -7,7 +7,6 @@ tags:
 - cef
 ---
 
-## 简介
 [CEF](https://bitbucket.org/chromiumembedded/cef)(The Chromium Embedded Framework) 是*Marshall Greenblatt*于2008年基于 [Google Chromium](http://www.chromium.org/Home) 项目创建由BSD开源协议授权的开源项目。它和Chromium项目不同之处在于，Chromium项目侧重于Google Chrome应用开发，而CEF侧重于使浏览器更容易内嵌到第三方应用中。CEF屏蔽了Chromium和
  Blink代码的复杂性，在Chromium Content API之上提供了一套友好且稳定的API，开发者只需要在CEF API的基础上就能很容易地建立起基于CEF的应用。了解更多关于CEF的内容，请参考[CEF官网](https://bitbucket.org/chromiumembedded/cef)。
 
@@ -57,7 +56,7 @@ cefclient.exe --url=https://www.baidu.com
 
 ![cefclient.exe](http://upload-images.jianshu.io/upload_images/6275607-5d0b9d503c722895.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/780)
 
-## 更多参考
+## 参考资料
 1. [CEF官网](https://bitbucket.org/chromiumembedded/cef)
 2. [CMake下载地址](https://cmake.org/download/)
 3. [Chromium Embedded Framework ](http://blogs.adobe.com/webplatform/2013/05/01/the-chromium-embedded-framework/)

@@ -7,8 +7,7 @@ tags:
 - cef
 ---
 
-## 写在前面
-最近由于项目需要用到内嵌浏览器，IE内核太依赖于操作系统，对H5的支持也不太好。[CEF](https://bitbucket.org/chromiumembedded/cef)是基于[chromium 项目](http://www.chromium.org/Home)的内嵌浏览器开源框架，已经应用到了[很多产品](https://en.wikipedia.org/wiki/Chromium_Embedded_Framework#Applications_using_CEF)中，而且有比较健全的[论坛](http://magpcss.org/ceforum/index.php)和[官方支持](https://bitbucket.org/chromiumembedded/cef)，是项目的不二选择。由于客户端要运行到Windows XP系统，但Chome浏览器在49版本(对应CEF3版本为2623，以下说的CEF均指CEF3)后不再支持Win7以下系统。CEF[二进制发布官网](http://opensource.spotify.com/cefbuilds/index.html)上并未包含2623版本, 但CEF提供了源码发布，官方也给了[源码编译文档说明](https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding)，虽然按照官方文档说明进行构建，但在编译CEF 2623版本过程还是遇到不少问题，在此做个记录供网友参考。
+由于项目需要用到内嵌浏览器，IE内核太依赖于操作系统，对H5的支持也不太好。[CEF](https://bitbucket.org/chromiumembedded/cef)是基于[chromium 项目](http://www.chromium.org/Home)的内嵌浏览器开源框架，已经应用到了[很多产品](https://en.wikipedia.org/wiki/Chromium_Embedded_Framework#Applications_using_CEF)中，而且有比较健全的[论坛](http://magpcss.org/ceforum/index.php)和[官方支持](https://bitbucket.org/chromiumembedded/cef)，是项目的不二选择。由于客户端要运行到Windows XP系统，但Chome浏览器在49版本(对应CEF3版本为2623，以下说的CEF均指CEF3)后不再支持Win7以下系统。CEF[二进制发布官网](http://opensource.spotify.com/cefbuilds/index.html)上并未包含2623版本, 但CEF提供了源码发布，官方也给了[源码编译文档说明](https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding)，虽然按照官方文档说明进行构建，但在编译CEF 2623版本过程还是遇到不少问题，在此做个记录供网友参考。
 
 ## 准备编译环境 
 
@@ -182,6 +181,6 @@ cefclient.exe --url=https://www.baidu.com
 将编译好的二进制拷贝到Windows XP系统下运行，发现Debug版本会崩溃，Release能正常工作。Debug版本加上`--single-process`参数，能够正常运行，但退出时也会崩溃。该问题可以参考链接：[Crash on Windows XP](https://bitbucket.org/chromiumembedded/cef/issues/1787)，CEF维护者
  *Marshall Greenblatt* 已经给出了解决方法；鉴于*CEF 2623 Release*版本在XP下工作良好，且不需要在XP下进行调试工作，*CEF 2623*版本的编译工作可以告一段落。
 
-## 更多参考
+## 参考资料
 [1].https://bitbucket.org/chromiumembedded/cef/
 [2].http://blog.csdn.net/yufei_lgq/article/details/53838270

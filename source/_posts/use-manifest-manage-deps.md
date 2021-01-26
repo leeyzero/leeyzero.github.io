@@ -7,7 +7,6 @@ tags:
 - manifest
 ---
 
-## 写在前面
 我们在开发应用程序时，一般会引入一些第三方库，通常情况下，我们是把这些第三方依赖文件放到应用程序所处目录，这样应用程序启动时就能正确找到相关依赖文件。但当依赖文件比较多，我们希望对依赖的文件进行归类，放置到不同的目录下以便管理，这个时候应用程序的manifest就派上用场了。
 
 ## 并行程序集
@@ -127,7 +126,7 @@ mt.exe -manifest SampleApp.exe.manifest -outputresource:$(OutDir)$(TargetName)$(
 **4**. *将libA.dll, libB.dll放到SampleAssembly目录下*
 **5**. *运行SampleApp.exe，看是否能正常工作了呢*
 
-## 更多参考
+## 参考资料
 [1].https://msdn.microsoft.com/en-us/library/windows/desktop/ff951640(v=vs.85).aspx
 [2].https://msdn.microsoft.com/en-us/library/windows/desktop/aa374224(v=vs.85).aspx
 [3].https://msdn.microsoft.com/en-us/library/windows/desktop/aa374219(v=vs.85).aspx

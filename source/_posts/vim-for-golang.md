@@ -2,26 +2,18 @@
 title: vim配置golang开发环境
 date: 2020-10-10 23:43:20
 categories:
-- vim
+- shell
 tags:
 - vim 
 - golang
 ---
 
-## 写在前面
-由于最近工作中使用golang开发比较多，而大部分工作都是使用vim完成，在配置vim的golang环境时，发现已经有很多配置的解决方案，vim有很多插件支持golang开发环境，对我而言，配置以下四个插件就够用了：
+最近工作中使用golang开发比较多，而大部分工作都是使用vim完成，在配置vim的golang环境时，发现已经有很多现成的插件可用，对我而言，主要配置以下四个插件就够用了：
 
-![](https://upload-images.jianshu.io/upload_images/6275607-387bbbe346502db4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-
-其中：
-- [vim-go](https://github.com/fatih/vim-go)是针对go语言的vim插件。支持代码格式化、语法检查、语法高亮、调试等非常多的功能。
-- [tagbar](https://github.com/majutsushi/tagbar)用于方便查看代码结构。
-- [nerdtree](https://github.com/scrooloose/nerdtree)用于管理和查看代码目录结构。
-- [YouCompleteMe](https://github.com/ycm-core/YouCompleteMe)用于代码自动补全。
-
-先来看一下整体效果吧：
-![](https://upload-images.jianshu.io/upload_images/6275607-643fa53531ad76cd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-左边是代码目录树，中间是代码编辑区域，右边是代码类结构等信息，底部是状态栏。
+- [vim-go](https://github.com/fatih/vim-go): go语言的vim插件。支持代码格式化、语法检查、语法高亮、调试等非常多的功能。
+- [tagbar](https://github.com/majutsushi/tagbar): 用于方便查看代码结构。
+- [nerdtree](https://github.com/scrooloose/nerdtree): 用于管理和查看代码目录结构。
+- [YouCompleteMe](https://github.com/ycm-core/YouCompleteMe): 用于代码自动补全。
 
 ## 依赖环境
 ### 安装go环境
@@ -228,7 +220,7 @@ YouCompleteMe unavailable: requires Vim compiled with Python (2.7.1+ or 3.5.1+) 
 ./configure --prefix=/usr/local/python27 --enable-shared 
 ```
 
-## 更多参考
+## 参考资料
 [1].[https://learnku.com/articles/24924](https://learnku.com/articles/24924)
 [2].[https://github.com/fatih/vim-go](https://github.com/fatih/vim-go)
 [3].[https://github.com/VundleVim/Vundle.vim/blob/master/CONTRIBUTING.md](https://github.com/VundleVim/Vundle.vim/blob/master/CONTRIBUTING.md)

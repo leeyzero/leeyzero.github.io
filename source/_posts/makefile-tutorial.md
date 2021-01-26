@@ -58,7 +58,7 @@ result.txt: source.txt
 
 第一次执行`make result.txt`，会创建source.txt，并将source.txt中的内容拷贝到result.txt中，当我们再次执行`make result.txt`时，终端会输出：
 ```
-make: `result.txt' is up to date.
+make: 'result.txt' is up to date.
 ```
 这是由于source.txt已经创建，且没有变化，所以不会执行任何操作。如果我们修改一下source.txt，如：
 ```
@@ -201,7 +201,7 @@ shell> make clean
 
 有了以上一些基础知识，就可以继续学习更多高级用法了。你会发现make会让你的构建过程更高效、自动化。
 
-## 更多参考
+## 参考资料
 [1].[https://www.wooster.edu/_media/files/academics/areas/computer-science/resources/makefile-tut.pdf](https://www.wooster.edu/_media/files/academics/areas/computer-science/resources/makefile-tut.pdf)
 [2].[http://www.gnu.org/software/make/manual/make.html#Makefile-Contents](http://www.gnu.org/software/make/manual/make.html#Makefile-Contents)
 [3].[https://thoughtbot.com/blog/the-magic-behind-configure-make-make-install#what-does-all-of-this-do](https://thoughtbot.com/blog/the-magic-behind-configure-make-make-install#what-does-all-of-this-do)

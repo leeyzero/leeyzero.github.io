@@ -8,7 +8,6 @@ tags:
 - vim
 ---
 
-## 写在前面
 [vim](https://en.wikipedia.org/wiki/Vim_(text_editor))是unix下一款非常强大的文本编辑器。vim本身支持很多个性化的配置，根据自身需求，合理的配置vim，能够很好的提高开发效率。本文介绍vim下无插件的常用配置，关于配置vim有一个非常重要的原则就是：**不要将你不明白的配置项写到配置文件中。**
 
 ## 准备环境
@@ -36,8 +35,11 @@ syntax on " 打开语法高亮
 ```
 
 ### 帮助文档
-vim有非常详细的帮助文档，在编辑过程中，你可以通过`F1`或`:help`快捷键呼出帮忙文档，也可以对某个配置项查看其配置说明，如`:help showmatch`
-![](https://upload-images.jianshu.io/upload_images/6275607-70b2b056f07ab09a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+vim有非常详细的帮助文档，在编辑过程中，你可以通过`F1`或`:help`快捷键呼出帮忙文档，也可以对某个配置项查看其配置说明，如
+
+```
+:help showmatch
+```
 
 ### 配置惯用法
 配置项一般都有"打开"和"关闭"两个设置。"关闭"就是在"打开"前面加上前缀"no"。如显示等号为`set number`，关闭就为`set nonumber`，大部分配置都有简写，如显示等号可以简写为`set nu`，关闭就为`set nonu`。

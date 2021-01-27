@@ -4,7 +4,7 @@ date: 2020-10-10 22:57:21
 categories:
 - windows
 tags:
-- 消息机制
+- message-loop
 ---
 
 原文出自：[Windows Messaging Architecture](https://xavierantony.wordpress.com/2010/08/24/windows-messaging-architecture/)
@@ -13,7 +13,7 @@ tags:
 
 很多新手软件工程师和.NET开发者在编写并运行一个Windows应用时，他们并不清楚其在操作系统中的运作原理。这篇文件将阐述Windows操作系统的消息体系。
 
-![Windows消息体系结构图](http://upload-images.jianshu.io/upload_images/6275607-ef800306ad3ff6ba.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![Windows消息体系结构图](/images/windows-message-architecture/1.png)
 
 ## 窗口和窗口类(*Window and Window Class*)
 

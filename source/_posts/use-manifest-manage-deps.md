@@ -11,7 +11,8 @@ tags:
 
 ## 并行程序集
 在介绍应用程序的manifest之前，需要了解一下并行程序集(Side-by-Side Assembly)。什么是并行程序集呢? 并行程序集是微软为了解决[DLL Hell](https://en.wikipedia.org/wiki/DLL_Hell)问题而提出的一种解决方案，它采用manifest文件扫描组件之间的依赖关系。其工作原理如下图所求：
-![](http://upload-images.jianshu.io/upload_images/6275607-2ac8c5821274b452.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+![](/images/manifest-manage/1.png)
 
 简单说明一下，微软在未提出Side-by-Side Assembly之前，应用程序启动时按照[一定的规则](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682586(v=vs.85).aspx)加载DLL。通常情况下，应用程序会采用动态链接方式共享一些操作系统提供的基础库文件，当Windows更新共享库且共享库不能向后兼容时(*DLL自身并不能向后兼容，这种情况通常发生在DLL的内存布局发生了改变*）,那些依赖于老版本共享库的应用程序就不能正常工作了。为了解决这个问题，微软重写了DLL动态加载子系统，提出了并行程序集的解决方案，即允许多个版本的库共同存在，应用程序通过manifest描述自身所依赖的文件，SxS Manager再通过manifest按照一定的规则找到应用程序的依赖文件，使应用程序正确工作。
 
@@ -59,6 +60,7 @@ SxS Manager首先查找[共享程序集](https://msdn.microsoft.com/en-us/librar
   </dependency>
 </assembly>
 ```
+
 这里重点关注dependency结点，该结点描述了应用程序SampleApp依赖于程序集SampleAssembly。更多关于Assembly Manifest的XML描述请参考[这里](https://msdn.microsoft.com/en-us/library/windows/desktop/aa374219(v=vs.85).aspx)。
 
 有了上面的manifest，应用程序启动时，为了让SxS Manager能够正确查找到依赖文件，还需要将SampleApp.exe.manifest嵌入到应用程序中，有两种方式可以嵌入：
@@ -76,7 +78,9 @@ Properties > Configuration Properties > Linker > Manifest File > Additional Mani
 
 设置好之后，重新编译、链接，生成SampleApp.exe。如果想知道上面依赖信息是否已经成功嵌入到SampleApp.exe中，也有两种方式查看:
 **1**. 如果使用Visual Studio, 可以直接在Visual Studio中打开应用程序，如下:
-![](http://upload-images.jianshu.io/upload_images/6275607-5ef64ef78b37f395.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+![](/images/manifest-manage/2.png)
+
 **2**. 也可以使用SDK提供的工具mt.exe, 命令如下：
 ```
 mt.exe -inputresource:SampleApp.exe;#1 -out:SampleApp.exe.manifest

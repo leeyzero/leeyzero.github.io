@@ -4,7 +4,7 @@ date: 2020-10-10 23:20:43
 categories:
 - linux
 tags:
-- [sz, rz]
+- lrzsz
 - Mac
 ---
 

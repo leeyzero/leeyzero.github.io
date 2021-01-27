@@ -17,9 +17,8 @@ tags:
 - **正确性**：获取分布式锁是为了防止进程对分布式系统中的资源并发访问而导致系统的状态出现混乱。如果锁失败，两个节点并发的访问同一个共享资源，可能造成数据的不一致性，如文件损坏或数据丢失等。
 
 ## 基于单实例的实现
-[Redis](https://redis.io/) 的作者 [antire](http://antirez.com/) 在 [Distributed locks with Redis](https://redis.io/topics/distlock)[3] 中给出了redis单机环境下实现分布式锁的正确做法。
+[Redis](https://redis.io/) 的作者 [antire](http://antirez.com/) 在 [Distributed locks with Redis](https://redis.io/topics/distlock)[3] 中给出了redis单机环境下实现分布式锁的正确做法，其中获取锁：
 
-获取锁：
 ```
 SET resource_name my_random_value NX PX 30000
 ```

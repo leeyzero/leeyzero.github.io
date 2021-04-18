@@ -2,7 +2,7 @@
 title: vim无插件配置
 date: 2020-10-09 23:00:56
 categories:
-- linux
+- 环境搭建
 tags:
 - linux
 - vim

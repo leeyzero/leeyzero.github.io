@@ -2,7 +2,7 @@
 title: 【读书笔记】如何阅读
 date: 2020-10-10 23:26:17
 categories:
-- reading
+- 随笔
 ---
 
 这个星期利用上下班时间，读了一下《[如何阅读]([https://item.jd.com/12074263.html?dist=jd](https://item.jd.com/12074263.html?dist=jd)

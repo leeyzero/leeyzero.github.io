@@ -2,8 +2,9 @@
 title: 每个程序员都应该知道的字符编码
 date: 2020-10-10 23:04:28
 categories:
-- encoding
+- 程序员的自我修养
 tags:
+- 字符编码
 - Unicode
 - ASCII
 - UTF-8

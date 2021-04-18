@@ -2,7 +2,7 @@
 title: vim入门
 date: 2020-10-10 23:38:46
 categories:
-- linux
+- shell
 tags:
 - vim
 ---

@@ -2,10 +2,10 @@
 title: MacOS下使用lrzsz传输文件
 date: 2020-10-10 23:20:43
 categories:
-- linux
+- shell
 tags:
 - lrzsz
-- Mac
+- mac
 ---
 
 在mac环境下，我们经常会使用[iTerm2](https://www.iterm2.com/index.html)终端连接远程服务器，也经常会有本机和远程服务器之间进行文件共享的需求。这个时候lrzsz就派上用场了。

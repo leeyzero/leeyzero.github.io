@@ -2,7 +2,7 @@
 title: Hello World
 date: 2020-10-09 23:00:34
 categories:
-- web
+- 环境搭建
 tags: 
 - hexo 
 ---

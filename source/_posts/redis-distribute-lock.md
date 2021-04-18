@@ -2,10 +2,10 @@
 title: 基于Redis的分布式锁
 date: 2021-01-24 09:10:54
 categories:
-- distribute-system
+- 分布式系统
 tags: 
 - redis
-- distribute-lock
+- 分布式锁
 ---
 
 在计算机中，锁是用于解决资源竞争问题。在单机（单进程）环境下, 锁可以使用操作系统提供的同步原语实现。 但在分布式环境下，操作系统提供的同步原语就失效了, 需要一个分布式锁。其原理是需要一个[分布式锁管理器](https://en.wikipedia.org/wiki/Distributed_lock_manager)[1]，提供进程级别访问共享资源的互斥性。本文主要讨论基于Redis实现的分布式锁。

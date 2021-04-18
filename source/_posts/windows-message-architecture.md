@@ -4,7 +4,7 @@ date: 2020-10-10 22:57:21
 categories:
 - windows
 tags:
-- message-loop
+- 消息循环
 ---
 
 原文出自：[Windows Messaging Architecture](https://xavierantony.wordpress.com/2010/08/24/windows-messaging-architecture/)

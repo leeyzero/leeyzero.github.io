@@ -2,7 +2,7 @@
 title: vim配置golang开发环境
 date: 2020-10-10 23:43:20
 categories:
-- shell
+- 环境搭建
 tags:
 - vim 
 - golang
@@ -179,21 +179,20 @@ ng.org/x/tools/cmd/guru?go-get=1: dial tcp 216.239.37.1:443: i/o timeout)
 vim-go: Error installing golang.org/x/tools/cmd/guru: can't load package: package golang.org/x/tools/cmd/guru: cannot find package "golang.org/x/tools/cmd/guru"
 ```
 
-原因是在执行:GoInstallBinaries执行时会使用go get 安装依赖包(依赖包在`~/.vim/bundle/vim-go/plugin/go.vim`中可以看到)，由于国内无法访问`https://golang.org`，故会出现io timeout的情况，好在google已经将这些代码上传至github上。直接clone在本地再安装即可，以安装guru为例：
+原因是在执行:GoInstallBinaries执行时会使用go get 安装依赖包(依赖包在`~/.vim/bundle/vim-go/plugin/go.vim`中可以看到)，由于国内无法访问`https://golang.org`，故会出现io timeout的情况，好在国内有比较稳定的加速镜像，简单配置一下即可：
 ```
-# 先在$GOPATH目录下本地建立golang.org\x
-mkdir -p %GOPATH%/src/golang.org/x
+# 启用 Go Modules 功能
+go env -w GO111MODULE=on
 
-# 将tools代码库clone到本地
-git clone https://github.com/golang/tools.git %GOPATH%/src/golang.org/x/tools
+# 配置 GOPROXY 环境变量，以下使用七牛国内镜像
+go env -w  GOPROXY=https://goproxy.cn,direct
 
-# 安装guru
-go install golang.org/x/tools/cmd/guru
+# 设置GOPATH
+go env -w GOPATH=/path/to/gopath
 
-# 安装成功后就可以在$GOPATH/bin 目录下看到guru的二进制文件了
+# 确认是否设置成功
+go env
 ```
-
-安装其它依赖包方法同上，不再累赘。
 
 ### YouCompleteMe安装后不可用
 安装完YouaCompleteMe插件后，打开vim提示：

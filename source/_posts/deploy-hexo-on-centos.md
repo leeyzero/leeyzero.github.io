@@ -2,7 +2,7 @@
 title: 搭建Hexo环境
 date: 2021-04-02 17:00:31
 categories:
-- hexo
+- 环境搭建
 tags:
 - hexo
 ---

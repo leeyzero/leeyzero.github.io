@@ -188,7 +188,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-04-24 12:13:02 / Modified: 19:55:30" itemprop="dateCreated datePublished" datetime="2021-04-24T12:13:02+08:00">2021-04-24</time>
+              <time title="Created: 2021-04-24 12:13:02 / Modified: 19:57:26" itemprop="dateCreated datePublished" datetime="2021-04-24T12:13:02+08:00">2021-04-24</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -211,7 +211,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="记一次服务hang死故障排查"><a href="#记一次服务hang死故障排查" class="headerlink" title="记一次服务hang死故障排查"></a>记一次服务hang死故障排查</h1><p>之前排查了一个服务hang死的线上故障，觉得这个问题比较有代表性，本文记录故障排查的经过，并做一些总结和思考。</p>
+          <p>之前排查了一个服务hang死的线上故障，觉得这个问题比较有代表性，本文记录故障排查的经过，并做一些总结和思考。</p>
 <h2 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h2><p>周末线上一个比较核心的服务（以下称为X服务）出现大量5xx报警。从客户端看到的现象是客户端请求X服务时，出现大量的链接被重置（connection reset by peer）的错误。</p>
 <h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>从经验来看，90%以上的问题都是上线引入的。故障出现在周末，按规范来说，非特殊情况下，周末是不允许上线，跟相关角色确认后，本次故障不是上线引入。</p>
 <p>观察线上流量，在出现故障时间点，流量的确有大幅上涨，从宏观分析来看，有可能流量突然上涨是一个诱因。</p>

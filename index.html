@@ -163,6 +163,108 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/23/dropbox-file-synchronization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="leeyzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="leeyzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/05/23/dropbox-file-synchronization/" class="post-title-link" itemprop="url">Dropbox同步原理</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-05-23 22:44:23 / Modified: 22:55:58" itemprop="dateCreated datePublished" datetime="2021-05-23T22:44:23+08:00">2021-05-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式系统</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>文件同步是利用网络将多个电脑或移动设备之间的文件进行同步的网络服务。文件同步的本质是对比网络上两台设备之间的文件变更，然后将文件的不同部分通过网络进行传输，以达到文件同步的目的。本文介绍dropbox的文件同步实现原理。</p>
+<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><h3 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h3><p>在本地电脑上，一个文件可以用文件路径来标识。但对于dropbox需要支持共享目录，定义了名字空间（namespace）的概念，用于对传统文件系统的抽象。每一个共享目录有一个惟一的名字空间，每个用户有一个根名字空间，每个共享目录可以挂载（mount）到不同的用户根名字空间下。即对于dropbox的文件可以通过名字空间和相对路径&lt;namespace，relative path&gt;惟一标识。</p>
+<h3 id="文件格式"><a href="#文件格式" class="headerlink" title="文件格式"></a>文件格式</h3><p>受<a target="_blank" rel="noopener" href="https://rsync.samba.org/tech_report/tech_report.html">rsync算法</a>的启发，dropbox把每个文件被分割成4MB的块（最后一个块小于等于4MB）。每个块通过计算出的SHA-256进行标识，对于每个文件内容，可以通过一个块列表blocklist引用。比如，文件video.avi大小了14MB，可以分割成4个块h1, h2, h3, h4，我们说文件video.avi的块列表blocklist是[h1, h2, h3, h4]，如下图：</p>
+<p><img src="/images/dropbox-file-synchronization/dropboxfileformat1.png" alt="image"></p>
+<h2 id="服务器文件日志"><a href="#服务器文件日志" class="headerlink" title="服务器文件日志"></a>服务器文件日志</h2><p>服务器文件日志（The Server File Journal，SFJ）是一个大的文件元信息数据库，注意元信息中不包含文件内容，文件内容通过blocklist引用。服务器文件日志是一个不断追加的记录行，每一行代表文件的一个版本。每一行主要包含以下关键字段：</p>
+<ul>
+<li>名字空间ID（Namespace ID，NSID）</li>
+<li>名字空间下的相对路径（Namespace Relative Path）</li>
+<li>块列表（Blocklist）</li>
+<li>日志ID（Journal ID，JID），在名字空间下单调递增</li>
+</ul>
+<p>Dropbox主要有两种服务类型：</p>
+<p><strong>块数据服务</strong>（block-server）：维护一个key-value存储，key可以理解为每个块的hash值，数据是加密的。<br><strong>元数据服务</strong>（meta-server）：维护用户、名字空间、和SFJ数据库。</p>
+<h2 id="文件同步"><a href="#文件同步" class="headerlink" title="文件同步"></a>文件同步</h2><p>dropbox的文件同步需要客户端和服务器共同完成。如果记本地文件集合为S1，上次已同步的文件集合为S2，服务器文件集合为S3。通过对比S1、S2，可以找出本地文件变更；通过对比S2、S3，可以找出服务器端文件变更。找到文件变更后，客户端需要与服务器进行上传、下载操作，以完成文件同步。</p>
+<p>这里不讨论如何找出文件变更的实现方式，后面会针对这个主题单独写一篇。这里主要讨论dropbox客户端和服务器上传下载的交互流程。</p>
+<h3 id="上传"><a href="#上传" class="headerlink" title="上传"></a>上传</h3><p>文件变更后，如果重新上传整个文件，无疑会极大增加网络数据传输以及同步效率。上文提到dropbox是将数据按4MB进行分块，且元数据和数据分离，客户端跟服务器交互时主要分成了三个步骤：</p>
+<p>第一步客户端是跟meta-server交互，尝试将文件提交commit至指定的名字空间的路径下&lt;nsid，path&gt;。服务器需要检查：</p>
+<ul>
+<li>用户是否有权限访问这个名字空间</li>
+<li>文件的块列表是否存在</li>
+</ul>
+<p>成功后，服务器返回需要上传的块列表，交互流程如下：</p>
+<p><img src="/images/dropbox-file-synchronization/protocol11.png" alt="image"></p>
+<p>第二步是客户端跟data-server交互，上传第一步中服务器返回的需要上传的块列表数据，可以进行批量上传。流程如下：</p>
+<p><img src="/images/dropbox-file-synchronization/protocol21.png" alt="image"></p>
+<p>第三步其实跟第一步一样，再次将文件提交至指定名字空间的路径下，但这次必定会成功，因为所有文件块已经存在了。如果对于一个已经上传过的文件，由于之前这个文件已经上传过，所以第一步就会成功，这便是我们所说的“秒传”。</p>
+<p><img src="/images/dropbox-file-synchronization/protocol31.png" alt="image"></p>
+<p>经过上面三个步骤（秒传只需要一步），用户的文件就已经存储到了dropbox中。</p>
+<h3 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h3><p>下载是要将服务器侧的文件变更同步至本地，主要包括两个步骤，第一步是将服务器侧的文件meta变更同步至本地，第二步是将文件的数据下载至本地，在本地重新构造出变更后的文件。</p>
+<p>客户端首先跟meta-server交互，通过指定名字空间和该名字空间下的cursor，发起一个list调用以增量获取指定名字空间下的文件变更。每次获取到文件变更后，服务器同时还会返回一个新的cursor，客户端会缓存这个cursor以便下次调用时使用，具体流程如下：</p>
+<p><img src="/images/dropbox-file-synchronization/protocol41.png" alt="image"></p>
+<p>拿到变更后的文件元信息后，需要通过块列表blocklist重新构造文件数据。客户端首先检查这些块是否在本地已缓存，如果未找到，客户端会向block-server发起一个retrieve调用，下载具体块的数据，retrieve操作支持批量。当所有块都下载到本地后，客户端重新构造文件，并将其将添加到本地文件系统中。流程如下：</p>
+<p><img src="/images/dropbox-file-synchronization/protocol52.png" alt="image"></p>
+<h2 id="一些思考"><a href="#一些思考" class="headerlink" title="一些思考"></a>一些思考</h2><p>云盘属于个人云存储赛道，其核心竞争力在于存储成本、带宽成本、数据安全性以及用户基数（数据迁移成本高）。目前国内云盘C端市场竞争激烈，很难在沿用现有模式下有所突破，可以针对细分人群或场景下做差异化以寻找生存空间。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1]. <a target="_blank" rel="noopener" href="https://dropbox.tech/infrastructure/streaming-file-synchronization">Streaming File Synchroniztion</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/05/talking-about-how-to-intervewing/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1240,145 +1342,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/10/vim-for-golang/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="leeyzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="leeyzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/10/vim-for-golang/" class="post-title-link" itemprop="url">vim配置golang开发环境</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-10-10 23:43:20" itemprop="dateCreated datePublished" datetime="2020-10-10T23:43:20+08:00">2020-10-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-04 21:28:16" itemprop="dateModified" datetime="2021-04-04T21:28:16+08:00">2021-04-04</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" itemprop="url" rel="index"><span itemprop="name">环境搭建</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>最近工作中使用golang开发比较多，而大部分工作都是使用vim完成，在配置vim的golang环境时，发现已经有很多现成的插件可用，对我而言，主要配置以下四个插件就够用了：</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://github.com/fatih/vim-go">vim-go</a>: go语言的vim插件。支持代码格式化、语法检查、语法高亮、调试等非常多的功能。</li>
-<li><a target="_blank" rel="noopener" href="https://github.com/majutsushi/tagbar">tagbar</a>: 用于方便查看代码结构。</li>
-<li><a target="_blank" rel="noopener" href="https://github.com/scrooloose/nerdtree">nerdtree</a>: 用于管理和查看代码目录结构。</li>
-<li><a target="_blank" rel="noopener" href="https://github.com/ycm-core/YouCompleteMe">YouCompleteMe</a>: 用于代码自动补全。</li>
-</ul>
-<h2 id="依赖环境"><a href="#依赖环境" class="headerlink" title="依赖环境"></a>依赖环境</h2><h3 id="安装go环境"><a href="#安装go环境" class="headerlink" title="安装go环境"></a>安装go环境</h3><p>参考go官网，按步骤安装，配置好<code>GOROOT</code>和<code>GOPATH</code>环境变更即可，配置go的vim IDE环境需要依赖vim和vim-go插件。</p>
-<p>vim-go插件需要vim使用8.0以上的版本，而YouCompleteMe需要python2.7.1+或3.5.1+。如果你系统的vim和python版本满足条件，可以忽略下面两个步骤。</p>
-<h3 id="安装vim8-0"><a href="#安装vim8-0" class="headerlink" title="安装vim8.0+"></a>安装vim8.0+</h3><p>推荐使用源码方式安装，先从github上下载<a target="_blank" rel="noopener" href="https://github.com/vim/vim.git">vim</a>源代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;vim&#x2F;vim.git</span><br></pre></td></tr></table></figure>
-<p>在<code>src/INSTALL</code>安装文档中有针对各个系统的安装步骤，依照步骤安装就好，需要注意的是：<strong>由于YouCompleteMe需要vim有python支持，python版本需要2.7.1+或3.5.1+。</strong>可以先查看你的vim是否已经支持python:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;vim --version | grep python</span><br><span class="line">+cmdline_hist      +langmap          -python            +visual</span><br><span class="line">+cmdline_info      +libcall          -python3           +visualextra</span><br></pre></td></tr></table></figure>
-<p><code>-</code>号表示不支持，重新编译在<code>./configure</code>的时候加上<code>--enable-pythoninterp=yes</code>参数就行，如果是python3，则加上<code>--enable-python3interp=yes</code>。</p>
-<h3 id="安装python2-7-1"><a href="#安装python2-7-1" class="headerlink" title="安装python2.7.1+"></a>安装python2.7.1+</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Python2.7.1：</span><br><span class="line">wget http:&#x2F;&#x2F;python.org&#x2F;ftp&#x2F;python&#x2F;2.7.14&#x2F;Python-2.7.14.tar.xz</span><br><span class="line">tar xf Python-2.7.14.tar.xz</span><br><span class="line">cd Python-2.7.14</span><br><span class="line">.&#x2F;configure --prefix&#x3D;&#x2F;usr&#x2F;local&#x2F;python27 --enable-unicode&#x3D;ucs4 --enable-shared </span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
-
-<p>需要注意的是：</p>
-<ul>
-<li>make install需要管理员权限进行安装</li>
-<li>编译python的时候加上–enable-unicode和–enable-shared，主要是vim打开python支持后需要python动态库支持，并且unicode需要支持ucs4。</li>
-</ul>
-<h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><h3 id="vim基本础配置"><a href="#vim基本础配置" class="headerlink" title="vim基本础配置"></a>vim基本础配置</h3><p>参考<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/2a0ccc86ee31">vim无插件配置</a>。</p>
-<h3 id="vim插件安装"><a href="#vim插件安装" class="headerlink" title="vim插件安装"></a>vim插件安装</h3><p>我使用<a target="_blank" rel="noopener" href="https://github.com/VundleVim/Vundle.vim.git">Vundle</a>管理vim插件。插件安装比较简单，先打开~/.vimrc，进行需要的插件配置，在配置前建议阅读Vundle的README.md。安装比较简单，如下：</p>
-<ol>
-<li>clone vundle.vim.git<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;VundleVim&#x2F;Vundle.vim.git ~&#x2F;.vim&#x2F;bundle&#x2F;Vundle.vim</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<p>2.配置插件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">set nocompatible              &quot; be iMproved, required</span><br><span class="line">filetype off                  &quot; required</span><br><span class="line"></span><br><span class="line">&quot; set the runtime path to include Vundle and initialize</span><br><span class="line">set rtp+&#x3D;~&#x2F;.vim&#x2F;bundle&#x2F;Vundle.vim</span><br><span class="line">call vundle#begin()</span><br><span class="line"></span><br><span class="line">&quot; let Vundle manage Vundle, required</span><br><span class="line">Plugin &#39;VundleVim&#x2F;Vundle.vim&#39;</span><br><span class="line"></span><br><span class="line">Plugin &#39;fatih&#x2F;vim-go&#39;</span><br><span class="line"></span><br><span class="line">Plugin &#39;majutsushi&#x2F;tagbar&#39;</span><br><span class="line"></span><br><span class="line">Plugin &#39;scrooloose&#x2F;nerdtree&#39;</span><br><span class="line"></span><br><span class="line">Plugin &#39;Valloric&#x2F;YouCompleteMe&#39;</span><br><span class="line"></span><br><span class="line">&quot; All of your Plugins must be added before the following line</span><br><span class="line">call vundle#end()            &quot; required</span><br><span class="line">filetype plugin indent on    &quot; required</span><br></pre></td></tr></table></figure>
-
-<p>配置完后，在vim命令模式下执行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:PluginInstall</span><br></pre></td></tr></table></figure>
-<p>插件会自动下载安装，看见上面显示 Finishing … Done 的内容，插件安装成功。</p>
-<h3 id="安装vim-go"><a href="#安装vim-go" class="headerlink" title="安装vim-go"></a>安装vim-go</h3><p>安装完vim-go插件后，vim-go本身依赖一些包，在vim命令模块下执行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:GoInstallBinaries</span><br></pre></td></tr></table></figure>
-<p>在安装过程中，不出意外，你会遇到安装失败的情况，请在下面遇到的问题中找解决方案。</p>
-<h3 id="编译YouCompleteMe"><a href="#编译YouCompleteMe" class="headerlink" title="编译YouCompleteMe"></a>编译YouCompleteMe</h3><p>安装完YouCompleteMe后，还需要单独编译才能运行YouaCompleteMe：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ~&#x2F;.vim&#x2F;plugged&#x2F;YouCompleteMe</span><br><span class="line">sh install.py --go-completer </span><br></pre></td></tr></table></figure>
-<p>YouCompleteMe支持多语言，其它语言支持请参考YouCompleteMe源代码目录下的README.md文件。</p>
-<h3 id="插件的配置"><a href="#插件的配置" class="headerlink" title="插件的配置"></a>插件的配置</h3><p>我对NERDTree、YouCompleteMe以及tagbar的配置比较简单，需要更多配置请参考各个插件的README.md</p>
-<h4 id="vim-go插件"><a href="#vim-go插件" class="headerlink" title="vim-go插件"></a>vim-go插件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">let g:go_fmt_command &#x3D; &quot;goimports&quot; &quot; 格式化将默认的 gofmt 替换</span><br><span class="line">let g:go_autodetect_gopath &#x3D; 1</span><br><span class="line">let g:go_list_type &#x3D; &quot;quickfix&quot;</span><br><span class="line">let g:go_version_warning &#x3D; 1</span><br><span class="line">let g:go_highlight_types &#x3D; 1</span><br><span class="line">let g:go_highlight_fields &#x3D; 1</span><br><span class="line">let g:go_highlight_functions &#x3D; 1</span><br><span class="line">let g:go_highlight_function_calls &#x3D; 1</span><br><span class="line">let g:go_highlight_operators &#x3D; 1</span><br><span class="line">let g:go_highlight_extra_types &#x3D; 1</span><br><span class="line">let g:go_highlight_methods &#x3D; 1</span><br><span class="line">let g:go_highlight_generate_tags &#x3D; 1</span><br><span class="line">let g:godef_split&#x3D;2</span><br></pre></td></tr></table></figure>
-
-<h4 id="NERDTree插件"><a href="#NERDTree插件" class="headerlink" title="NERDTree插件"></a>NERDTree插件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&quot; 打开和关闭NERDTree快捷键</span><br><span class="line">map &lt;F10&gt; :NERDTreeToggle&lt;CR&gt;</span><br><span class="line">&quot; 设置宽度</span><br><span class="line">&quot; let NERDTreeWinSize&#x3D;25</span><br></pre></td></tr></table></figure>
-
-<h4 id="tagbar插件"><a href="#tagbar插件" class="headerlink" title="tagbar插件"></a>tagbar插件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">nmap &lt;F9&gt; :TagbarToggle&lt;CR&gt;</span><br><span class="line">let g:tagbar_width&#x3D;25</span><br><span class="line">let g:tagbar_type_go &#x3D; &#123;</span><br><span class="line">    \ &#39;ctagstype&#39; : &#39;go&#39;,</span><br><span class="line">    \ &#39;kinds&#39;     : [</span><br><span class="line">        \ &#39;p:package&#39;,</span><br><span class="line">        \ &#39;i:imports:1&#39;,</span><br><span class="line">        \ &#39;c:constants&#39;,</span><br><span class="line">        \ &#39;v:variables&#39;,</span><br><span class="line">        \ &#39;t:types&#39;,</span><br><span class="line">        \ &#39;n:interfaces&#39;,</span><br><span class="line">        \ &#39;w:fields&#39;,</span><br><span class="line">        \ &#39;e:embedded&#39;,</span><br><span class="line">        \ &#39;m:methods&#39;,</span><br><span class="line">        \ &#39;r:constructor&#39;,</span><br><span class="line">        \ &#39;f:functions&#39;</span><br><span class="line">    \ ],</span><br><span class="line">    \ &#39;sro&#39; : &#39;.&#39;,</span><br><span class="line">    \ &#39;kind2scope&#39; : &#123;</span><br><span class="line">        \ &#39;t&#39; : &#39;ctype&#39;,</span><br><span class="line">        \ &#39;n&#39; : &#39;ntype&#39;</span><br><span class="line">    \ &#125;,</span><br><span class="line">    \ &#39;scope2kind&#39; : &#123;</span><br><span class="line">        \ &#39;ctype&#39; : &#39;t&#39;,</span><br><span class="line">        \ &#39;ntype&#39; : &#39;n&#39;</span><br><span class="line">    \ &#125;,</span><br><span class="line">    \ &#39;ctagsbin&#39;  : &#39;gotags&#39;,</span><br><span class="line">    \ &#39;ctagsargs&#39; : &#39;-sort -silent&#39;</span><br><span class="line">\ &#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h2><h3 id="vim-go执行-GoInstallBinaries失败"><a href="#vim-go执行-GoInstallBinaries失败" class="headerlink" title="vim-go执行:GoInstallBinaries失败"></a>vim-go执行:GoInstallBinaries失败</h3><p>表现为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vim-go: guru not found. Installing golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru to folder &#x2F;home&#x2F;xxx&#x2F;repos&#x2F;gopath&#x2F;bin&#x2F;</span><br><span class="line">vim-go: Error downloading golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru: Fetching https:&#x2F;&#x2F;golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru?go-get&#x3D;1</span><br><span class="line">vim-go: https fetch failed: Get https:&#x2F;&#x2F;golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru?go-get&#x3D;1: dial tcp 216.239.37.1:443: i&#x2F;o timeout</span><br><span class="line">vim-go: package golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru: unrecognized import path &quot;golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru&quot; (https fetch: Get https:&#x2F;&#x2F;gola</span><br><span class="line">ng.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru?go-get&#x3D;1: dial tcp 216.239.37.1:443: i&#x2F;o timeout)</span><br><span class="line">vim-go: Error installing golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru: can&#39;t load package: package golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru: cannot find package &quot;golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru&quot;</span><br></pre></td></tr></table></figure>
-
-<p>原因是在执行:GoInstallBinaries执行时会使用go get 安装依赖包(依赖包在<code>~/.vim/bundle/vim-go/plugin/go.vim</code>中可以看到)，由于国内无法访问<code>https://golang.org</code>，故会出现io timeout的情况，好在国内有比较稳定的加速镜像，简单配置一下即可：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 启用 Go Modules 功能</span><br><span class="line">go env -w GO111MODULE&#x3D;on</span><br><span class="line"></span><br><span class="line"># 配置 GOPROXY 环境变量，以下使用七牛国内镜像</span><br><span class="line">go env -w  GOPROXY&#x3D;https:&#x2F;&#x2F;goproxy.cn,direct</span><br><span class="line"></span><br><span class="line"># 设置GOPATH</span><br><span class="line">go env -w GOPATH&#x3D;&#x2F;path&#x2F;to&#x2F;gopath</span><br><span class="line"></span><br><span class="line"># 确认是否设置成功</span><br><span class="line">go env</span><br></pre></td></tr></table></figure>
-
-<h3 id="YouCompleteMe安装后不可用"><a href="#YouCompleteMe安装后不可用" class="headerlink" title="YouCompleteMe安装后不可用"></a>YouCompleteMe安装后不可用</h3><p>安装完YouaCompleteMe插件后，打开vim提示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">YouCompleteMe unavailable: requires Vim compiled with Python (2.7.1+ or 3.5.1+) support</span><br></pre></td></tr></table></figure>
-<p>原因是YouCompleteMe需要vim支持python，在编译vim的时候指定<code>--enable-pythoninterp=yes</code>即可，如果是python3，则指定<code>--enable-python3interp=yes</code></p>
-<h3 id="vim加载libpython2-7-so-1-0动态库失败"><a href="#vim加载libpython2-7-so-1-0动态库失败" class="headerlink" title="vim加载libpython2.7.so.1.0动态库失败"></a>vim加载libpython2.7.so.1.0动态库失败</h3><p>表现为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;usr&#x2F;local&#x2F;bin&#x2F;vim: error while loading shared libraries: libpython2.7.so.1.0: cannot open shared object file: No such file or directory</span><br></pre></td></tr></table></figure>
-
-<p>当vim开启python支持后，需要依赖python共享库，使用ldd命令可以查看vim依赖的动态库：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; ldd &#x2F;usr&#x2F;local&#x2F;bin&#x2F;vim</span><br></pre></td></tr></table></figure>
-<p>发现的确没有找到<code>libpython2.7.so.1.0</code>。原因是在源码编译python的时候没有指定<code>--enable-shared</code>导致，重新编译python即可。由于python源码安装时，默认安装到<code>/usr/local/python27</code>下，如果仍然没有找到，可以将<code>/usr/local/python27/lib</code>下生成的<code>libpython2.7.so.1.0</code>库拷贝到<code>/usr/lib64/</code>下(64位环境），也可以在<code>/etc/ld.so.conf</code>指定动态库加载目录。</p>
-<h3 id="undefined-symbol-pyunicodeucs4-asencodedstring"><a href="#undefined-symbol-pyunicodeucs4-asencodedstring" class="headerlink" title="undefined symbol pyunicodeucs4_asencodedstring"></a>undefined symbol pyunicodeucs4_asencodedstring</h3><p>原因是源码编译python的时候没有开启asencodedstring支持，在编译python的时候加上以下参数就行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;configure --prefix&#x3D;&#x2F;usr&#x2F;local&#x2F;python27 --enable-shared </span><br></pre></td></tr></table></figure>
-
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1].<a target="_blank" rel="noopener" href="https://learnku.com/articles/24924">https://learnku.com/articles/24924</a><br>[2].<a target="_blank" rel="noopener" href="https://github.com/fatih/vim-go">https://github.com/fatih/vim-go</a><br>[3].<a target="_blank" rel="noopener" href="https://github.com/VundleVim/Vundle.vim/blob/master/CONTRIBUTING.md">https://github.com/VundleVim/Vundle.vim/blob/master/CONTRIBUTING.md</a><br>[4].<a target="_blank" rel="noopener" href="https://github.com/majutsushi/tagbar">https://github.com/majutsushi/tagbar</a><br>[5].<a target="_blank" rel="noopener" href="https://github.com/ycm-core/YouCompleteMe">https://github.com/ycm-core/YouCompleteMe</a><br>[6].<a target="_blank" rel="noopener" href="https://github.com/vim/vim">https://github.com/vim/vim</a><br>[7].<a target="_blank" rel="noopener" href="https://ephrain.net/python-%E5%87%BA%E7%8F%BE-undefined-symbol-pyunicodeucs4_asencodedstring-%E9%8C%AF%E8%AA%A4/">https://ephrain.net/python-出現-undefined-symbol-pyunicodeucs4_asencodedstring-錯誤/</a><br>[8].<a target="_blank" rel="noopener" href="https://github.com/scrooloose/nerdtree">https://github.com/scrooloose/nerdtree</a><br>[9].<a target="_blank" rel="noopener" href="https://danieleriksson.net/2017/02/08/how-to-install-latest-python-on-centos/">https://danieleriksson.net/2017/02/08/how-to-install-latest-python-on-centos/</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1449,7 +1412,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1460,7 +1423,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

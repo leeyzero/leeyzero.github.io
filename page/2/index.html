@@ -163,6 +163,145 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/10/vim-for-golang/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="leeyzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="leeyzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/10/10/vim-for-golang/" class="post-title-link" itemprop="url">vim配置golang开发环境</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-10-10 23:43:20" itemprop="dateCreated datePublished" datetime="2020-10-10T23:43:20+08:00">2020-10-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-04-04 21:28:16" itemprop="dateModified" datetime="2021-04-04T21:28:16+08:00">2021-04-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" itemprop="url" rel="index"><span itemprop="name">环境搭建</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>最近工作中使用golang开发比较多，而大部分工作都是使用vim完成，在配置vim的golang环境时，发现已经有很多现成的插件可用，对我而言，主要配置以下四个插件就够用了：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/fatih/vim-go">vim-go</a>: go语言的vim插件。支持代码格式化、语法检查、语法高亮、调试等非常多的功能。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/majutsushi/tagbar">tagbar</a>: 用于方便查看代码结构。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/scrooloose/nerdtree">nerdtree</a>: 用于管理和查看代码目录结构。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/ycm-core/YouCompleteMe">YouCompleteMe</a>: 用于代码自动补全。</li>
+</ul>
+<h2 id="依赖环境"><a href="#依赖环境" class="headerlink" title="依赖环境"></a>依赖环境</h2><h3 id="安装go环境"><a href="#安装go环境" class="headerlink" title="安装go环境"></a>安装go环境</h3><p>参考go官网，按步骤安装，配置好<code>GOROOT</code>和<code>GOPATH</code>环境变更即可，配置go的vim IDE环境需要依赖vim和vim-go插件。</p>
+<p>vim-go插件需要vim使用8.0以上的版本，而YouCompleteMe需要python2.7.1+或3.5.1+。如果你系统的vim和python版本满足条件，可以忽略下面两个步骤。</p>
+<h3 id="安装vim8-0"><a href="#安装vim8-0" class="headerlink" title="安装vim8.0+"></a>安装vim8.0+</h3><p>推荐使用源码方式安装，先从github上下载<a target="_blank" rel="noopener" href="https://github.com/vim/vim.git">vim</a>源代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;vim&#x2F;vim.git</span><br></pre></td></tr></table></figure>
+<p>在<code>src/INSTALL</code>安装文档中有针对各个系统的安装步骤，依照步骤安装就好，需要注意的是：<strong>由于YouCompleteMe需要vim有python支持，python版本需要2.7.1+或3.5.1+。</strong>可以先查看你的vim是否已经支持python:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;vim --version | grep python</span><br><span class="line">+cmdline_hist      +langmap          -python            +visual</span><br><span class="line">+cmdline_info      +libcall          -python3           +visualextra</span><br></pre></td></tr></table></figure>
+<p><code>-</code>号表示不支持，重新编译在<code>./configure</code>的时候加上<code>--enable-pythoninterp=yes</code>参数就行，如果是python3，则加上<code>--enable-python3interp=yes</code>。</p>
+<h3 id="安装python2-7-1"><a href="#安装python2-7-1" class="headerlink" title="安装python2.7.1+"></a>安装python2.7.1+</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Python2.7.1：</span><br><span class="line">wget http:&#x2F;&#x2F;python.org&#x2F;ftp&#x2F;python&#x2F;2.7.14&#x2F;Python-2.7.14.tar.xz</span><br><span class="line">tar xf Python-2.7.14.tar.xz</span><br><span class="line">cd Python-2.7.14</span><br><span class="line">.&#x2F;configure --prefix&#x3D;&#x2F;usr&#x2F;local&#x2F;python27 --enable-unicode&#x3D;ucs4 --enable-shared </span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是：</p>
+<ul>
+<li>make install需要管理员权限进行安装</li>
+<li>编译python的时候加上–enable-unicode和–enable-shared，主要是vim打开python支持后需要python动态库支持，并且unicode需要支持ucs4。</li>
+</ul>
+<h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><h3 id="vim基本础配置"><a href="#vim基本础配置" class="headerlink" title="vim基本础配置"></a>vim基本础配置</h3><p>参考<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/2a0ccc86ee31">vim无插件配置</a>。</p>
+<h3 id="vim插件安装"><a href="#vim插件安装" class="headerlink" title="vim插件安装"></a>vim插件安装</h3><p>我使用<a target="_blank" rel="noopener" href="https://github.com/VundleVim/Vundle.vim.git">Vundle</a>管理vim插件。插件安装比较简单，先打开~/.vimrc，进行需要的插件配置，在配置前建议阅读Vundle的README.md。安装比较简单，如下：</p>
+<ol>
+<li>clone vundle.vim.git<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;VundleVim&#x2F;Vundle.vim.git ~&#x2F;.vim&#x2F;bundle&#x2F;Vundle.vim</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>2.配置插件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">set nocompatible              &quot; be iMproved, required</span><br><span class="line">filetype off                  &quot; required</span><br><span class="line"></span><br><span class="line">&quot; set the runtime path to include Vundle and initialize</span><br><span class="line">set rtp+&#x3D;~&#x2F;.vim&#x2F;bundle&#x2F;Vundle.vim</span><br><span class="line">call vundle#begin()</span><br><span class="line"></span><br><span class="line">&quot; let Vundle manage Vundle, required</span><br><span class="line">Plugin &#39;VundleVim&#x2F;Vundle.vim&#39;</span><br><span class="line"></span><br><span class="line">Plugin &#39;fatih&#x2F;vim-go&#39;</span><br><span class="line"></span><br><span class="line">Plugin &#39;majutsushi&#x2F;tagbar&#39;</span><br><span class="line"></span><br><span class="line">Plugin &#39;scrooloose&#x2F;nerdtree&#39;</span><br><span class="line"></span><br><span class="line">Plugin &#39;Valloric&#x2F;YouCompleteMe&#39;</span><br><span class="line"></span><br><span class="line">&quot; All of your Plugins must be added before the following line</span><br><span class="line">call vundle#end()            &quot; required</span><br><span class="line">filetype plugin indent on    &quot; required</span><br></pre></td></tr></table></figure>
+
+<p>配置完后，在vim命令模式下执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:PluginInstall</span><br></pre></td></tr></table></figure>
+<p>插件会自动下载安装，看见上面显示 Finishing … Done 的内容，插件安装成功。</p>
+<h3 id="安装vim-go"><a href="#安装vim-go" class="headerlink" title="安装vim-go"></a>安装vim-go</h3><p>安装完vim-go插件后，vim-go本身依赖一些包，在vim命令模块下执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:GoInstallBinaries</span><br></pre></td></tr></table></figure>
+<p>在安装过程中，不出意外，你会遇到安装失败的情况，请在下面遇到的问题中找解决方案。</p>
+<h3 id="编译YouCompleteMe"><a href="#编译YouCompleteMe" class="headerlink" title="编译YouCompleteMe"></a>编译YouCompleteMe</h3><p>安装完YouCompleteMe后，还需要单独编译才能运行YouaCompleteMe：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ~&#x2F;.vim&#x2F;plugged&#x2F;YouCompleteMe</span><br><span class="line">sh install.py --go-completer </span><br></pre></td></tr></table></figure>
+<p>YouCompleteMe支持多语言，其它语言支持请参考YouCompleteMe源代码目录下的README.md文件。</p>
+<h3 id="插件的配置"><a href="#插件的配置" class="headerlink" title="插件的配置"></a>插件的配置</h3><p>我对NERDTree、YouCompleteMe以及tagbar的配置比较简单，需要更多配置请参考各个插件的README.md</p>
+<h4 id="vim-go插件"><a href="#vim-go插件" class="headerlink" title="vim-go插件"></a>vim-go插件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">let g:go_fmt_command &#x3D; &quot;goimports&quot; &quot; 格式化将默认的 gofmt 替换</span><br><span class="line">let g:go_autodetect_gopath &#x3D; 1</span><br><span class="line">let g:go_list_type &#x3D; &quot;quickfix&quot;</span><br><span class="line">let g:go_version_warning &#x3D; 1</span><br><span class="line">let g:go_highlight_types &#x3D; 1</span><br><span class="line">let g:go_highlight_fields &#x3D; 1</span><br><span class="line">let g:go_highlight_functions &#x3D; 1</span><br><span class="line">let g:go_highlight_function_calls &#x3D; 1</span><br><span class="line">let g:go_highlight_operators &#x3D; 1</span><br><span class="line">let g:go_highlight_extra_types &#x3D; 1</span><br><span class="line">let g:go_highlight_methods &#x3D; 1</span><br><span class="line">let g:go_highlight_generate_tags &#x3D; 1</span><br><span class="line">let g:godef_split&#x3D;2</span><br></pre></td></tr></table></figure>
+
+<h4 id="NERDTree插件"><a href="#NERDTree插件" class="headerlink" title="NERDTree插件"></a>NERDTree插件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&quot; 打开和关闭NERDTree快捷键</span><br><span class="line">map &lt;F10&gt; :NERDTreeToggle&lt;CR&gt;</span><br><span class="line">&quot; 设置宽度</span><br><span class="line">&quot; let NERDTreeWinSize&#x3D;25</span><br></pre></td></tr></table></figure>
+
+<h4 id="tagbar插件"><a href="#tagbar插件" class="headerlink" title="tagbar插件"></a>tagbar插件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">nmap &lt;F9&gt; :TagbarToggle&lt;CR&gt;</span><br><span class="line">let g:tagbar_width&#x3D;25</span><br><span class="line">let g:tagbar_type_go &#x3D; &#123;</span><br><span class="line">    \ &#39;ctagstype&#39; : &#39;go&#39;,</span><br><span class="line">    \ &#39;kinds&#39;     : [</span><br><span class="line">        \ &#39;p:package&#39;,</span><br><span class="line">        \ &#39;i:imports:1&#39;,</span><br><span class="line">        \ &#39;c:constants&#39;,</span><br><span class="line">        \ &#39;v:variables&#39;,</span><br><span class="line">        \ &#39;t:types&#39;,</span><br><span class="line">        \ &#39;n:interfaces&#39;,</span><br><span class="line">        \ &#39;w:fields&#39;,</span><br><span class="line">        \ &#39;e:embedded&#39;,</span><br><span class="line">        \ &#39;m:methods&#39;,</span><br><span class="line">        \ &#39;r:constructor&#39;,</span><br><span class="line">        \ &#39;f:functions&#39;</span><br><span class="line">    \ ],</span><br><span class="line">    \ &#39;sro&#39; : &#39;.&#39;,</span><br><span class="line">    \ &#39;kind2scope&#39; : &#123;</span><br><span class="line">        \ &#39;t&#39; : &#39;ctype&#39;,</span><br><span class="line">        \ &#39;n&#39; : &#39;ntype&#39;</span><br><span class="line">    \ &#125;,</span><br><span class="line">    \ &#39;scope2kind&#39; : &#123;</span><br><span class="line">        \ &#39;ctype&#39; : &#39;t&#39;,</span><br><span class="line">        \ &#39;ntype&#39; : &#39;n&#39;</span><br><span class="line">    \ &#125;,</span><br><span class="line">    \ &#39;ctagsbin&#39;  : &#39;gotags&#39;,</span><br><span class="line">    \ &#39;ctagsargs&#39; : &#39;-sort -silent&#39;</span><br><span class="line">\ &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h2><h3 id="vim-go执行-GoInstallBinaries失败"><a href="#vim-go执行-GoInstallBinaries失败" class="headerlink" title="vim-go执行:GoInstallBinaries失败"></a>vim-go执行:GoInstallBinaries失败</h3><p>表现为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vim-go: guru not found. Installing golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru to folder &#x2F;home&#x2F;xxx&#x2F;repos&#x2F;gopath&#x2F;bin&#x2F;</span><br><span class="line">vim-go: Error downloading golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru: Fetching https:&#x2F;&#x2F;golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru?go-get&#x3D;1</span><br><span class="line">vim-go: https fetch failed: Get https:&#x2F;&#x2F;golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru?go-get&#x3D;1: dial tcp 216.239.37.1:443: i&#x2F;o timeout</span><br><span class="line">vim-go: package golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru: unrecognized import path &quot;golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru&quot; (https fetch: Get https:&#x2F;&#x2F;gola</span><br><span class="line">ng.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru?go-get&#x3D;1: dial tcp 216.239.37.1:443: i&#x2F;o timeout)</span><br><span class="line">vim-go: Error installing golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru: can&#39;t load package: package golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru: cannot find package &quot;golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;guru&quot;</span><br></pre></td></tr></table></figure>
+
+<p>原因是在执行:GoInstallBinaries执行时会使用go get 安装依赖包(依赖包在<code>~/.vim/bundle/vim-go/plugin/go.vim</code>中可以看到)，由于国内无法访问<code>https://golang.org</code>，故会出现io timeout的情况，好在国内有比较稳定的加速镜像，简单配置一下即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 启用 Go Modules 功能</span><br><span class="line">go env -w GO111MODULE&#x3D;on</span><br><span class="line"></span><br><span class="line"># 配置 GOPROXY 环境变量，以下使用七牛国内镜像</span><br><span class="line">go env -w  GOPROXY&#x3D;https:&#x2F;&#x2F;goproxy.cn,direct</span><br><span class="line"></span><br><span class="line"># 设置GOPATH</span><br><span class="line">go env -w GOPATH&#x3D;&#x2F;path&#x2F;to&#x2F;gopath</span><br><span class="line"></span><br><span class="line"># 确认是否设置成功</span><br><span class="line">go env</span><br></pre></td></tr></table></figure>
+
+<h3 id="YouCompleteMe安装后不可用"><a href="#YouCompleteMe安装后不可用" class="headerlink" title="YouCompleteMe安装后不可用"></a>YouCompleteMe安装后不可用</h3><p>安装完YouaCompleteMe插件后，打开vim提示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">YouCompleteMe unavailable: requires Vim compiled with Python (2.7.1+ or 3.5.1+) support</span><br></pre></td></tr></table></figure>
+<p>原因是YouCompleteMe需要vim支持python，在编译vim的时候指定<code>--enable-pythoninterp=yes</code>即可，如果是python3，则指定<code>--enable-python3interp=yes</code></p>
+<h3 id="vim加载libpython2-7-so-1-0动态库失败"><a href="#vim加载libpython2-7-so-1-0动态库失败" class="headerlink" title="vim加载libpython2.7.so.1.0动态库失败"></a>vim加载libpython2.7.so.1.0动态库失败</h3><p>表现为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;usr&#x2F;local&#x2F;bin&#x2F;vim: error while loading shared libraries: libpython2.7.so.1.0: cannot open shared object file: No such file or directory</span><br></pre></td></tr></table></figure>
+
+<p>当vim开启python支持后，需要依赖python共享库，使用ldd命令可以查看vim依赖的动态库：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; ldd &#x2F;usr&#x2F;local&#x2F;bin&#x2F;vim</span><br></pre></td></tr></table></figure>
+<p>发现的确没有找到<code>libpython2.7.so.1.0</code>。原因是在源码编译python的时候没有指定<code>--enable-shared</code>导致，重新编译python即可。由于python源码安装时，默认安装到<code>/usr/local/python27</code>下，如果仍然没有找到，可以将<code>/usr/local/python27/lib</code>下生成的<code>libpython2.7.so.1.0</code>库拷贝到<code>/usr/lib64/</code>下(64位环境），也可以在<code>/etc/ld.so.conf</code>指定动态库加载目录。</p>
+<h3 id="undefined-symbol-pyunicodeucs4-asencodedstring"><a href="#undefined-symbol-pyunicodeucs4-asencodedstring" class="headerlink" title="undefined symbol pyunicodeucs4_asencodedstring"></a>undefined symbol pyunicodeucs4_asencodedstring</h3><p>原因是源码编译python的时候没有开启asencodedstring支持，在编译python的时候加上以下参数就行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;configure --prefix&#x3D;&#x2F;usr&#x2F;local&#x2F;python27 --enable-shared </span><br></pre></td></tr></table></figure>
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1].<a target="_blank" rel="noopener" href="https://learnku.com/articles/24924">https://learnku.com/articles/24924</a><br>[2].<a target="_blank" rel="noopener" href="https://github.com/fatih/vim-go">https://github.com/fatih/vim-go</a><br>[3].<a target="_blank" rel="noopener" href="https://github.com/VundleVim/Vundle.vim/blob/master/CONTRIBUTING.md">https://github.com/VundleVim/Vundle.vim/blob/master/CONTRIBUTING.md</a><br>[4].<a target="_blank" rel="noopener" href="https://github.com/majutsushi/tagbar">https://github.com/majutsushi/tagbar</a><br>[5].<a target="_blank" rel="noopener" href="https://github.com/ycm-core/YouCompleteMe">https://github.com/ycm-core/YouCompleteMe</a><br>[6].<a target="_blank" rel="noopener" href="https://github.com/vim/vim">https://github.com/vim/vim</a><br>[7].<a target="_blank" rel="noopener" href="https://ephrain.net/python-%E5%87%BA%E7%8F%BE-undefined-symbol-pyunicodeucs4_asencodedstring-%E9%8C%AF%E8%AA%A4/">https://ephrain.net/python-出現-undefined-symbol-pyunicodeucs4_asencodedstring-錯誤/</a><br>[8].<a target="_blank" rel="noopener" href="https://github.com/scrooloose/nerdtree">https://github.com/scrooloose/nerdtree</a><br>[9].<a target="_blank" rel="noopener" href="https://danieleriksson.net/2017/02/08/how-to-install-latest-python-on-centos/">https://danieleriksson.net/2017/02/08/how-to-install-latest-python-on-centos/</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/10/vim-tutorial/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1377,196 +1516,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/10/cef-windows-source/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="leeyzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="leeyzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/10/cef-windows-source/" class="post-title-link" itemprop="url">CEF Windows环境源码编译</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-10-10 22:21:09" itemprop="dateCreated datePublished" datetime="2020-10-10T22:21:09+08:00">2020-10-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-02 15:41:11" itemprop="dateModified" datetime="2021-04-02T15:41:11+08:00">2021-04-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/windows/" itemprop="url" rel="index"><span itemprop="name">windows</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>由于项目需要用到内嵌浏览器，IE内核太依赖于操作系统，对H5的支持也不太好。<a target="_blank" rel="noopener" href="https://bitbucket.org/chromiumembedded/cef">CEF</a>是基于<a target="_blank" rel="noopener" href="http://www.chromium.org/Home">chromium 项目</a>的内嵌浏览器开源框架，已经应用到了<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Chromium_Embedded_Framework#Applications_using_CEF">很多产品</a>中，而且有比较健全的<a target="_blank" rel="noopener" href="http://magpcss.org/ceforum/index.php">论坛</a>和<a target="_blank" rel="noopener" href="https://bitbucket.org/chromiumembedded/cef">官方支持</a>，是项目的不二选择。由于客户端要运行到Windows XP系统，但Chome浏览器在49版本(对应CEF3版本为2623，以下说的CEF均指CEF3)后不再支持Win7以下系统。CEF<a target="_blank" rel="noopener" href="http://opensource.spotify.com/cefbuilds/index.html">二进制发布官网</a>上并未包含2623版本, 但CEF提供了源码发布，官方也给了<a target="_blank" rel="noopener" href="https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding">源码编译文档说明</a>，虽然按照官方文档说明进行构建，但在编译CEF 2623版本过程还是遇到不少问题，在此做个记录供网友参考。</p>
-<h2 id="准备编译环境"><a href="#准备编译环境" class="headerlink" title="准备编译环境"></a>准备编译环境</h2><ul>
-<li>OS: Win7 64bit 以上系统, 至少8G内存，60G以上硬盘，最好是SSD</li>
-<li>Visual Studio: VS2015u3 + Win10.0.14393 SDK + Ninja</li>
-<li>Python 2.7+</li>
-<li>下载 <a target="_blank" rel="noopener" href="https://bitbucket.org/chromiumembedded/cef/raw/master/tools/automate/automate-git.py">automate-git.py 脚本</a></li>
-</ul>
-<blockquote>
-<p>注意:</p>
-<ol>
-<li>由于某些原因（你懂的），源代码是同步不下来的，建议使用VPN。另外，CEF基于chromium，源码比较大，同步源码时间比较漫长，耐心等待；</li>
-<li>安装VS2015u3的时候，默认是不会安装Win10.0.14393 SDK的，所以需要你手动勾选；</li>
-<li>安装python后需要将python的执行环境加入到环境变量中；</li>
-</ol>
-</blockquote>
-<h2 id="下载CEF源码"><a href="#下载CEF源码" class="headerlink" title="下载CEF源码"></a>下载CEF源码</h2><p>在下载CEF源码之前先了解一下自动构建脚本automate-git.py, 命令行执行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python automate-git.py -h</span><br></pre></td></tr></table></figure>
-
-<p>可以看到源码同步、编译、发布等相关选项，每个选项都有相关说明。默认情况下同步完源代码后会自动构建并发布二进制包，由于同步源代码和构建时间都比较长，所以将同步源码和编译源码分开。先来看看目录结构：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CEF</span><br><span class="line"> | --- 2623</span><br><span class="line">automate</span><br><span class="line"> | --- automate-git.py</span><br><span class="line"> | --- sync_cef_2623.bat</span><br><span class="line"> | --- build_cef_2623.bat</span><br></pre></td></tr></table></figure>
-
-<p>说明：</p>
-<ul>
-<li>目录CEF\2623：用于下载CEF 2623分支的源代码</li>
-<li>目录automate：用于放置自动构造相关脚本</li>
-<li>automate-git.py：自动构建脚本</li>
-<li>sync_cef_2623.bat：同步2623分支源码批处理脚本，具体内容往下看</li>
-<li>build_cef_2623.bat：编译2623分支源码批处理脚本，具体内容往下看</li>
-</ul>
-<p>以上目录结构属于个人偏好，不一定非要这样设置，关键是正确设置automate-git.py的参数。sync_cef_2623.bat用于同步CEF 2623分支源码，其内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">set CEF_USE_GN&#x3D;0</span><br><span class="line">set GYP_DEFINES&#x3D;buildtype&#x3D;Official</span><br><span class="line">set GYP_GENERATORS&#x3D;ninja,msvs-ninja </span><br><span class="line">set GYP_MSVS_VERSION&#x3D;2015</span><br><span class="line">set CEF_ARCHIVE_FORMAT&#x3D;tar.bz2</span><br><span class="line">set DEPOT_TOOLS_WIN_TOOLCHAIN&#x3D;0</span><br><span class="line">python automate-git.py --download-dir&#x3D;..\CEF\2623 --branch&#x3D;2623 --no-build --no-distrib</span><br></pre></td></tr></table></figure>
-
-<p>在sync_cef_2623.bat脚本中写入以上内容，在保证以上环境设置正确的前提下，在命令行运行sync_cef_2623.bat就可以同步源代码了，源代码有十几个G,如果网络不稳定的情况下，会花比较长的时间。</p>
-<p>下面是一些参数说明，更多参数，请运行<code>python automate-git.py -h</code>查看，</p>
-<ul>
-<li><em>–download-dir</em> ：设置下载源码的目录，这个地方用相对路径，下载到和automate同级的CEF\2623目录下</li>
-<li><em>–branch</em> ：同步2623分支源码</li>
-<li><em>–no-build</em> ：不编译</li>
-<li><em>–no-distrib</em> ：不发布</li>
-</ul>
-<blockquote>
-<p>注：</p>
-<ol>
-<li>如果VPN不太稳定，可能会经常中断，造成脚本运行错误，重新运行脚本即可，源码主要有三部分，depot_tools源码cef源码和chromium源码，如果发现相应部分的源码已经同步完成，可以分别使用–no-depot-tools-update, –no-cef-update, –no-chromium-update  来不进行相应部分的代码更新。</li>
-<li>自动构建脚本在下载源码时，并没有进度提示，比如在下载chromium/src目录时时间会非常长，会一直提示<code>still working on src...</code>，请耐心等待。</li>
-</ol>
-</blockquote>
-<h2 id="编译CEF源码"><a href="#编译CEF源码" class="headerlink" title="编译CEF源码"></a>编译CEF源码</h2><p>源代码下载完成后，就可以进行编译了，编译2623版本，可能会遇到一些编译错误，如果你不想亲自试一下这些编译错误，请直接看下节编译错误解决办法。编译源码用脚本build_cef_2623.bat，其内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">set CEF_USE_GN&#x3D;0</span><br><span class="line">set GYP_DEFINES&#x3D;buildtype&#x3D;Official</span><br><span class="line">set GYP_GENERATORS&#x3D;ninja,msvs-ninja </span><br><span class="line">set GYP_MSVS_VERSION&#x3D;2015</span><br><span class="line">set CEF_ARCHIVE_FORMAT&#x3D;tar.bz2</span><br><span class="line">set DEPOT_TOOLS_WIN_TOOLCHAIN&#x3D;0</span><br><span class="line">python automate-git.py --download-dir&#x3D;..\CEF\2623 --branch&#x3D;2623 --no-update --no-depot-tools-update --verbose-build --force-build --no-debug-build --force-distrib</span><br></pre></td></tr></table></figure>
-
-<p>在build_cef_2623.bat脚本中写入以上内容，就可以进行release版本的编译和发布了，以下是一些参数说明：</p>
-<ul>
-<li><em>–no-update</em> ：不更新cef和chromium源码</li>
-<li><em>–no-depot-tools-update</em> : 不更新depot-tools源码</li>
-<li><em>–verbose-build</em> : 开启编译日志，该参数比较重要，编译出错时方便定位问题，相关编译错误见下节</li>
-<li><em>–force-build</em> : 强制编译。在编译失败时，重新运行脚本能重新编译，不加该参数，则会提示out目录已存在</li>
-<li><em>–no-debug-build</em> : 不进行debug版本的编译，之所以加该参数是因为如果debug和release一起编译，时间会比较长，产生的二进制也比较大，如果你的空间足够，时间足够，可以去掉该参数</li>
-<li><em>–force-distrib</em> ：强制发布二进制包，如果已经发布过，再次运行脚本会重新生成二进制发布包</li>
-</ul>
-<p>此外还有其它编译参数供选择，请运行<code>python automate-git.py -h</code>查看.</p>
-<h2 id="解决编译错误"><a href="#解决编译错误" class="headerlink" title="解决编译错误"></a>解决编译错误</h2><p>在编译过程中，你可能会遇到以下编译或链接错误, 以我的CEF源码所在位置<em>e:\repos\cef\2623</em>为例：</p>
-<h3 id="编译错误1"><a href="#编译错误1" class="headerlink" title="编译错误1"></a>编译错误1</h3><blockquote>
-<p>如果你用的系统locale是中国，可能会遇到一些字符集相关的编码错误，需要更改系统区域设置，Win10系统下修改如下，其它系统请自行<a href="www.google.com">google</a>： </p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">控制面板 &gt; 时钟、语言和区域 &gt; 区域 &gt; 管理 &gt; 更新系统区域设置...</span><br></pre></td></tr></table></figure>
-
-<p>修改为: </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">英语(美国)</span><br></pre></td></tr></table></figure>
-
-<h3 id="编译错误2"><a href="#编译错误2" class="headerlink" title="编译错误2"></a>编译错误2</h3><blockquote>
-<p><em>e:\repos\cef\2623\chromium\src\google_apis\gaia\oauth2_token_service.cc(313):<br>error C2220: warning treated as error - no ‘object’ file generated<br>warning C4334: ‘&lt;&lt;’: result of 32-bit shift implicitly converted to 64 bits</em></p>
-</blockquote>
-<p>该编译错误比较明显，具体请参考<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/ke55d167.aspx">MSDN</a>，根据路径打开oauth2_token_service.cc，定位到313行, 将:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int64_t exponential_backoff_in_seconds &#x3D; 1 &lt;&lt; retry_num;</span><br></pre></td></tr></table></figure>
-
-<p>修改为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int64_t exponential_backoff_in_seconds &#x3D; 1i64 &lt;&lt; retry_num;</span><br></pre></td></tr></table></figure>
-
-<h3 id="编译错误3"><a href="#编译错误3" class="headerlink" title="编译错误3"></a>编译错误3</h3><blockquote>
-<p><em>e:\repos\cef\2623\chromium\src\ui\gl\gl_bindings_skia_in_process.cc(920): note: while trying to match the argument list ‘(GrGLInterface::GLPtr<GrGLMapBufferRangeProc>, overloaded-function)’</em></p>
-</blockquote>
-<p>从编译器给出的错误提示，可以看出是函数参数不匹配，打开gl_bindings_skia_in_process.cc, 定位到920行:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">functions-&gt;fMapBufferRange &#x3D; StubGLMapBufferRange;</span><br></pre></td></tr></table></figure>
-
-<p>functions是类型是GrGLInterface::Functions ,根据gl_bindings_skia_in_process.cc头部引用的头文件，打开<em>e:\repos\cef\2623\chromium\src\third_party\skia\include\gpu\gl\GrGLInterface.h</em>，可以看到fMapBufferRange的类型为<em>GrGLMapBufferRangeProc</em>，其声明在<em>e:\repos\cef\2623\chromium\src\third_party\skia\include\gpu\gl\GrGLFunctions.h</em>中，声明如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">typedef GrGLvoid* (GR_GL_FUNCTION_TYPE* GrGLMapBufferRangeProc(GrGLenum target, </span><br><span class="line">                                            GrGLintptr offset, </span><br><span class="line">                                            GrGLsizeiptr length, </span><br><span class="line">                                            GrGLbitfield access);</span><br></pre></td></tr></table></figure>
-
-<p>再看<em>gl_bindings_skia_in_process.cc</em>中<em>StubGLMapBufferRange</em>的定义：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">void* GR_GL_FUNCTION_TYPE StubGLMapBufferRange(GLenum target,</span><br><span class="line">                                               GLintptr offset,</span><br><span class="line">                                               GLsizeiptr length,</span><br><span class="line">                                               GLbitfield access) &#123;</span><br><span class="line">    return glMapBufferRange(target, offset, length, access);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>从上面可以看出，的确是参数类型不匹配，其它StubXXX函数也有同样的问题，清楚了这个问题后，就好修复了，在<em>gl_bindings_skia_in_process.cc</em>，找到所有以GL开头的类型，将其增加前缀Gr就行了，这样一个个改比较麻烦，我们只需要重新typedef一下即可，需要typedef的类型不多，修改如下，在<em>gl_bindings_skia_in_process.cc 19</em>行处插入以下代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">typedef GrGLenum GLenum;</span><br><span class="line">typedef GrGLuint GLuint;</span><br><span class="line">typedef GrGLchar GLchar;</span><br><span class="line">typedef GrGLclampf GLclampf;</span><br><span class="line">typedef GrGLint GLint;</span><br><span class="line">typedef GrGLbitfield GLbitfield;</span><br><span class="line">typedef GrGLsizeiptr GLsizeiptr;</span><br><span class="line">typedef GrGLboolean GLboolean;</span><br><span class="line">typedef GrGLsizei GLsizei;</span><br><span class="line">typedef GrGLfloat GLfloat;</span><br><span class="line">typedef GrGLintptr GLintptr;</span><br></pre></td></tr></table></figure>
-
-<h3 id="编译错误4"><a href="#编译错误4" class="headerlink" title="编译错误4"></a>编译错误4</h3><blockquote>
-<p><em>e:\repos\cef\2623\chromium\src\third_party\swiftshader\include\egl\eglext.h(752): error C2061: syntax error: identifier ‘EGLAttrib’<br>e:\repos\cef\2623\chromium\src\third_party\swiftshader\include\egl\eglext.h(753): error C2061: syntax error: identifier ‘EGLAttrib’<br>e:\repos\cef\2623\chromium\src\third_party\swiftshader\include\egl\eglext.h(1057): error C2061: syntax error: identifier ‘EGLAttrib’<br>e:\repos\cef\2623\chromium\src\third_party\swiftshader\include\egl\eglext.h(1121): error C2061: syntax error: identifier ‘EGLAttrib’</em></p>
-</blockquote>
-<p>编译错误也比较明确，就是找不到<code>EGLAttrib</code>类型，CEF论坛中已经给出了<a target="_blank" rel="noopener" href="http://www.magpcss.org/ceforum/viewtopic.php?f=6&t=14473">答案</a>, 修改方法是打开eglext.h, 在代码typedef intptr_t EGLAttribKHR;(62行)后插入以下代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">typedef EGLAttribKHR EGLAttrib; </span><br></pre></td></tr></table></figure>
-<h3 id="编译错误5"><a href="#编译错误5" class="headerlink" title="编译错误5"></a>编译错误5</h3><blockquote>
-<p><em>ffmpeg.lib(ffmpeg.wavdec.obj) : error LNK2001: unresolved external symbol _ff_w64_guid_data<br>libcef.dll : fatal error LNK1120: 1 unresolved externals</em></p>
-</blockquote>
-<p>这个是一个链接错误，找不到外部符号<em>_ff_w64_guid_data</em>，一开始不知道怎么修复这个错误，那就<a href="www.google.com">google</a>吧，好在已经有网友给出了解决办法，请参考：</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="http://ffmpeg.org/pipermail/ffmpeg-devel/2016-May/194142.html"><em>CONFIG_W64_DEMUXER and dead-code elimination</em></a></li>
-<li><a target="_blank" rel="noopener" href="https://chromium-review.googlesource.com/c/chromium/third_party/ffmpeg/+/343398/4"><em>Add missing w64.c to fix VS 2015 Update 3 link errors</em></a></li>
-</ul>
-<p>修改方法是分别打开<em>e:\repos\cef\2623\chromium\src\third_party\ffmpeg\ffmpeg_generated.gni</em> 和<br><em>e:\repos\cef\2623\chromium\src\third_party\ffmpeg\ffmpeg_generated.gypi</em>, </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在 libavformat&#x2F;wavdec.c 前加上 libavformat&#x2F;w64.c</span><br></pre></td></tr></table></figure>
-
-<h2 id="发布二进制包"><a href="#发布二进制包" class="headerlink" title="发布二进制包"></a>发布二进制包</h2><p>编译完成后，二进制发布包默认生成路径在<em>e:\repos\cef\2623\chromium\src\cef\binary_distrib</em>, 二进制发布包的编译请参考我的另一文章<a target="_blank" rel="noopener" href="https://leeyzero.github.io/2020/10/10/cef-windows-bin/">CEF Windows环境二进制发布</a>. </p>
-<p>另外在<em>e:\repos\cef\2623\chromium\src\out\Release</em>中其实已经生成了cefclient.exe(如果编译的是debug版本，则在Debug目录)，在命令行执行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cefclient.exe --url&#x3D;https:&#x2F;&#x2F;www.baidu.com</span><br></pre></td></tr></table></figure>
-
-<p>效果如下：</p>
-<p><img src="/images/cef-windows-source/1.png" alt="cefclient.exe"></p>
-<h2 id="其它问题"><a href="#其它问题" class="headerlink" title="其它问题"></a>其它问题</h2><p>将编译好的二进制拷贝到Windows XP系统下运行，发现Debug版本会崩溃，Release能正常工作。Debug版本加上<code>--single-process</code>参数，能够正常运行，但退出时也会崩溃。该问题可以参考链接：<a target="_blank" rel="noopener" href="https://bitbucket.org/chromiumembedded/cef/issues/1787">Crash on Windows XP</a>，CEF维护者 <em>Marshall Greenblatt</em> 已经给出了解决方法；鉴于<em>CEF 2623 Release</em>版本在XP下工作良好，且不需要在XP下进行调试工作，<em>CEF 2623</em>版本的编译工作可以告一段落。</p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1].<a target="_blank" rel="noopener" href="https://bitbucket.org/chromiumembedded/cef/">https://bitbucket.org/chromiumembedded/cef/</a><br>[2].<a target="_blank" rel="noopener" href="http://blog.csdn.net/yufei_lgq/article/details/53838270">http://blog.csdn.net/yufei_lgq/article/details/53838270</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1637,7 +1586,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1648,7 +1597,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

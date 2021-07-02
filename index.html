@@ -163,6 +163,139 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/02/go-concurrency-pattern/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="leeyzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="leeyzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/02/go-concurrency-pattern/" class="post-title-link" itemprop="url">Go并发编程模式</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-07-02 23:38:31 / Modified: 23:53:13" itemprop="dateCreated datePublished" datetime="2021-07-02T23:38:31+08:00">2021-07-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>并发是Go语言最重要的语言特性之一，是Go语言区别于其它语言的重要特征。Go语言原生支持并发，可以充分发挥多核CPU的机器性能，同时在语言层面上，Go以十分简洁的语法提供丰富的并发能力，让并发编程并得简单。本文总结Go语言并发编程的常用模式，模式也就是我们说的套路，先学会模仿，再学会融汇贯通，最后才能创造出新的模式，这就是所谓的无招胜有招吧。</p>
+<h2 id="Go对并发的支持"><a href="#Go对并发的支持" class="headerlink" title="Go对并发的支持"></a>Go对并发的支持</h2><p>对于桌面客户端应用程序，为了提升客户端的运行效率和简化多线程编程，通常的做法是在客户端启动时，启动三个常驻线程，分别是UI线程，逻辑线程和IO线程。每个线程维护一个事件循环，线程之间通信（数据传输）只能通过消息队列进行传递，消息队列是线程安全。</p>
+<p>这么做主要有两个好处，一是常驻线程避免创建和销毁线程的开销，多核情况下，通常没有线程上下文切换，线程运行效率高。二是通过消息队列传递数据，各个线程对数据进行操作时不用所以资源竞争问题，这极大降低了多线程编程的难度，并且设计出的程序也更简单，更容易理解。</p>
+<p>接触到Go之后，才知道这种编程模型其实就是C. A. R. Hoare的<a target="_blank" rel="noopener" href="http://www.usingcsp.com/">Communicating Sequential Processes, CSP</a>。Go语言原生支持并发（goroutine）和通道（channel），并且还提供了<a target="_blank" rel="noopener" href="https://golang.org/ref/spec#Select_statements">select</a>对多路通道进行控制，极大简化了并发编程的难度。</p>
+<p>接下来，本文将介绍Go并发编程的常用模式。本文并不适合没有Go语言基础的读者，在阅读以下内容前，请先查阅以下内容：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://golang.org/ref/spec">The Go Programming Language Specification</a></li>
+<li><a target="_blank" rel="noopener" href="https://golang.org/doc/effective_go">Effective Go</a></li>
+</ul>
+<h2 id="基本原则"><a href="#基本原则" class="headerlink" title="基本原则"></a>基本原则</h2><p>正如文章 <a target="_blank" rel="noopener" href="https://blog.golang.org/codelab-share">Share Memory By Communicating</a> 所概括的：</p>
+<blockquote>
+<p><em>Do not communicate by sharing memory; instead, share memory by communicating.</em></p>
+</blockquote>
+<p>这跟传统多线程编程有着本质的区别：传统多线程编程是通过共享状态进行通信，为了防止共享状态存在竞争问题，通常是使用一些同步原语，如互斥量、临界区、信号量等对共享状态进行同步；而Go语言中的并发编程是通过使用channel在goroutine之间传递消息，这种能够保证在某一时刻goroutine能够对数据进行独占访问，不存在资源竞争问题。</p>
+<h2 id="Fan-out-Fan-in"><a href="#Fan-out-Fan-in" class="headerlink" title="Fan-out, Fan-in"></a>Fan-out, Fan-in</h2><p><strong>多个处理函数可以从同一个channel中读取数据，直到channel关闭，这称为Fan-out。同一个处理函数通过对多个输入channel进行多路复用，并将多个输入channel定向到一个单一的channel中，当多个输入channel均关闭后，将单一channel也关闭，这被称为Fan-in。</strong></p>
+<img src="/images/go-concurency-pattern/fan-out.png" alt="image" style="zoom:45%;" /> 
+
+<img src="/images/go-concurency-pattern/fan-in.png" alt="image" style="zoom:45%;" />
+
+<p>Fan-out, Fan-in有点像算法中的divide-conquer-combine。Fan-out模式提供一种分治处理的能力，将任务拆分成一组并发的worker进行处理，可以充分利用机器CPU和I/O。Fan-in则将各worker处理的结果进行合并，收拢到统一入口，可以对整体结果做一些加工处理。 </p>
+<h2 id="Pipeline"><a href="#Pipeline" class="headerlink" title="Pipeline"></a>Pipeline</h2><p><strong>在Go语言中，Pipeline是一系列通过channel连接的处理阶段，每个阶段可以理解为由一组goroutine运行的相同函数。</strong>对于每个阶段，goroutine的处理流程大致为：</p>
+<ul>
+<li>通过输入channel从上游（上一阶段）接收数据；</li>
+<li>处理数据并生成新的数据；</li>
+<li>将新生成的数据通过输出channel发送给下游（下一阶段）；</li>
+</ul>
+<p>除了第一个阶段和最后一个阶段外，每个阶段都有一个或多个输入和输出channel。第一个阶段被称为源（source）或生产者（producer），最后一个阶段，被称为槽（sink）或消费者（consumer）。</p>
+<p>对于pipeline的惯用法，有两条指导原则：</p>
+<ul>
+<li>对于每个阶段，当向输出channel发送完数据后应该即时关闭channel。</li>
+<li>对于每个阶段，持续从输入channel中读取数据，直到channel被关闭或被取消（下面会单独介绍取消操作）。</li>
+</ul>
+<h2 id="Timeout"><a href="#Timeout" class="headerlink" title="Timeout"></a>Timeout</h2><p>并发编程通常要处理超时的问题，在实际应用中，通过网络请求获取远端数据就是一个很典型的例子。为了不阻塞当前线程，通过需要在网络线程（也称为I/O线程）去发送网络请求，由于网络通常是不可靠的，通常需要设置一个超时时间，如果在既定的超时时间范围内，请求还是没有完成，就取消网络请求。</p>
+<p>在Go语言中通过Goroutine开启一个并发任务，通过channel在Goroutine之间通信，使用select对控制多个channel。对于timeout，可以直接使用标准库函数time.After，开启一个定时器，当到达指定时间后，定时器会往channel中发送一个消息，如下例：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Request</span><span class="params">(query <span class="keyword">string</span>)</span> &lt;-<span class="title">chan</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(query <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">      	<span class="comment">// 模拟请求耗时较长</span></span><br><span class="line">        time.Sleep(<span class="number">3</span> * time.Second)</span><br><span class="line">        out &lt;- <span class="string">&quot;world&quot;</span></span><br><span class="line">    &#125;(query)</span><br><span class="line">    <span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    out := Request(<span class="string">&quot;hello&quot;</span>)</span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> result := &lt;-out:</span><br><span class="line">        fmt.Println(<span class="string">&quot;fetch result:&quot;</span>, result)</span><br><span class="line">    <span class="keyword">case</span> &lt;-time.After(<span class="number">1</span> * time.Second):</span><br><span class="line">        fmt.Println(<span class="string">&quot;timeout&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Cancellation"><a href="#Cancellation" class="headerlink" title="Cancellation"></a>Cancellation</h2><p>除了超时控制之外，并发编程中另一个经常需要处理的问题就是取消操作。和超时控制类似，取消操作是指调用方可以在对运行的goroutine进行取消。考虑一个经典的生产-消息者模型：生产者持续生产消息，消息者持续消费消息，直到应用程序终止。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">produce</span><span class="params">(done &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> <span class="built_in">close</span>(out)</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            <span class="keyword">select</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> &lt;-time.Tick(<span class="number">100</span> * time.Millisecond):</span><br><span class="line">                out &lt;- rand.Int() % <span class="number">100</span></span><br><span class="line">            <span class="keyword">case</span> &lt;-done:</span><br><span class="line">                fmt.Println(<span class="string">&quot;producer quit&quot;</span>)</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">consume</span><span class="params">(done &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;, ch &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            <span class="keyword">select</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> n := &lt;-ch:</span><br><span class="line">                fmt.Println(n)</span><br><span class="line">            <span class="keyword">case</span> &lt;-done:</span><br><span class="line">                fmt.Println(<span class="string">&quot;consumer quit&quot;</span>)</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    done := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span><br><span class="line">    out := produce(done)</span><br><span class="line">    consume(done, out)</span><br><span class="line">    time.Sleep(<span class="number">1</span> * time.Second)</span><br><span class="line">    <span class="built_in">close</span>(done)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>在以上例子中，我们使用done来通知各gorountime退出循环，使用select来控制多个channel的接收和发送，当main函数要退出时，关闭done，goroutime product和consumer会读取到这个变化，退出循环，这样就正确的退出的goroutine。其实Go标准库中的context包已经为我们提供了类似的功能，我们只需要简单改一下代码即可：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">produce</span><span class="params">(ctx context.Context)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> <span class="built_in">close</span>(out)</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> &lt;-time.Tick(<span class="number">100</span> * time.Millisecond):</span><br><span class="line">				out &lt;- rand.Int() % <span class="number">100</span></span><br><span class="line">			<span class="keyword">case</span> &lt;-ctx.Done():</span><br><span class="line">				fmt.Println(<span class="string">&quot;producer quit&quot;</span>)</span><br><span class="line">				<span class="keyword">return</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">consume</span><span class="params">(ctx context.Context, ch &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> n := &lt;-ch:</span><br><span class="line">				fmt.Println(n)</span><br><span class="line">			<span class="keyword">case</span> &lt;-ctx.Done():</span><br><span class="line">				fmt.Println(<span class="string">&quot;consumer quit&quot;</span>)</span><br><span class="line">				<span class="keyword">return</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	ctx, cancel := context.WithCancel(context.Background())</span><br><span class="line">	<span class="keyword">defer</span> cancel()</span><br><span class="line">	out := produce(ctx)</span><br><span class="line">	consume(ctx, out)</span><br><span class="line">	time.Sleep(<span class="number">1</span> * time.Second)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p><a target="_blank" rel="noopener" href="https://blog.golang.org/pipelines">Go Concurrency Patterns: Pipelines and cancellation</a> 中给出了一个计算文件md5的实用程序，使用了pipline，fan-out, fan-in，cancellation等常用并发编程模式，是学习Go并发编程特别好的例子。整个代码才100余行就能实例md5sum的功能，而且效率还很高。在这个小程序中，使用pipeline将整个计算过程分成三个阶段：</p>
+<ul>
+<li>遍历目录</li>
+<li>计算文件md5</li>
+<li>收集计算结果</li>
+</ul>
+<p>我对原程序做了一点点修改，引入了context包用于cancellation，当遍历文件时任何一部出现错误时，可以进行优雅退出；同时对bounded concurency部分代码做了优化，使其更简洁和更具可读性，具体代码参考<a target="_blank" rel="noopener" href="https://github.com/leeyzero/go-tools/blob/main/md5sum.go">md5sum</a>。</p>
+<p>在这个例子中，还可以加入timeout超时控制，以指定程序的执行时长，如果在指定的超时时间内未完成所有文件的md5计算，则程序提示执行超时，进行退出。增加这个功能其实比较简单，可以直接使用context.WithTimeout实现，感兴趣的读者可以自己动手进行实现。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Go语言原生支持并发操作，go、channel都成为了一等公民，同时使用select可以对多路channel发送和接收进行控制，极大降低了并发编程的难度。首先一个基本原则是goroutine之间通过通信共享内存，在此基本上我们介绍和Fan-out, Fan-in，Pipeline，Timeout，Cancellation几个常用的Go并发编程模式，最后给出了一个综合应用的例子以强化以上基本概念。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1] <a target="_blank" rel="noopener" href="https://blog.golang.org/codelab-share">Share Memory By Communicating</a></p>
+<p>[2] <a target="_blank" rel="noopener" href="https://blog.golang.org/pipelines">Go Concurrency Patterns: Pipelines and cancellation</a></p>
+<p>[3] <a target="_blank" rel="noopener" href="https://blog.golang.org/concurrency-timeouts">Go Concurrency Patterns: Timing out, moving on</a></p>
+<p>[4] <a target="_blank" rel="noopener" href="https://blog.golang.org/context">Go Concurrency Patterns: Context</a></p>
+<p>[5] <a target="_blank" rel="noopener" href="https://encore.dev/blog/advanced-go-concurrency">Advanced Go Concurrency</a></p>
+<p>[6] <a target="_blank" rel="noopener" href="https://barrgroup.com/Embedded-Systems/How-To/RTOS-Mutex-Semaphore">Mutexes and Semaphores Demystified</a></p>
+<p>[7] <a target="_blank" rel="noopener" href="https://github.com/golang/go/wiki/Go-Community-Slides#rethinking-classical-concurrency-patterns">Rethinking Classical Concurrency Patterns</a></p>
+<p>[8] <a target="_blank" rel="noopener" href="https://talks.golang.org/2012/concurrency.slide#1">Go Concurrency Patterns</a></p>
+<p>[9] <a target="_blank" rel="noopener" href="https://talks.golang.org/2013/advconc.slide#1">Advanced Go Concurrency Patterns</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/08/end-to-end-principle/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1171,108 +1304,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/24/redis-distribute-lock/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="leeyzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="leeyzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/01/24/redis-distribute-lock/" class="post-title-link" itemprop="url">基于Redis的分布式锁</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-01-24 09:10:54" itemprop="dateCreated datePublished" datetime="2021-01-24T09:10:54+08:00">2021-01-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-04 21:25:58" itemprop="dateModified" datetime="2021-04-04T21:25:58+08:00">2021-04-04</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式系统</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>在计算机中，锁是用于解决资源竞争问题。在单机（单进程）环境下, 锁可以使用操作系统提供的同步原语实现。 但在分布式环境下，操作系统提供的同步原语就失效了, 需要一个分布式锁。其原理是需要一个<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Distributed_lock_manager">分布式锁管理器</a>[1]，提供进程级别访问共享资源的互斥性。本文主要讨论基于Redis实现的分布式锁。</p>
-<h2 id="分布式锁的使用场景"><a href="#分布式锁的使用场景" class="headerlink" title="分布式锁的使用场景"></a>分布式锁的使用场景</h2><p><a target="_blank" rel="noopener" href="https://martin.kleppmann.com/">Martin Kleppmann</a> 在他的博客 <a target="_blank" rel="noopener" href="https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html">How to do distributed locking</a>[2] 中对分布式锁的使用场景做了非常好的概括。从一个更高层次来讲，在一个分布式应用中，使用分布式锁主要有两个原因：效率和正确性。</p>
-<ul>
-<li><strong>效率</strong>：获取分布式锁可以避免相同的任务被处理两次。如果锁失败，带来的结果就是对某一个子任务多做了一次，其影响完全取决于具体业务场景。比如为了提高消息PUSH效率，需要按用户进行分片，然后每个任务获取一个锁后处理对应的分片，如果锁失败，会造成重复给用户PUSH。</li>
-<li><strong>正确性</strong>：获取分布式锁是为了防止进程对分布式系统中的资源并发访问而导致系统的状态出现混乱。如果锁失败，两个节点并发的访问同一个共享资源，可能造成数据的不一致性，如文件损坏或数据丢失等。</li>
-</ul>
-<h2 id="基于单实例的实现"><a href="#基于单实例的实现" class="headerlink" title="基于单实例的实现"></a>基于单实例的实现</h2><p><a target="_blank" rel="noopener" href="https://redis.io/">Redis</a> 的作者 <a target="_blank" rel="noopener" href="http://antirez.com/">antire</a> 在 <a target="_blank" rel="noopener" href="https://redis.io/topics/distlock">Distributed locks with Redis</a>[3] 中给出了redis单机环境下实现分布式锁的正确做法，其中获取锁：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SET resource_name my_random_value NX PX 30000</span><br></pre></td></tr></table></figure>
-
-<p>其中NX表示，只有当key不存在时才设置成功，PX后跟过期时间30000毫秒，用于设置锁的最长有效时间，才防止客户端崩溃或网络等异常情况下也能够使锁得到释放。之所以对key设置一个随机值，且该随机值需要保证对所有客服端唯一，是为了防止客服端在释放锁时把其他客服端加的锁释放掉。所以在释放锁时需要校验key对应的value值，为了达到原子性，需要使用Lua脚本：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if redis.call(&quot;get&quot;,KEYS[1]) &#x3D;&#x3D; ARGV[1] then</span><br><span class="line">    return redis.call(&quot;del&quot;,KEYS[1])</span><br><span class="line">else</span><br><span class="line">    return 0</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
-<p>基于单实例的实现存在单点问题。虽然可以使用主从集群规避单点问题，但基于故障转移的实现并不能保证互斥性。以下是一个存在资源竞争的模型：</p>
-<p><em>1. 客户端A从master实例获得锁。</em><br><em>2. master实例在将key同步给slave实例前挂掉。</em><br><em>3. slave实例被提升为master。</em><br><em>4. 客户端B获取同客户端A的相同资源，客户端B也获得了锁。</em></p>
-<p>由于主从切换时，key对应的锁丢失，导致客户端A和客户端B均获得了锁，违反了锁的安全性。针对这个问题，antirez提出了Redlock算法，见下文。</p>
-<h2 id="Redlock算法及其讨论"><a href="#Redlock算法及其讨论" class="headerlink" title="Redlock算法及其讨论"></a>Redlock算法及其讨论</h2><p>Redlock是客户端侧实现的分布式锁算法，需要N个redis master（N=5是个合理值），客户端在获取锁是，需要依次在N个实例上获取锁，只有当客户端在 N/2+1 个实例上获得锁后，才表示这个客户端获得了锁。具体算法如下： </p>
-<p><em>1. 客户端获取当前毫秒时间戳。</em><br><em>2.   按照单实例获取锁的方式逐一在N个实例上获取锁。在从每个实例中获取锁期间，超时时间相对于锁的有效期来说，需要设置的比较短，通常在5-50ms。主要是为了防止某个实例挂掉后，可以避免客户端在访问该实例时造成阻塞，以便可以尽快访问下一个实例。</em><br><em>3. 客户端在获得锁之后通过减去第1步的时间即可计算出获取锁用的时间。只有当客户端在获取了超过N/2+1个实例所使用的时间小于锁的有效时间时才表示该客户端成功获得了锁。</em><br><em>4. 如果客户端获得了锁，锁的有效期为初始有效期减去获取锁所使用的时间。</em><br><em>5. 如果客户端没有获得到锁（即客户端获得锁的实例数不足 N/2+1 或获取锁的时间超过锁的有效期）,<br>则客户端需要释放掉所有实例上的锁。</em></p>
-<p>Redlock 算法基于以下假设：<br><em>1. 进程间没有同步时间。</em><br><em>2. 每个进程间的本地时间流动速率几乎相同，且其误差相较于锁的有效期非常小。</em></p>
-<p>Martin Kleppmann 在<a target="_blank" rel="noopener" href="https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html">How to do distribute locking</a>[2] 中对Redlock做了非常精彩的分析，认为Redlock算法并不是安全的，其主要原因在于以下两点：<br><em>1. 带auto-release的分布式锁需要提供一种机制：在客户端获取锁过期后访问共享资源时任然需要避免违反互斥性。但 Redis并未提供这样的机制。</em><br><em>2. 即便在忽略1的情况下，Redlock算法的系统模型在现实系统中并不成立。</em></p>
-<p>针对以上两点，Redis的作者antirez在他的博客 <a target="_blank" rel="noopener" href="http://antirez.com/news/101">Is Redlock safe?</a>[4] 中做了一一回应。</p>
-<p>对于第1点，个人比较赞同antirez的观点，主要原因是对于分布式锁过期后，如果靠DLM去生成一个fencing token，然后让储存线性地接收fencing token较大值。让存储线性化并不一定适用于所有场景，且如何保证生成的 token 是唯一的呢，如果要保证唯一性，就需要read-modify-write，这又需要保证token的一致性。所以说在现实系统中，fencing token 机制也是有很多问题的。</p>
-<p>对于第2点，的确可能出现Martin Kleppmann 分析的场景，但在人为管理得当的前提下，机率非常低，在工程上任然有可实践性。如果你需要一个强一致的分布式锁，可以使用像基于 <a target="_blank" rel="noopener" href="https://www.oreilly.com/library/view/zookeeper/9781449361297/">zookeeper</a> 实现的分布式锁。 </p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li>在使用分布式锁时，应该首先要清楚使用分布式锁时是为了效率还是正确性。</li>
-<li>如果时为了效率，基于redis 单实例的分布式锁能够提供非常好的性能和可操作性。</li>
-<li>如果时为了正确性，可以使用有强一致保证的分布式协调系统或数据库实现分布式锁。 </li>
-<li>分布式锁过期后，应该由具体的业务场景去保证一致性，而且总能做到这一点。</li>
-</ul>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1].<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Distributed_lock_manager">Distributed lock manager</a><br>[2].<a target="_blank" rel="noopener" href="https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html">How to do distributed locking</a><br>[3].<a target="_blank" rel="noopener" href="https://redis.io/topics/distlock">Distributed locks with Redis</a><br>[4].<a target="_blank" rel="noopener" href="http://antirez.com/news/101">Is Redlock safe?</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1343,7 +1374,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-count">26</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1354,7 +1385,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-count">38</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

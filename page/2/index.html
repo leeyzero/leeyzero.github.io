@@ -163,6 +163,119 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/28/cpp-raii/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="leeyzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="leeyzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/28/cpp-raii/" class="post-title-link" itemprop="url">C++资源管理</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-01-28 00:20:11" itemprop="dateCreated datePublished" datetime="2021-01-28T00:20:11+08:00">2021-01-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-04-02 15:41:11" itemprop="dateModified" datetime="2021-04-02T15:41:11+08:00">2021-04-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>RAII作为C++资源管理的一种惯用法，是每一位C++程序员都应该掌握的基本技能。在google上搜索关键字RAII,  有二百多万条搜索结果。说明这个话题在网上已经被讨论过无数次，也发现了一些好文章给我不少启发，这篇文章主要是做个总结并谈谈自己的理解。 </p>
+<h2 id="什么是RAII"><a href="#什么是RAII" class="headerlink" title="什么是RAII"></a>什么是RAII</h2><p>资源获取即初始化（<em>Resource Acquisition Is Initialization</em>），即<strong>RAII</strong>。RAII是一种C++编程技术。<strong>它利用栈对象在离开作用域后自动析构的语言特点，将受限资源的生命周期绑定到该对象上，当对象析构时以达到自动释放资源的目的</strong>。 这里说的资源都是指的受限资源，比如堆上分配的内存、文件句柄、线程、数据库连接、网络连接等。 </p>
+<h2 id="资源管理问题"><a href="#资源管理问题" class="headerlink" title="资源管理问题"></a>资源管理问题</h2><p>操作系统的资源是有限的，当我们向操作系统索取资源，使用完后应即时归还给操作操作，这是一个良好的编程习惯，资源获取操作流程如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">获取资源 &gt; 使用资源 &gt; 释放资源</span><br></pre></td></tr></table></figure>
+
+<p>实例1：堆上分配内存</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">void eg1(void) &#123;</span><br><span class="line">    int* pBuf &#x3D; new int[256];</span><br><span class="line">    if (!condition1) &#123;</span><br><span class="line">        delete []pBuf;  &#x2F;&#x2F; 怪味道，释放资源入口不止一个</span><br><span class="line">        return ;</span><br><span class="line">    &#125;</span><br><span class="line">    if (!condition2) &#123;</span><br><span class="line">        foo(); &#x2F;&#x2F; 潜藏问题</span><br><span class="line">    &#125;</span><br><span class="line">    delete []pBuf;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实例2：打开文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">void eg2(void) &#123;</span><br><span class="line">    FILE* pf &#x3D; fopen(&quot;eg1.txt&quot;, &quot;w&quot;);</span><br><span class="line">    &#x2F;&#x2F; 使用资源</span><br><span class="line">    fclose(pf);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实例3：互斥量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">void eg3(void) &#123;</span><br><span class="line">    static std::mutex m;</span><br><span class="line">    m.lock(); </span><br><span class="line">    &#x2F;&#x2F; 使用资源</span><br><span class="line">    m.unlock();    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面代码只为演示，未做合法性校验。对于<code>eg1</code>（其它例子存在同样的问题），在使用资源过程中可能在某个分支（<code>condition1</code>）返回，或调用某个函数(<code>foo</code>)产生异常并抛出，导致资源未能正确释放。而且从代码可维护性来看，后续的维护者可能要fuck了。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>看完上面的例子，读者可能会说，这些C++标准库不是提供了吗？</p>
+<ul>
+<li>内存管理有智能指针（<code>std::unique_ptr</code>、<code>std::shared_ptr</code>）</li>
+<li>文件操作有文件流对象（<code>ifstream</code>、<code>ofstream</code>和<code>fstream</code>）</li>
+<li>互斥管理有（<code>std::lock_guard</code>、<code>std::unique_guard</code>和<code>std::shared_guard</code>）</li>
+</ul>
+<p>没错，我们要学会善用工具，明白其本质更有助于我们灵活运用并不拘于这些工具。对于以上实例，当函数返回或异常抛出，当前栈回溯，栈上的对象自动析构。按照这个思路，我们需要写一个资源管理类，并在栈上创建其类对象，类构造的时候获取资源（不是必须），析构的时候释放资源。比如对于<code>eg3</code>我们写一个互斥管理类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">class scoped_lock &#123;</span><br><span class="line">public:</span><br><span class="line">    explicit scoped_lock(std::mutex&amp; m) : _m(m) &#123;</span><br><span class="line">        _m.lock();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ~scoped_lock(void) &#123;</span><br><span class="line">        _m.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">private:</span><br><span class="line">    std::mutext&amp; _m;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void eg3(void) &#123;</span><br><span class="line">    static std::mutex m;</span><br><span class="line">    scoped_lock(m);</span><br><span class="line">    &#x2F;&#x2F; 使用资源</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面<code>scoped_lock</code>的实现是<code>std::lock_guard</code>的一个简化版，但展示了RAII技术最核心部分。按照这个思路，我们可以抽象出利用RAII技术进行资源管理的一般步骤：</p>
+<ol>
+<li>创建一个资源包装类</li>
+<li>在构造函数中获取资源（可选）</li>
+<li>在析构函数中释放资源</li>
+<li>在栈上创建资源包装类对象</li>
+</ol>
+<p>虽然C++标题库给我们提供了一些资源管理工具，但这些工具有时候仍然不能满足我们的需求，有没有通用的解决方案呢？也许下面一组宏能够帮助你： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#define CONCAT_INNER(a,b) a##b</span><br><span class="line">#define CONCAT(a,b) CONCAT_INNER(a,b)</span><br><span class="line"></span><br><span class="line">#define ON_LEAVE(statement) \</span><br><span class="line">struct CONCAT(s_ol_, __LINE__) &#123; \</span><br><span class="line">	~CONCAT(s_ol_, __LINE__)() &#123; statement; &#125; \</span><br><span class="line">&#125; CONCAT(v_ol_, __LINE__);</span><br><span class="line"></span><br><span class="line">#define ON_LEAVE_1(statement, type, var) \</span><br><span class="line">struct CONCAT(s_ol_, __LINE__) &#123; \</span><br><span class="line">	type var; \</span><br><span class="line">	CONCAT(s_ol_, __LINE__)(type v): var(v) &#123;&#125; \</span><br><span class="line">	~CONCAT(s_ol_, __LINE__)() &#123; statement; &#125; \</span><br><span class="line">&#125; CONCAT(v_ol_, __LINE__)(var);</span><br></pre></td></tr></table></figure>
+
+<p>如何使用呢？比如对于<code>eg2</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">void eg2(void) &#123;</span><br><span class="line">    FILE* pf &#x3D; fopen(&quot;eg1.txt&quot;, &quot;w&quot;);</span><br><span class="line">    ON_LEAVE_1(fclose(pf), FILE*, pf);</span><br><span class="line">    &#x2F;&#x2F; 使用资源</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果释放资源时需要更多参数，扩展上面宏即可；如果还需要在构造的时候获取资源（<em>资源包装类构造时获取资源是可选的</em>）,  当你真正解理了RAII，我想扩展上面宏以满足需求应该不是难事儿！ </p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>RAII是一种C++编程技术，其原理简单且优雅。C++标准库已经为我们提供了很多有用工具，不必重复造轮子。理解并灵活运用该技术，能避免很多资源泄露的问题，且代码更具健壮性和可维护性。 </p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1].<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Resource_acquisition_is_initialization">https://en.wikipedia.org/wiki/Resource_acquisition_is_initialization</a><br>[2].<a target="_blank" rel="noopener" href="http://www.tomdalling.com/blog/software-design/resource-acquisition-is-initialisation-raii-explained/">http://www.tomdalling.com/blog/software-design/resource-acquisition-is-initialisation-raii-explained/</a><br>[3].<a target="_blank" rel="noopener" href="http://zh.cppreference.com/w/cpp/language/raii">http://zh.cppreference.com/w/cpp/language/raii</a><br>[4].<a target="_blank" rel="noopener" href="http://zh.cppreference.com/w/cpp/language/raii#cite_note-1">http://zh.cppreference.com/w/cpp/language/raii#cite_note-1</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/24/redis-distribute-lock/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1406,159 +1519,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/10/windows-message-architecture/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="leeyzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="leeyzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/10/windows-message-architecture/" class="post-title-link" itemprop="url">【翻译】Windows消息体系</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-10-10 22:57:21" itemprop="dateCreated datePublished" datetime="2020-10-10T22:57:21+08:00">2020-10-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-04 21:29:00" itemprop="dateModified" datetime="2021-04-04T21:29:00+08:00">2021-04-04</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/windows/" itemprop="url" rel="index"><span itemprop="name">windows</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>原文出自：<a target="_blank" rel="noopener" href="https://xavierantony.wordpress.com/2010/08/24/windows-messaging-architecture/">Windows Messaging Architecture</a></p>
-<blockquote>
-<p><em>Most of the fresh software engineers and .NET developers may not know what really happens inside the Windows operating system when they implement and run a Windows application. This article explains the Windows Messaging Architecture of the Windows operating system.</em></p>
-</blockquote>
-<p>很多新手软件工程师和.NET开发者在编写并运行一个Windows应用时，他们并不清楚其在操作系统中的运作原理。这篇文件将阐述Windows操作系统的消息体系。</p>
-<p><img src="/images/windows-message-architecture/1.png" alt="Windows消息体系结构图"></p>
-<h2 id="窗口和窗口类-Window-and-Window-Class"><a href="#窗口和窗口类-Window-and-Window-Class" class="headerlink" title="窗口和窗口类(Window and Window Class)"></a>窗口和窗口类(<em>Window and Window Class</em>)</h2><blockquote>
-<p><em>The Windows UI application (e) has one main thread (g), one or more &gt; windows (a) and one or more child threads (k) [worker threads or UI threads].</em></p>
-</blockquote>
-<p>Windows应用程序(<strong>e</strong>)包含一个主线程(<strong>g</strong>)、多个窗口(<strong>a</strong>)和一个或多个子线程(<strong>k</strong>)[工作线程或UI线程]。</p>
-<blockquote>
-<p><em>An application must specify a window class and register with Windows (d) before it creates a window (a) and displays. A window class is a structure which contains the attributes of a window such as window styles, Icon, Cursor, Background color, menu resource name and window class name etc. Registering a window class associates a window procedure, class styles, and other class attributes with a class name. Each window class has an associated window procedure (c) shared by all windows (a) of the same class in an application. The window procedure processes messages for all windows of that class.</em></p>
-</blockquote>
-<p>在创建并展示一个窗口(<strong>a</strong>)之前，应用程序必须指定一个窗口类并将其注册到Windows系统中(<strong>d</strong>)。窗口类只是一个数据结构，包含窗口的一些属性，如窗口风格、Icon、Cursor、窗口背景颜色、菜单资源名和窗口类名等。注册的窗口类需要关联一个窗口过程、类风格、其它类属性和一个窗口类名。在应用程序中，和每个窗口类关联和窗口过程(<strong>c</strong>)是所有拥有相同窗口类名的窗口(<strong>a</strong>)共享的。窗口过程处理所有拥有相同窗口类名窗口的窗口消息。</p>
-<h2 id="窗口过程-Window-Procedure"><a href="#窗口过程-Window-Procedure" class="headerlink" title="窗口过程(Window Procedure)"></a>窗口过程(<em>Window Procedure</em>)</h2><blockquote>
-<p><em>A window procedure (c) is a function that receives and processes all messages sent to the window (a). Every window class (b) has a window procedure (c), and every window (a) created with that class uses that same window procedure to respond to messages. The system sends a message to a window procedure by passing the message data as arguments to the procedure. The window procedure then performs an appropriate action for the message; it checks the message identifier and, while processing the message, uses the information specified by the message parameters.</em></p>
-</blockquote>
-<p>窗口过程(<strong>c</strong>)是一个函数，用于接收所有发往该窗口(<strong>a</strong>)的消息。每个窗口类(<strong>b</strong>)都有一个窗口过程(<strong>c</strong>)，每个用该窗口类创建的窗口(<strong>a</strong>)使用相同的窗口过程响应消息。系统给窗口过程发送消息是将消息作为一些函数参数传递给窗口过程，然后窗口过程再对具体的消息做响应；窗口过程会检查消息标识，并通过消息标识使用跟该消息相对应的消息参数。</p>
-<blockquote>
-<p><em>A window procedure does not usually ignore a message. If it does not process a message, it must send the message back to the system for default processing. The window procedure does this by calling the DefWindowProc function (f), which performs a default action and returns a message result. The default window procedure function, DefWindowProc defines certain fundamental behavior shared by all windows. The default window procedure provides the minimal functionality for a window.</em></p>
-</blockquote>
-<p>窗口过程通常不忽略消息。如果应用不处理某个消息，应用必须将该消息发送回系统，交由系统处理。窗口过程通过一个叫<em>DefWindowPrc</em>函数来处理这些发送回系统的消息，该函数会作默认的响应并返回消息处理结果。<em>DefWindowProc</em>定义了一些适用于所有窗口的基本的行为，并提供了一个窗口的最小功能集。</p>
-<h2 id="窗口消息-Windows-Message"><a href="#窗口消息-Windows-Message" class="headerlink" title="窗口消息(Windows Message)"></a>窗口消息(<em>Windows Message</em>)</h2><blockquote>
-<p><em>A Windows message (m) is nothing but a set of parameters such as a window handle, a message identifier and two values called message parameters (WPARAM and LPARAM). The window handle identifies the window for which the message is intended. The message identifier is a constant that identifies the purpose of a message. For example, the message identifier WM_PAINT tells the window procedure that the window’s client area has changed and must be repainted.</em></p>
-</blockquote>
-<p>窗口消息(<strong>m</strong>)只是一个参数集合，包括窗口句柄、消息标识和两个被称为消息参数(<em>WPARAM和LPARAM</em>)的值。窗口句柄标识一个消息即将发往的窗口。消息标识是一个常量，用于认别一个消息的具体含义。例如，对于消息WM_PAINT用于告诉窗口过程窗口的客户区发生了改变需要重新绘制。</p>
-<blockquote>
-<p><em>There are two types of Windows messages such as System defined messages and Application defined messages. The system sends or posts a system-defined message when it communicates with an application. An application can also send or post system-defined messages. For example, the WM_PAINT message identifier is used in system defined message which requests that a window paint its contents.</em></p>
-</blockquote>
-<p>有两种类型的消息，分别是系统定义消息和应用定义消息。当和应用程序通信时，系统通过发送(sends)或投递(posts)一个系统定义消息给应用程序。一个应用程序也可以发送或投递系统消息。例如，WM_PAINT消息是一个系统定义消息，该消息请求一个窗口绘制其窗口内容。</p>
-<blockquote>
-<p><em>An application can create messages to be used by its own windows or to communicate with windows in other processes. If an application creates its own messages, the window procedure that receives them must interpret the messages and provide appropriate processing.</em></p>
-</blockquote>
-<p>应用程序可以创建为自身使用或用于和其它进程通信的消息。如果一个应用程序创建一个自定义的消息，窗口过程接收到后必须解析并适当处理该消息。</p>
-<h2 id="消息队列-Message-Queues"><a href="#消息队列-Message-Queues" class="headerlink" title="消息队列(Message Queues)"></a>消息队列(<em>Message Queues</em>)</h2><blockquote>
-<p><em>The Windows operating system uses two methods to route messages to a window procedure : posting messages to a first-in, first-out queue called a message queue (l), a system-defined memory (q) object that temporarily stores messages, and sending messages directly to a window procedure.</em></p>
-</blockquote>
-<p>Windows操作系统使用两个方法来发送消息给窗口过程：投递消息到一个先进先出的队列，该队列被称为消息队列(<strong>l</strong>)，系统定义了一块内存对象(<strong>q</strong>)会临时存储直接发往某个窗口过程的消息。</p>
-<blockquote>
-<p><em>The Windows operating system maintains only one System wide message queue (l) for the all applications. And, another message queue (j) is created for each graphical user interface (UI) thread. Whenever a user creates an UI thread, the message queue is also created for the UI thread.</em></p>
-</blockquote>
-<p>Windows操作系统维护了一个供所有应用程序服务的系统级别的消息队列(<strong>l</strong>)。而另一个消息队列(<strong>j</strong>)是被UI线程创建的。当用户创建一个UI线程的同时，系统会为该UI线程创建一个消息队列。</p>
-<h2 id="消息流-Message-Flow"><a href="#消息流-Message-Flow" class="headerlink" title="消息流(Message Flow)"></a>消息流(<em>Message Flow</em>)</h2><blockquote>
-<p><em>DOS based applications make C-Runtime function calls to obtain input from the system. For example, it calls gets() C-Runtime function to get input from the keyboard. But, Windows based applications do not make explicit function calls to obtain input. Instead, they wait for the system to pass input to them. This is why Windows-based applications are event-driven.</em></p>
-</blockquote>
-<p>基于DOS的应用程序使用C运行时库函数从系统获取输入。例如，应用程序调用C运行时库函数gets()从键盘获取输入。但是，基于窗口的应用程序并不需要显示的函数调用以获取输入，相反，应用程序是等待系统将输入传递给他们。这就是为什么基于窗口的应用是事件驱动的。</p>
-<blockquote>
-<p><em>Whenever the user moves the mouse, clicks [1] the mouse buttons or types on the keyboard, the device driver (p) for the mouse or keyboard handovers [2] the details to User32.dll (n), which in turn converts the input into Windows messages and places[3] them in the system message queue (l).</em></p>
-</blockquote>
-<p>用户无论是移动鼠标、点击鼠标按钮[<strong>1</strong>]或敲击键盘，鼠标或键盘设备驱动(<strong>p</strong>)会将这些处理交给[<strong>2</strong>]User32.dll(<strong>n</strong>)，而User32.dll又会将这些输入转化[<strong>3</strong>]成Windows消息并将这些消息存到系统消息队列中(<strong>l</strong>)。</p>
-<blockquote>
-<p><em>The Windows operating system removes the messages, one at a time, from the system message queue, examines them to determine the destination window, and then posts [4] them to the message queue of the thread that created the destination window. A thread’s message queue receives all mouse and keyboard messages for the windows created by the thread. The thread removes [5] messages from its queue and directs the system to send [6 &amp; 7] them to the appropriate window procedure for processing. How does a thread remove a message from thread’s message queue and process? Let’s discuss now.</em></p>
-</blockquote>
-<p>操作系统在某一时刻从系统消息队列中移除消息，检查并决定其目标窗口程序，然后将这些消息投递[<strong>4</strong>]给目标窗口程序创建的线程消息队列 。窗口应用程序通过线程创建的线程消息队列接收所有鼠标和键盘消息。该线程从消息队列中移除[<strong>5</strong>]消息，并将其通过系统发送[<strong>6 &amp; 7</strong>]给相应的窗口过程处理。线程如何从线程消息队列中移除一条消息呢？我们马上就会讨论。</p>
-<h2 id="消息循环或消息泵-Message-Loop-or-Message-Pump"><a href="#消息循环或消息泵-Message-Loop-or-Message-Pump" class="headerlink" title="消息循环或消息泵(Message Loop or Message Pump)"></a>消息循环或消息泵(<em>Message Loop or Message Pump</em>)</h2><blockquote>
-<p><em>A Windows application has a WinMain() function which is the entry point for that application, like main()function in ‘C‘ language program. The WinMain()function acts as application’s main thread function. The following three lines of code in the WinMain() function is referred as Message Loop or Message pump.</em></p>
-</blockquote>
-<p>就像C语言程序有一个main函数一样，每一个Windows应用都有一个WinMain的入口函数。WinMain函数扮演着应用程序主线程函数角色。下面这三行在WinMain函数中的代码被称作消息循环或消息泵。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">while (GetMessage(&amp;Msg, NULL, 0, 0)) </span><br><span class="line">&#123; </span><br><span class="line">    TranslateMessage(&amp;Msg); </span><br><span class="line">    DispatchMessage(&amp;Msg); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p><em>The message loop’s GetMessage() call checks the message queue for windows messages. If it finds a valid message, it removes a message from its queue. After removing a message from its queue, an application can use the DispatchMessage() function to direct the system to send the message to a window procedure for processing. If there are no messages in the message queue, the GetMessage() call will be blocked till a valid message comes to the message queue.</em></p>
-</blockquote>
-<p>消息循环中的GetMessage调用会检查消息队列中的windows消息。如果发现一个合法的消息，该函数会从消息队列中移除一条消息。当从消息队列中移除一条消息后，应用程序使用DispatchMessage函数将该消息通过系统发送给一个窗口过程处理。如果消息队列中没有消息，GetMessage调用会被阻塞直到有一个合法的消息进入消息队列中。</p>
-<blockquote>
-<p><em>In between these two calls, the TranslateMessage() method call does nothing, but simply translating virtual key messages into character messages. Your application still works, if you comment this line. Only thing is, your test team will file 50 keyboard related bugs.</em></p>
-</blockquote>
-<p>在GetMessage和DispatchMessage中，TranslateMessage函数调用只是简单地做了虚拟键消息和字符消息的转换。如果你注释该行代码，你的应用程序仍然能够工作，只是你的测试小组会给报50键盘事件相关的bug。</p>
-<h2 id="旅行到此结束-Journey-Ends-Here"><a href="#旅行到此结束-Journey-Ends-Here" class="headerlink" title="旅行到此结束(Journey Ends Here)"></a>旅行到此结束(<em>Journey Ends Here</em>)</h2><blockquote>
-<p><em>The message loop (while loop) breaks when the GetMessage() retrieves a WM_QUIT message from the message queue and subsequently application’s main thread quits. That’s all, the application’s life comes to an end.</em></p>
-</blockquote>
-<p>当GetMessage从消息队列中接收到WM_QUIT消息时，消息循环(while循环)会中止，随后应用程序主线程退出。因此，应用程序的整个生命周期就结束了。</p>
-<h2 id="最后-Finally"><a href="#最后-Finally" class="headerlink" title="最后(Finally)"></a>最后(<em>Finally</em>)</h2><blockquote>
-<p><em>Enjoy .NET application programming by knowing the messaging internals. This article is an another flavor of MSDN article about <a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms632590(v=vs.85).aspx">Messages and Message Queues</a>.</em></p>
-</blockquote>
-<p>了解Windows消息的内幕更容易享受.NET编程的乐趣。本文是MSDN上一篇关于<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms632590(v=vs.85).aspx">消息和消息队列</a>文章的另一种解说。</p>
-<blockquote>
-<p><em>I wrote and published this article in Aditi’s Mindscape magazine in 2008. Even now, it may be useful to many developers who don’t know the internals of Windows messaging architecture.</em></p>
-</blockquote>
-<p>我在2008年写了该文章并将其发表到<em>Aditi’s Mindscape</em>杂志上。至今，该文或许会对那些并不清楚Windows消息体系的开发者有帮助。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1629,7 +1589,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-count">27</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1640,7 +1600,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-count">40</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

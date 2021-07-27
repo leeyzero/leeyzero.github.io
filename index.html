@@ -163,6 +163,81 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/27/reading-ddia-md/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="leeyzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="leeyzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/27/reading-ddia-md/" class="post-title-link" itemprop="url">【读书笔记】数据密集型应用</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-07-27 11:28:14 / Modified: 11:37:00" itemprop="dateCreated datePublished" datetime="2021-07-27T11:28:14+08:00">2021-07-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9A%8F%E7%AC%94/" itemprop="url" rel="index"><span itemprop="name">随笔</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>最近断断续续花了一个月时间看了一遍<a target="_blank" rel="noopener" href="https://item.jd.com/12437624.html">数据密集型应用系统设计</a>，也就是大家所说的DDIA（Designing Data-Intensive Applications）。这是一本一看就停不下来的书，强烈安利做业务系统的同学看看。那这本书到底在讲什么呢？</p>
+<p>数据模型是对现实世界的抽象，可以从微观角度理解为“数据结构”，它是一个应用系统中最重要的部分。数据模型在一定程度上会影响到系统设计人员解决问题的方式。关系型数据库在很长一段时间大行其道（虽然NoSQL越来越流行，但关系型数据库仍然有一席之地），通常我们在做系统设计时首先会对现实对象建模，建立对象之间的关系，以便能更好的用关系型数据库来表现。然而从这本书中我们可以看到，关系型数据库并不是惟一的数据模型，在做系统设计的时候，不应该受具体数据模型影响，了解各数据模型的优缺点和应用场景，有助于我们设计更具可靠性、可扩展性以及可维护性的系统。</p>
+<p>一句话概括：<strong>这是一本介绍各种数据库原理及其应用的书</strong>。</p>
+<p>具体来讲，本书从可靠性、可扩展性和可维护性角度展开，介绍各类数据库原理和应用。全书一共分成了三个部分：</p>
+<p>第一部分介绍了数据系统的基础，首先对数据系统可靠性、可扩展性、可维护性进行定义和解释，然后综述了数据模型和查询语言，最后介绍了数据库的核心原理以及基于数据库的两类系统——事务处理系统与分析处理系统。</p>
+<p>第二部分介绍了分布式数据，包括数据复制、分区、事务等。个人感觉最精彩的部分在于阐述分布式系统的挑战以及一致性问题。看完这部分，你就知道为什么设计一个分布式系统这么难，以及各种分布式数据库系统如何在可靠性、可用性之间寻找平衡。</p>
+<p>第三部分介绍派生数据，包括批处理系统、流处理系统以及数据库系统的发展趋势。这部分说明了为什么消息系统（数据流）也是一种数据库，讨论了派生数据和数据源，批处理和流数据的关系以及在应用系统中的价值和定位。这部分让我现有的知识，比如关系型数据库、消息队列、批处理系统(Map-Reduce)、流处理系统之间产生了化学反应，把整块知识串起来了。</p>
+<p>这本书对我最大的价值在于，它在广度上极大提升我对数据库的认识，同时对各数据库原理有了一定的了解。有些人批评这本书在深度不够，实践上也不够具体。我想说这恰好是作者拿捏得当的地方，它看起来像是一本对数据度的综述，但同时剖析了各种数据库的核心原理，而且是以比较通俗的语言描述，全书基本没有复杂的公式和理论证明，这在一定程度上降低了阅读门槛，同时让读者知其然并知其所以然，关于更深入的讨论，作者提供了很多高质量的引用文献。对一些关键原理的总结上也是非常到位的，比如最后一章中关系数据库的端到端问题，可以说对端到端原则 <a target="_blank" rel="noopener" href="http://web.mit.edu/saltzer/www/publications/endtoend/endtoend.pdf">End-To-End Argument In System Design</a> 的精简。关于实践上，并不是这本书的重点，这本书已经超过500页了，如果再针对各项数据库技术详细讨论具体实践，估计书的厚度就控制不住了，同时也会让这本书缺乏重点。关于实践，最好还是看具体数据库的相关书籍。但如果先看了这本，再看其它数据库应用的书籍，会在宏观上有一个整体的认识，同时对各数据库的应用场景，优缺点也有一个大致的了解，读起来会更事半功倍。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/12/questions-worth-thinking-about/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1174,100 +1249,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/01/timezones-touble-analysis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="leeyzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="leeyzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/02/01/timezones-touble-analysis/" class="post-title-link" itemprop="url">记一次时区问题引发的故障</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-02-01 00:45:45" itemprop="dateCreated datePublished" datetime="2021-02-01T00:45:45+08:00">2021-02-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-18 23:33:02" itemprop="dateModified" datetime="2021-04-18T23:33:02+08:00">2021-04-18</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/" itemprop="url" rel="index"><span itemprop="name">故障排查</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>周末大清早就被报警短信吵醒，故障表现为离线存储集群流量突增，集中在热点分片，而且流量越来越大，系统吞吐、稳定性均在降低。最终发现是因为实例间时区不一致触发一个隐藏的BUG导致。这个问题在分布式系统中很具有代表性，在此做个记录以备忘。</p>
-<h2 id="症状"><a href="#症状" class="headerlink" title="症状"></a>症状</h2><ul>
-<li>离线存储集群流量突增，集中在热点分片；</li>
-<li>消息系统中消息在持续积压；</li>
-<li>消息系统收到大量重复ACK；</li>
-<li>业务worker消费到大量重复的消息；</li>
-</ul>
-<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>从表象来看，出现了大量重复消息，周末是禁止上线了，上下游也均没有上线通告，排除上线引起。同时也咨询了运营、市场的同学，并没有做相关的运营活动，从gateway的流量来看，也没有大的波动。初步判断是在某种条件下触发了系统的BUG或是存在雪崩的可能。</p>
-<p>分析线上日志和模块代码，排除是业务层面发送重复消息的可能性，把范围缩小到了消息系统本身。消息系统在消息超时会将消息重放入队列中，但从逻辑来看，最多也就重放6次（可配置）。但线上个别消息重放次数达到几十万甚至上百万，仔细分析了日志和代码，发现问题出在以下代码：</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tm := time.Unix(timestamp, <span class="number">0</span>)</span><br></pre></td></tr></table></figure>
-
-<p>以上代码去掉了业务逻辑，但这段代码的确是造成这个问题的根本原因。这行代码的目的是使用指定的时间戳生成一个时间格式串的Redis key，消息系统的多个实例会通过本地时间来共享该Key。这个函数的说明如下：</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Unix</span><span class="params">(sec <span class="keyword">int64</span>, nsec <span class="keyword">int64</span>)</span> <span class="title">Time</span></span></span><br><span class="line"></span><br><span class="line">Unix returns the local Time corresponding to the given Unix time, sec seconds and nsec nanoseconds since January <span class="number">1</span>, <span class="number">1970</span> UTC.</span><br></pre></td></tr></table></figure>
-
-<p>注意，<strong>函数返回的是本地时间，就是说其返回值受本地时区影响。</strong>比如两个实例的时区分别是东八区和西八区，其格式化后的时间字符串是不一样的。这会有什么影响呢？这要看具体业务场景，在我们的系统中，对于两个时区不一致的实例，在一个实例上生成的Redis Key在另一个实例上找不到，触发一个死循环，导致消息被无限重放。</p>
-<h2 id="如何解决"><a href="#如何解决" class="headerlink" title="如何解决"></a>如何解决</h2><p>开发人员估计都没有考虑到这个问题，但这的确是在分布式系统中非常容易犯的一个错误。首先分布式系统中时钟同步就是一个很难得问题。对于上面的case，系统能工作的前提是各实例的本地时间不会出现跳变，时间精度至少要精确到秒，但这者几乎很难保证。</p>
-<p>本地时间可以理解为实例本身的状态，由于我们使用的是 Unix 时间戳，其实系统本身并不需要依赖机器的本地时区。在代码层面可以通过设置一个固定的时区，用指定的时间戳生成一致的 Unix 时间即可。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li>每个程序员都应该了解时间、时区等基本概念；</li>
-<li>在分布式系统中，如果要使用 Unix 时间戳来访问分布式系统中的共享资源，不要依赖于本地时间；</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1338,7 +1319,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-count">28</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1349,7 +1330,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">40</span>
+        <span class="site-state-item-count">42</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

@@ -163,6 +163,124 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/21/oauth2-intro/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="leeyzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="leeyzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/09/21/oauth2-intro/" class="post-title-link" itemprop="url">OAuth2简介</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-21 23:15:52 / Modified: 23:26:21" itemprop="dateCreated datePublished" datetime="2021-09-21T23:15:52+08:00">2021-09-21</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><strong>开放授权</strong>（OAuth, <strong>O</strong>pen <strong>Auth</strong>orization）是一个<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Open_standard">开放标准</a>，允许用户让第三方应用访问该用户在某一网站上存储的私密的资源（如照片，视频，联系人列表等），而无需将用户名的密码提供给第三方应用。OAuth2.0是OAuth的2.0版本。本文主要介绍OAuth2的授权流程。</p>
+<h2 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h2><ul>
+<li>Resource Owner：资源拥有者</li>
+<li>Resource Server：资源服务器</li>
+<li>Client：客户端</li>
+<li>Authorization Server：认证服务器</li>
+<li>User Agent：用户代理，通常指浏览器</li>
+</ul>
+<h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><p>在现实生活中就存在OAuth的场景：快递员给你送快递，但他进不了小区，他只能按下你家的门牌号，然后你通过摄像头确认他的确是给你来送快递的快递员，然后你给它解除门禁，快递员就能进入小区了给你送快递了。</p>
+<p>在这个例子中，你就是资源拥有者（Resource Owner），小区内基础设施可以理解为资源（Resource），物业就是资源服务器（Resource Server），快递员是客户端（Client），门禁就是认证服务器（Authorization Server）。</p>
+<p>你是受认证的业主，可以通过门禁卡、人脸认别等方式自由进入小区。但快递员不是业主，也想进入小区，怎么办呢？你可以直接把门禁卡给他，但这样不安全，所以门禁系统推出一个授权的功能，就是快递员先向你请求要进入小区，经过你的授权后再给他开门。如果你的快递比较多，这个快递员每天都要来送快递，每次都要你给他授权也比较麻烦，然后门禁系统又推出一个带有效期的临时出入卡，比如有效期一个周，那快速员就可以在这一个周之内自由出入小区了。</p>
+<p>以上场景就是OAuth授权的原理，为了贴合互联网应用场景，OAuth制定了一套开放标准。</p>
+<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>在传统C/S认证模型中，客户端使用资源拥有者的认证凭证从资源服务器中访问资源。如果有一个第三方应用想要访问资源服务器中的受限资源，那么资源拥有者需要将其认证凭证分享给第三方应用，这带来了一些问题和限制：</p>
+<ul>
+<li>第三方应用为了后续能够访问资源，需要存储资源拥有者的认证凭证，如密码等。</li>
+<li>服务器需要支持密码身份验证，尽管密码本身存在安全缺陷。</li>
+<li>第三方应用拥有资源拥有者的所有权限，资源拥有者也没办法限制，毕竟密码都告诉别人了。</li>
+<li>资源拥有者修改密码后，所有第三方应用的权限均被收回。</li>
+<li>任何一个第三方应用造成的密码泄漏会终端用户的密码和数据被泄露。</li>
+</ul>
+<h2 id="认证流程"><a href="#认证流程" class="headerlink" title="认证流程"></a>认证流程</h2><p><img src="/images/oauth2-intro/1.png" alt="image-20210905234121594"></p>
+<p>OAuth的认证流程跟上述场景是类似的：</p>
+<p>（A） 客户端向资源拥有者申请授权</p>
+<p>（B）资源拥有者同意授权</p>
+<p>（C）客户端使用上一步中拿到的授权凭证向认证服务器申请令牌</p>
+<p>（D）认证服务器返回令牌</p>
+<p>（E）客户端使用令牌向资源服务器获取资源</p>
+<p>（F）资源服务器确认令牌有效后返回资源</p>
+<p>上述6个步骤中，最关键的步骤就是（B），即资源拥有者向客户端授权的过程。</p>
+<h2 id="授权模式"><a href="#授权模式" class="headerlink" title="授权模式"></a>授权模式</h2><p>授权是指资源拥有者同意客户端获取受限资源后，给予客户端认证的表现方式。OAuth有4种授权模式，分别是授权码模式（Authorization Code）、简化模式（Implicit）、密码模式（Resource Owner Password Credentials）以及客户端模式（Client Credentials）。</p>
+<h3 id="授权码模式"><a href="#授权码模式" class="headerlink" title="授权码模式"></a>授权码模式</h3><p>授权码模式是功能最完整、流程最严密的授权模式，也是使用最广泛的授权模式。它的特点就是通过客户端的后台服务器，与”服务提供商”的认证服务器进行交互。</p>
+<p>由于授权码模式是基于页面跳转的流程，所以客户端需要跟用户代理（通常是web浏览器）交互。</p>
+<p><img src="/images/oauth2-intro/2.png" alt="image-20210905235351556"></p>
+<p>（A）客户端（Client）通过用户代理（User-Agent）请求认证服务器（Authorization Server）。</p>
+<p>（B）授权服务器验证用户是否给客户端授权。</p>
+<p>（C）如果用户同意给客户端授权，认证服务器将会跳转到客户端事先指定的”重定向URI（redicreation URI）”同时附上一个授权码（authorization code）。</p>
+<p>（D）客户端收到授权码，随上之前的重定向URI，向认证服务器申请令牌。这一步是在客户端的后台服务器上完成的，对用户不可见。</p>
+<p>（E）认证服务器核对授权码和重定向URI，确认无误后，向客户端返回访问令牌(access token)和更新令牌(refresh token)。</p>
+<h3 id="简化模式"><a href="#简化模式" class="headerlink" title="简化模式"></a>简化模式</h3><p>简化模式不通过第三方应用程序的服务器，直接在浏览器中向认证服务器申请令牌，跳过了”授权码”这个步骤，因此得名。所有步骤在浏览器中完成，令牌对访问者是可见的，且客户端不需要认证。</p>
+<p>同样，由于简化模式也是基于页面跳转的流程，所以客户端需要跟用户代理（通常是web浏览器）交互</p>
+<p><img src="/images/oauth2-intro/3.png" alt="image-20210905235435000"></p>
+<p>（A）客户端通过用户代理请求认证服务器。</p>
+<p>（B）授权服务器验证用户是否给客户端授权。</p>
+<p>（C）如果用户同意给客户端授权，认证服务器将跳转至客户端指定的“重定向URI”，并在URI中的fragment中包含访问令牌（access token）。</p>
+<p>（D）浏览器向资源服务器发出请求，但不包括上一步中收到的fragment部分的值。浏览器将在本地保留fragment中的信息。</p>
+<p>（E）资源服务器返回一个页面，页面中一段可以提供fragment中的token的代码。</p>
+<p>（F）浏览器执行上一步中资源服务器返回的代码，从fragment中提取出token。</p>
+<p>（G）浏览器将令牌传给客户端。</p>
+<h3 id="密码模式"><a href="#密码模式" class="headerlink" title="密码模式"></a>密码模式</h3><p>密码模式（Resource Owner Password Credentials Grant）中，用户向客户端提供自己的用户名和密码。客户端使用这些信息，向认证服务提供商索要授权。密码模式适用于对客户端高度信任的场景。</p>
+<p><img src="/images/oauth2-intro/4.png" alt="image-20210905235452857"></p>
+<p>（A）用户向客户端提供用户名和密码。</p>
+<p>（B）客户端使用用户名和密码向认证服务器请求令牌。</p>
+<p>（C）认证服务器确认无误后给客户端下发令牌。</p>
+<h3 id="客户端模式"><a href="#客户端模式" class="headerlink" title="客户端模式"></a>客户端模式</h3><p>客户端模式（client credentials grant）甚至都不需要用户授权，由客户端直接以用户的名义使用客户端凭证向认证服务器请求认证。</p>
+<p><img src="/images/oauth2-intro/5.png" alt="image-20210905235535370"></p>
+<p>（A）客户端向认证服务器请求身份认证和获取令牌。</p>
+<p>（B）认证服务器确认无误后向客户端下发令牌。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1] <a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc6749.txt">rfc6749</a></p>
+<p>[2] <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/OAuth">OAuth Wiki</a></p>
+<p>[3] <a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2014/05/oauth_2_0.html">理解OAuth 2.0</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/29/gin-tutorial/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -177,7 +295,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/08/29/gin-tutorial/" class="post-title-link" itemprop="url">gin-tutorial</a>
+            <a href="/2021/08/29/gin-tutorial/" class="post-title-link" itemprop="url">Gin简介</a>
         </h2>
 
         <div class="post-meta">
@@ -186,10 +304,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-08-29 16:23:26 / Modified: 16:28:54" itemprop="dateCreated datePublished" datetime="2021-08-29T16:23:26+08:00">2021-08-29</time>
+              <time title="Created: 2021-08-29 16:23:26" itemprop="dateCreated datePublished" datetime="2021-08-29T16:23:26+08:00">2021-08-29</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-21 23:24:37" itemprop="dateModified" datetime="2021-09-21T23:24:37+08:00">2021-09-21</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -1164,154 +1288,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/02/how-to-do-a-code-review/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="leeyzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="leeyzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/04/02/how-to-do-a-code-review/" class="post-title-link" itemprop="url">如何做Code Review</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2021-04-02 17:12:17 / Modified: 17:37:37" itemprop="dateCreated datePublished" datetime="2021-04-02T17:12:17+08:00">2021-04-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB/" itemprop="url" rel="index"><span itemprop="name">程序员的自我修养</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Code Review是保障代码和产品质量的重要手段，但却被绝大部分公司所忽略。本文主要基于Google对Code Review的实践，结合自身的经验谈谈团队中该如何做Code Review。</p>
-<h2 id="1-什么是Code-Review"><a href="#1-什么是Code-Review" class="headerlink" title="1. 什么是Code Review"></a>1. 什么是Code Review</h2><p>Code Review是代码评审人（Code Reviewer）对代码提交者（Code Committer）做审查（Review）的过程。</p>
-<h2 id="2-为什么要做Code-Review"><a href="#2-为什么要做Code-Review" class="headerlink" title="2. 为什么要做Code Review"></a>2. 为什么要做Code Review</h2><ul>
-<li>提升代码/产品质量</li>
-<li>团队工程师文化传承</li>
-<li>团队成员间知识/经验分享</li>
-</ul>
-<h2 id="3-代码评审人角度"><a href="#3-代码评审人角度" class="headerlink" title="3. 代码评审人角度"></a>3. 代码评审人角度</h2><h3 id="3-1-基本原则"><a href="#3-1-基本原则" class="headerlink" title="3.1. 基本原则"></a>3.1. 基本原则</h3><blockquote>
-<p>变更列表（CL，Change List）应该让整体代码库更加整洁。</p>
-</blockquote>
-<p>整洁可以从两个层面来理解：对代码来身来讲，每次变更应该需要更好的可读性；对系统来讲，每次变更应该让系统工作地更好；换句话说，我们应该拒绝那些让代码库变得更糟的变更列表。</p>
-<h3 id="3-2-浏览变更列表"><a href="#3-2-浏览变更列表" class="headerlink" title="3.2. 浏览变更列表"></a>3.2. 浏览变更列表</h3><ul>
-<li><strong>浏览整体变更</strong></li>
-</ul>
-<p>查看变更信息，理解当前变更主要是干什么？当前变更是否合理？</p>
-<ul>
-<li><strong>检查变更列表的主要部分</strong></li>
-</ul>
-<p>检查变更列表文件，通常来说，这些变更列表都是按一定的逻辑结构组织的，浏览变更列表文件可能对变更有一个整体的认识。检查当前变更列表是否太大，能否拆分成多个变更列表？这些变更文件是否跟当前变更主题有关？</p>
-<ul>
-<li><strong>按合理顺序查看</strong></li>
-</ul>
-<p>按合理的逻辑顺序查看变更，比如按接口维度。</p>
-<h3 id="3-3-Code-Review具体需要做什么"><a href="#3-3-Code-Review具体需要做什么" class="headerlink" title="3.3. Code Review具体需要做什么"></a>3.3. Code Review具体需要做什么</h3><ul>
-<li><strong>设计（Design）</strong></li>
-</ul>
-<p>代码实现和对应的设计是否合理？</p>
-<ul>
-<li><strong>功能性（Functionality）</strong></li>
-</ul>
-<p>代码实现的功能是否是代码提供者预期的？这些功能是否符合用户预期？</p>
-<ul>
-<li><strong>复杂度（Complexity）</strong></li>
-</ul>
-<p>代码实现是否可以更简单？其它人在使用或维护代码时是否能理解？</p>
-<ul>
-<li><strong>测试（Tests）</strong></li>
-</ul>
-<p>当前变更是否能通过单元测试（Unit Test）、集成测试（Integration Test）、端到端测试（End-to-End Test）？测试是否覆盖到当前变更？</p>
-<ul>
-<li><strong>命名（Naming）</strong></li>
-</ul>
-<p>变量名、函数名、类名、包名是否合理？命名是否容易理解？</p>
-<ul>
-<li><strong>注释（Comments）</strong></li>
-</ul>
-<p>注释是否清晰或容易理解？</p>
-<ul>
-<li><strong>风格（Style）</strong></li>
-</ul>
-<p>代码风格是否符合规范？尽量持有包容的心态，遵循团队已有代码规范。</p>
-<ul>
-<li><strong>文档（Documention）</strong></li>
-</ul>
-<p>如果当前变更涉及到客户使用，如果接口变更，编译脚本变更等，代码提交人是否同步更新了相关文档？</p>
-<ul>
-<li><strong>上下文（Context）</strong></li>
-</ul>
-<p>通常代码diff工具只展示代码变更的行，但这可能会忽略到一些重要信息。</p>
-<h3 id="3-4-Code-Review的速度"><a href="#3-4-Code-Review的速度" class="headerlink" title="3.4. Code Review的速度"></a>3.4. Code Review的速度</h3><blockquote>
-<p>尽快开始做Code Review，原则上不要跨天</p>
-</blockquote>
-<p>Code Review是需要Commiter和Reviewer高度配合的。通常可能存在以下问题：</p>
-<ul>
-<li>评审人当前正在进行其它工作，不能立即开始做Code Review</li>
-<li>代码提交者提交的变更列表过大，Reviewer需要花费比较大的精力</li>
-<li>紧急情况</li>
-</ul>
-<h3 id="3-5-写评论"><a href="#3-5-写评论" class="headerlink" title="3.5. 写评论"></a>3.5. 写评论</h3><ul>
-<li>礼貌用语</li>
-<li>用简洁的语言指出问题并解释原因</li>
-<li>最好提供指导方案：Reviewer只是提供建议，最终是由Committer修复</li>
-</ul>
-<h2 id="4-代码提交人角度"><a href="#4-代码提交人角度" class="headerlink" title="4. 代码提交人角度"></a>4. 代码提交人角度</h2><h3 id="4-1-变更说明"><a href="#4-1-变更说明" class="headerlink" title="4.1. 变更说明"></a>4.1. 变更说明</h3><p>一句话清晰描述变更意图，尽量用中文。</p>
-<h3 id="4-2-变更列表"><a href="#4-2-变更列表" class="headerlink" title="4.2. 变更列表"></a>4.2. 变更列表</h3><p>变更列表应该尽量”小”。这里的小没有严格定义，可以按逻辑单元进行组织，一次变更列表代码行数最好不要超过200行。</p>
-<h3 id="4-3-处理评论"><a href="#4-3-处理评论" class="headerlink" title="4.3. 处理评论"></a>4.3. 处理评论</h3><ul>
-<li>礼貌用语，解释原因</li>
-<li>修复评审代码，提交patch</li>
-<li>解决冲突</li>
-</ul>
-<h2 id="5-参考资料"><a href="#5-参考资料" class="headerlink" title="5. 参考资料"></a>5. 参考资料</h2><p>[1]. <a target="_blank" rel="noopener" href="https://google.github.io/eng-practices/review/">Code Review Developer Guide Introduction</a><br>[2]. <a target="_blank" rel="noopener" href="https://thenewstack.io/linkedin-code-review/">LinkedIn’s Tips for Highly Effective Code Review</a><br>[3]. <a target="_blank" rel="noopener" href="https://blog.palantir.com/code-review-best-practices-19e02780015f">Code Review Best Practices</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1382,7 +1358,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-count">30</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1393,7 +1369,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-count">47</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

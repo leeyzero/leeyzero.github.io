@@ -5,7 +5,7 @@ categories:
 - 环境搭建
 tags:
 - vim 
-- golang
+- Go 
 ---
 
 最近工作中使用golang开发比较多，而大部分工作都是使用vim完成，在配置vim的golang环境时，发现已经有很多现成的插件可用，对我而言，主要配置以下四个插件就够用了：

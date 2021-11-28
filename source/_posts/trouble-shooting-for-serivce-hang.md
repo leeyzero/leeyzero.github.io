@@ -208,7 +208,7 @@ func dbQuery() {
         },
     }
     cli := &http.Client{Transport: tr}
-    res, err := cli.Get("http://localhost:8800/test/db/query")
+    res, err := cli.Get("http://localhost:8000/test/db/query")
     if err != nil {
         log.Printf("http GET fail.err:%v", err)
         return

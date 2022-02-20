@@ -163,6 +163,232 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/10/write-readable-code/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="leeyzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="leeyzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/10/10/write-readable-code/" class="post-title-link" itemprop="url">【读书笔记】编写可读代码的艺术</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-10-10 23:32:06" itemprop="dateCreated datePublished" datetime="2020-10-10T23:32:06+08:00">2020-10-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-04-04 21:29:15" itemprop="dateModified" datetime="2021-04-04T21:29:15+08:00">2021-04-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9A%8F%E7%AC%94/" itemprop="url" rel="index"><span itemprop="name">随笔</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>最近花了一个周的零星时间，看了《编写可读代码艺术》，收获颇多。虽然平时也经常使用书中提到的一些方法编写代码，但只是一种直观感觉认为这种方式是“正确”的。书中将这些方法提炼成一条条原则，并采用大量实例佐证这些原则。书中系统化的介绍了如何编写可读代码，并提出很多指导性原则，整本书不到200页，非常值得阅读。</p>
+<h2 id="基本原则"><a href="#基本原则" class="headerlink" title="基本原则"></a>基本原则</h2><p>何为好代码，何为坏代码，每个人的判断标准可能并不一样，但作者提了总的指导原则：<strong>代码应当易于理解</strong>来诠释什么是好的代码，并用可读性基本定理：<strong>代码的写法应当全人理解它所需的时间最小化</strong>来衡量代码的可理解程度。即“可读”是一个总的指导原则，而可读性基本定理则是对“可读”的定量判断。当我们在犹豫不决时，可读性基本定理可以帮你做判断。 </p>
+<h2 id="命名"><a href="#命名" class="headerlink" title="命名"></a>命名</h2><p>在编写代码时，做的最多的一件事情就是命名，我们会对变量、函数、类、包等命名，命名的本质是把信息封装到名字中，好的命名，可以帮忙你快速理解代码。书中提到了很多指导原则，我认为比较重要有些原则的如下：</p>
+<h3 id="选择专业的词"><a href="#选择专业的词" class="headerlink" title="选择专业的词"></a>选择专业的词</h3><p>有很多专业词汇是计算机从业者都比较熟悉的，如get、set、find、download，upload等，通常选用这些专业词汇，更容易让别人阅读你的代码。但在不同场景，应该选用更具表现力的词汇，比如get一般来讲是获取比较轻量级的对象，但当我们想从网络或数据库中获取一个对象时，可能用fetch会更好。</p>
+<h3 id="使用前缀或后缀给名字附带更多信息"><a href="#使用前缀或后缀给名字附带更多信息" class="headerlink" title="使用前缀或后缀给名字附带更多信息"></a>使用前缀或后缀给名字附带更多信息</h3><p>对于一些具体单位属于的名字，比如<code>delay</code>，当你看到这个变量时，你可能并不知道它是<code>delay</code>毫秒、秒、分钟，甚至是小时，你只有进一步查看该变量使用的地方看能否提供更多的信息。如果将单位编码到名字中，如<code>delay_sec</code>，则一眼就能理解其含义。更多具有相似的变量如：</p>
+<table>
+<thead>
+<tr>
+<th>函数参数</th>
+<th>带单位的参数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Start(int delay)</td>
+<td>delay -&gt; delay_sec</td>
+</tr>
+<tr>
+<td>CreateCache( int size)</td>
+<td>size -&gt; size_mb</td>
+</tr>
+<tr>
+<td>Download(float limit)</td>
+<td>limit -&gt; max_kbps</td>
+</tr>
+<tr>
+<td>Rotate(float angle)</td>
+<td>angle -&gt; degrees_cw</td>
+</tr>
+</tbody></table>
+<h3 id="利用名字格式来传递含义"><a href="#利用名字格式来传递含义" class="headerlink" title="利用名字格式来传递含义"></a>利用名字格式来传递含义</h3><p>有目的的使用大小写、下划线等。比如对成员变更后面加上”<em>“来区分，全局变更使用大写，使用”</em>“分隔。<strong>采用哪些规范由并不重要，重要的是在你的项目中要保持一致。</strong></p>
+<h3 id="决定名字的长度"><a href="#决定名字的长度" class="headerlink" title="决定名字的长度"></a>决定名字的长度</h3><p>好的名字并不意味着很长，名字太长也很难记，还占用屏幕空间。有一些指导原则可以使用：<br><strong>在小的作用域里可以使用短的名字</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">if (debug) &#123;</span><br><span class="line">    map&lt;string, int&gt; m;</span><br><span class="line">    LooUpNamesNumbers(&amp;m);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述列子中，尽量m没有包含什么信息，但这个小的作用域范围内，并不影响理解这段代码。但如果m是一个全局变量，那就需要更多信息来标识这个变量了。</p>
+<p><strong>使用缩略词</strong><br>我们经常使用<code>str</code>代替<code>string</code>、<code>doc</code>代替<code>document</code>、<code>pic</code>代替<code>picture</code>等，使用这些共识的缩略词，并不影响理解代码。</p>
+<h2 id="风格"><a href="#风格" class="headerlink" title="风格"></a>风格</h2><p>有三条原则：</p>
+<ul>
+<li>使用一致的布局，让读者很快就习惯这种风格</li>
+<li>让相似的代码看上去相似</li>
+<li>把相关的代码行分组，形成代码块</li>
+</ul>
+<p>另外需要注意的是，每个人的编码风格可能并不相同，例如，类定义的大括号该放在哪里：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">class Logger &#123;</span><br><span class="line">    ....</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>还是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">class Logger </span><br><span class="line">&#123;</span><br><span class="line">    ....</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>这里两种风格都不影响可读性，但如果两种风格同时放在一起，就会对可读性有影响了。有时，即使我们感觉使用了“错误”的风格，但我们还是需要遵守项目的习惯，因为<strong>一致的风格比“正确”的风格更重要。</strong></p>
+<h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><p>注释的目的是帮助读者了解作者在写代码时已经知道的那些事情。 如果代码本身就能很好的反映事实，那基本不需要注释；另外，如果需要靠一些“拐杖式注释”来粉饰代码，那应该把代码改好。 对于为什么代码写成这样而不是那样的内在理由或这样写的背景以及代码中的一些缺陷，需要写下注释； </p>
+<p>对于写完的注释，看是否能真实表达代码意图，最好的办法就是让同事看你写的注释能否看懂。最后就是注释一定要与代码同步，如果修改完代码后，注释却没有同步修改，将会误导读者，这种比没有注释更严重。</p>
+<h2 id="控制流"><a href="#控制流" class="headerlink" title="控制流"></a>控制流</h2><h3 id="条件语句中参数的顺序"><a href="#条件语句中参数的顺序" class="headerlink" title="条件语句中参数的顺序"></a>条件语句中参数的顺序</h3><p>先来比较一下下面两段代码的易读性：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if (length &gt;&#x3D; 10)</span><br></pre></td></tr></table></figure>
+<p>和</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if (10 &lt;&#x3D; length)</span><br></pre></td></tr></table></figure>
+<p>对大多数据程序员来说，第一段更易读。为什么为这样呢？因为这符合自然语言的语法习惯，我们通常会说“如果你小于18岁”而不是说”如果18岁大于等于你的年龄”。下面指导原则很有帮助：</p>
+<table>
+<thead>
+<tr>
+<th>比较的左侧</th>
+<th>比较的右侧</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>“被问询的”表达式，它的值更倾向于不断变化</td>
+<td>用来做比较的的表达式，它的值更倾向于常量</td>
+</tr>
+</tbody></table>
+<h3 id="if-else语句块的顺序"><a href="#if-else语句块的顺序" class="headerlink" title="if/else语句块的顺序"></a>if/else语句块的顺序</h3><ul>
+<li>首先处理正逻辑而不是负逻辑，如if (debug)而不是if (!debug)</li>
+<li>先处理简单的情况，这种方式可能会使得if和else会在屏幕内都可见。</li>
+<li>先处理有趣或者是可疑的情况</li>
+</ul>
+<h3 id="三目运算符"><a href="#三目运算符" class="headerlink" title="三目运算符"></a>三目运算符</h3><p>它对于可读性的影响是富有争议的。拥挤者认为可以只写一行而不用写成多行；反对者则说可能会造成阅读的混乱而且难以调试。但如果三目运算符的值都是常量，其可读性是比较高的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">time_str +&#x3D; (hour &gt;&#x3D; 12) ? &quot;pm&quot; : &quot;am&quot;</span><br></pre></td></tr></table></figure>
+
+<p>如果要避免使用三目运算符，那就得写成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if (hour &gt;&#x3D; 12) &#123;</span><br><span class="line">    time_str +&#x3D; &quot;pm&quot;;</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    time_str +&#x3D; &quot;am&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这就有点冗长了。然而如果表达式很复杂，就会变得难于理解：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">return exponent &gt;&#x3D; 0 ? mantissa * (1 &lt;&lt; exponent) : mantissa &#x2F; (1 &lt;&lt; -exponent);</span><br></pre></td></tr></table></figure>
+
+<h3 id="避免do-while循环"><a href="#避免do-while循环" class="headerlink" title="避免do/while循环"></a>避免do/while循环</h3><p>通常来讲，逻辑条件应该出现在它们所“保护”的代码之前，这也是if、while和for语句的工作方式，因为你通常会从前往后读代码，而do/while循环就有点不自然了。很多读者会读这段代码两遍。幸运的是，实践中大多数的do/while循环都可以写成while循环。</p>
+<h3 id="最小化嵌套"><a href="#最小化嵌套" class="headerlink" title="最小化嵌套"></a>最小化嵌套</h3><p>嵌套很深的代码很难理解。每个嵌套层次都在读者的“思维栈”上又增加了一个条件。当读者见到一个右大括号<code>&#125;</code>时，可能很难“出栈”来回忆它背后的条件是什么。可以通过提早返回来减少嵌套或减少循环内的嵌套。</p>
+<h3 id="从函数中提前返回"><a href="#从函数中提前返回" class="headerlink" title="从函数中提前返回"></a>从函数中提前返回</h3><p>有些程序员认为函数永远不应该出现多条return语句。其实从函数中提前返回没有任何问题，而且很受欢迎。如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public boolean Contains(String str, String substr) &#123;</span><br><span class="line">    if (str &#x3D;&#x3D; null || substr &#x3D;&#x3D; null) return false;</span><br><span class="line">    if (substr.equals(&quot;&quot;)) return true;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通常来说想要单一出口的一个动机是保证调用函数结尾的清理代码。但现在编码语言为这种保证提供了更精细的方式：</p>
+<table>
+<thead>
+<tr>
+<th>语言</th>
+<th>清理代码的结构化术语</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C++</td>
+<td>析构函数</td>
+</tr>
+<tr>
+<td>Java</td>
+<td>try finally</td>
+</tr>
+<tr>
+<td>Python</td>
+<td>with</td>
+</tr>
+<tr>
+<td>Go</td>
+<td>defer</td>
+</tr>
+<tr>
+<td>C#</td>
+<td>using</td>
+</tr>
+</tbody></table>
+<h2 id="简化表达式"><a href="#简化表达式" class="headerlink" title="简化表达式"></a>简化表达式</h2><h3 id="使用解释变量"><a href="#使用解释变量" class="headerlink" title="使用解释变量"></a>使用解释变量</h3><p>当一个表达式巨大时，是很难理解和思考的。一个简单的技术是引入“解释变量”来代表较长的子表达式。这有三个好处：</p>
+<ul>
+<li>它把巨大的表达式拆成小段</li>
+<li>它通过用简单的名字描述子表达式来让代码文档化</li>
+<li>它帮助读者识别代码中的主要概念</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">if line.split(&#39;:&#39;)[0].strip() &#x3D;&#x3D; &quot;root&quot;:</span><br><span class="line">    ....</span><br></pre></td></tr></table></figure>
+
+<p>如果引入一个解释变量就容易理解了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">username &#x3D; line.split(&#39;:&#39;)[0].strip()</span><br><span class="line">if username &#x3D;&#x3D; &quot;root&quot;:</span><br><span class="line">    ....</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用德摩根定理"><a href="#使用德摩根定理" class="headerlink" title="使用德摩根定理"></a>使用德摩根定理</h3><p>对于布尔表达式，有两种等价写法：</p>
+<ul>
+<li>not (a or b or c ) &lt;=&gt; (not a) and (not b) and (not c)</li>
+<li>not (a and b and c) &lt;=&gt; (not a) or (not b) or (not c)</li>
+</ul>
+<p>有时，使用这些法则可以让布尔表达式更具可读性，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if (!(file_exists &amp;&amp; !is_protected)) &#123;</span><br><span class="line">  ....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可心把它改写成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if (!file_exists || is_protected) &#123;</span><br><span class="line">    ....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>对于变量的运用，主要有以下三个问题：</p>
+<ol>
+<li>变量越多，就越难全部跟踪它们的动向；</li>
+<li>变量的作用域越大，就需要跟踪它的动向越久；</li>
+<li>变量改变的越频繁，就越难以跟踪它的当前值；</li>
+</ol>
+<p>针对这三个问题，看如何让变量更容易理解：</p>
+<h3 id="减少变量"><a href="#减少变量" class="headerlink" title="减少变量"></a>减少变量</h3><p>之前说增加解析性变量让代码更易读，这量的减少变量是指减少不能改进可读性的变量。当移除这种变量后，新的代码会更精练而且同样容易理解。可以通过移除一些没有价值的临时变量、减少中间结果和减少控制流变量来实现。</p>
+<h3 id="缩小变更作用域"><a href="#缩小变更作用域" class="headerlink" title="缩小变更作用域"></a>缩小变更作用域</h3><p>我们都听过“避免全局变量”这条建议。这是一条好建议，因为很难跟踪这些全局变量在哪里以及如何使用它们。并且通过“命名空间污染”，代码可能会意外地改变全局变量的值。实际上，让所有变量都“缩小作用域”是一个好主意，并非只针对全局变量。关键思想是：<strong>让你的变量对尽量少的代码行可见</strong>。</p>
+<h3 id="只写一次的变量更好"><a href="#只写一次的变量更好" class="headerlink" title="只写一次的变量更好"></a>只写一次的变量更好</h3><p>“永久固定”的变量更容易思考，因为读者不需要思考更多。基于同样的原因，C++中鼓励使用const。而对于变量，有一个建议是：<strong>只写一次的变量更好</strong>。因为操作一个变量的地方越多，越难确定它的当前值。</p>
+<h2 id="代码组织"><a href="#代码组织" class="headerlink" title="代码组织"></a>代码组织</h2><p>对于函数级别的代码，具体来讲，有三种组织代码的方法：</p>
+<h3 id="抽取出那些与程序主要目的“不相关的子问题”"><a href="#抽取出那些与程序主要目的“不相关的子问题”" class="headerlink" title="抽取出那些与程序主要目的“不相关的子问题”"></a>抽取出那些与程序主要目的“不相关的子问题”</h3><p>我对它的理解是抽象层次的不同，相同层次的代码应该放到一起。比如，我们从main函数入口，接着是抽取出主框架层次的代码，在主框架中又抽取出子框架层次的代码，在各子框架中又抽出出各模块，在各模块抽取出各个类，等等。</p>
+<h3 id="重新组织代码使它只做一什事情"><a href="#重新组织代码使它只做一什事情" class="headerlink" title="重新组织代码使它只做一什事情"></a>重新组织代码使它只做一什事情</h3><p>这是对单一职责的一个应用。同时在做几件事的代码很难理解。一个代码块可能初始化对象，清除数据，解析输入，处理业务逻辑，格式化输出。如果把这些代码都纠缠在一起，对于每个“任务”都很难靠其自身来帮你理解它从哪里开始，到哪里结束。</p>
+<h3 id="先用自然语言描述代码，然后用这个描述帮助你找到更整洁的解决方案"><a href="#先用自然语言描述代码，然后用这个描述帮助你找到更整洁的解决方案" class="headerlink" title="先用自然语言描述代码，然后用这个描述帮助你找到更整洁的解决方案"></a>先用自然语言描述代码，然后用这个描述帮助你找到更整洁的解决方案</h3><p>当把一件复杂的事向别人解释时，那些小细节很容易就会让他们迷惑。把一个想法用“自然语言”解释是个很有价值的能力，因为这样其它知识没有你这么渊博的人才可以理解它。这需要把一个想法精炼成最重要的概念。这样做不仅帮助他人理解，而且也帮助你自己把这个想法想得更清晰。</p>
+<h2 id="熟悉你周边的库"><a href="#熟悉你周边的库" class="headerlink" title="熟悉你周边的库"></a>熟悉你周边的库</h2><p>很多时候，程序员并不知道再有的库可以解决他们的问题。如果你的库能做什么以便你可以使用它，这一点很重要。这里有一条中肯的建议：<strong>每隔一段时间，花15分钟来阅读标准库中的所有函数、模块、类型的名字</strong>。这并不是说要记住这些库，只是为了在你的脑中建议一个索引，到你在写新代码时，你会想起：<br>“等一下，有一个库好像可以处理这种情况…”。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以上很多原则是可以遵守的，当你犹豫不决时，可以使用可读性定理帮助你判断。对于一些表面上的改进，如变量命名、统一风格、简化表达式等，是比较容易做到的，但对代码的组织，则需要综合考虑个人的一些抽象能力和归纳能力，需要更多的实践。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/10/how-to-reading/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1309,100 +1535,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/09/vim-config-without-plugin/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="leeyzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="leeyzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/09/vim-config-without-plugin/" class="post-title-link" itemprop="url">vim无插件配置</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-10-09 23:00:56" itemprop="dateCreated datePublished" datetime="2020-10-09T23:00:56+08:00">2020-10-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-04 21:28:02" itemprop="dateModified" datetime="2021-04-04T21:28:02+08:00">2021-04-04</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" itemprop="url" rel="index"><span itemprop="name">环境搭建</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Vim_(text_editor)">vim</a>是unix下一款非常强大的文本编辑器。vim本身支持很多个性化的配置，根据自身需求，合理的配置vim，能够很好的提高开发效率。本文介绍vim下无插件的常用配置，关于配置vim有一个非常重要的原则就是：<strong>不要将你不明白的配置项写到配置文件中。</strong></p>
-<h2 id="准备环境"><a href="#准备环境" class="headerlink" title="准备环境"></a>准备环境</h2><p>首先需要安装vim，目前大部分类unix系统默认都已经安装好了。如果没有安装，通常可以用系统的包管理功能进行安装，如centos下使用yum安装。但使用包管理工具安装默认的包源的vim版本可能比较低，推荐使用源码方式安装：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;vim&#x2F;vim.git</span><br></pre></td></tr></table></figure>
-<p>源代码clone下来后，<code>src/INSTALL</code>文档中有非常详细的安装说明文档，根据自己的系统环境按步骤安装即可。</p>
-<h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>vim是通过vimrc配置文件进行配置的，全局配置一般在<code>/etc/vim/vimrc</code>或者<code>/etc/vimrc</code>，对所有用户生效。用户个人的配置在<code>~/.vimrc</code>。对我们来讲，通常在<code>~/.vimrc</code>进行配置就行了。</p>
-<p>除了在配置中进行配置外，在vim编辑过程中，可以在命令模式下，直接输入配置命令，即对当前编辑的文件生效，如显示行号：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:set number</span><br></pre></td></tr></table></figure>
-
-<h3 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h3><p>vimrc文件支持注释，<code>&quot;</code>后面的内容为注释，如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&quot; 显示行号</span><br><span class="line">set number</span><br><span class="line">syntax on &quot; 打开语法高亮</span><br></pre></td></tr></table></figure>
-
-<h3 id="帮助文档"><a href="#帮助文档" class="headerlink" title="帮助文档"></a>帮助文档</h3><p>vim有非常详细的帮助文档，在编辑过程中，你可以通过<code>F1</code>或<code>:help</code>快捷键呼出帮忙文档，也可以对某个配置项查看其配置说明，如</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:help showmatch</span><br></pre></td></tr></table></figure>
-
-<h3 id="配置惯用法"><a href="#配置惯用法" class="headerlink" title="配置惯用法"></a>配置惯用法</h3><p>配置项一般都有”打开”和”关闭”两个设置。”关闭”就是在”打开”前面加上前缀”no”。如显示等号为<code>set number</code>，关闭就为<code>set nonumber</code>，大部分配置都有简写，如显示等号可以简写为<code>set nu</code>，关闭就为<code>set nonu</code>。</p>
-<h2 id="常用配置"><a href="#常用配置" class="headerlink" title="常用配置"></a>常用配置</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line">&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">&quot; 基本配置</span><br><span class="line">&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">&quot; 不兼容vi命令</span><br><span class="line">set nocompatible</span><br><span class="line"></span><br><span class="line">&quot; 打开语法高亮</span><br><span class="line">syntax on</span><br><span class="line"></span><br><span class="line">&quot; 开启文件类型检查，并且载入与该类型对应的缩进规则。</span><br><span class="line">filetype indent on</span><br><span class="line"></span><br><span class="line">&quot; 在底部状态栏显示当前模式，如插入、命令模式</span><br><span class="line">set showmode</span><br><span class="line"></span><br><span class="line">&quot; 在命令模式下显示当前命令，如输入2y时，会在状态栏显示命令，再次输入y时，执行命令，状态栏命令消失</span><br><span class="line">set showcmd</span><br><span class="line"></span><br><span class="line">&quot; 是否显示状态栏。0表示不显示，1表示只在多窗口时显示，2表示显示。</span><br><span class="line">set laststatus&#x3D;2</span><br><span class="line"></span><br><span class="line">&quot; 在状态栏显示光标的当前位置</span><br><span class="line">set  ruler</span><br><span class="line"></span><br><span class="line">&quot; 支持鼠标</span><br><span class="line">set mouse&#x3D;a</span><br><span class="line"></span><br><span class="line">&quot; 当前文本使用uf8编码</span><br><span class="line">set encoding&#x3D;utf-8  </span><br><span class="line"></span><br><span class="line">&quot; 保留命令的历史记录数</span><br><span class="line">set history&#x3D;1000</span><br><span class="line"></span><br><span class="line">&quot; 显示行号</span><br><span class="line">set number</span><br><span class="line"></span><br><span class="line">&quot; 光标所在的当前行高亮</span><br><span class="line">set cursorline</span><br><span class="line"></span><br><span class="line">&quot; 设置行宽，即一行显示多少个字符</span><br><span class="line">set textwidth&#x3D;100</span><br><span class="line"></span><br><span class="line">&quot; 自动折行，即太长的行分成几行显示，关闭自动折行为set nowrap</span><br><span class="line">set wrap</span><br><span class="line"></span><br><span class="line">&quot; 只有遇到指定的符号（比如空格、连词号和其他标点符号），才发生折行。也就是说，不会在单词内部折行</span><br><span class="line">set linebreak</span><br><span class="line"></span><br><span class="line">&quot; 垂直滚动时，光标距离顶部&#x2F;底部的位置（单位：行）</span><br><span class="line">set scrolloff&#x3D;5</span><br><span class="line"></span><br><span class="line">&quot; 水平滚动时，光标距离行首或行尾的位置（单位：字符）。该配置在不折行时比较有用。</span><br><span class="line">set sidescrolloff&#x3D;10</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">&quot; 缩进相关配置</span><br><span class="line">&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">&quot; 按下tab时显示的空格数</span><br><span class="line">set tabstop&#x3D;4</span><br><span class="line"></span><br><span class="line">&quot; tab转化为多少个空格</span><br><span class="line">set softtabstop&#x3D;4</span><br><span class="line"></span><br><span class="line">&quot; 执行移位操作&#96;&gt;&gt;或&lt;&lt;&#96;时，显示的空格数</span><br><span class="line">set shiftwidth&#x3D;4</span><br><span class="line"></span><br><span class="line">&quot; 由于 tab 键在不同的编辑器缩进不一致，该设置自动将 Tab 转为空格</span><br><span class="line">set expandtab</span><br><span class="line"></span><br><span class="line">&quot; 自动缩略，当按下回车时，自动与上一行的缩进保持一致</span><br><span class="line">set autoindent</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">&quot; 搜索相关配置</span><br><span class="line">&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">&quot; 光标遇到&#123;[()]&#125;时，会高亮显示另一半匹配的符号</span><br><span class="line">set showmatch</span><br><span class="line"></span><br><span class="line">&quot; 高亮显示搜索的词</span><br><span class="line">set hlsearch</span><br><span class="line"></span><br><span class="line">&quot; 增量搜索匹配结果，即每输入一个字母都会进行匹配</span><br><span class="line">set incsearch</span><br><span class="line"></span><br><span class="line">&quot; 搜索时忽略大小写</span><br><span class="line">set ignorecase</span><br><span class="line"></span><br><span class="line">&quot; 如果同时打开了ignorecase，那么对于只有一个大写字母的搜索词，将大小写敏感；其他情况都是大小写不敏感</span><br><span class="line">set smartcase</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">&quot; 编辑相关配置</span><br><span class="line">&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">&quot; 不创建交换文件。交换文件主要用于系统崩溃时恢复文件，文件名的开头是.、结尾是.swp</span><br><span class="line">set noswapfile</span><br><span class="line"></span><br><span class="line">&quot; 自动切换工作目录。这主要用在一个 Vim 会话之中打开多个文件的情况，默认的工作目录是打开的第一个文件的目录。该配置可以将工作目录自动切换到，正在编辑的文件的目录。</span><br><span class="line">set autochdir</span><br><span class="line"></span><br><span class="line">&quot; 出错时，不要发出响声</span><br><span class="line">set noerrorbells</span><br><span class="line"></span><br><span class="line">&quot; 出错时，发出视觉提示，通常是屏幕闪烁</span><br><span class="line">set visualbell</span><br><span class="line"></span><br><span class="line">&quot; 打开文件监视。如果在编辑过程中文件发生外部改变，就会发出提示。</span><br><span class="line">set autoread</span><br><span class="line"></span><br><span class="line">&quot; 命令模式下，底部操作指令按下 Tab 键自动补全</span><br><span class="line">set wildmenu</span><br></pre></td></tr></table></figure>
-
-<p>以上配置可以通过github克隆到本地：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;leeyzero&#x2F;vimrc.git </span><br></pre></td></tr></table></figure>
-
-<h2 id="更多参考"><a href="#更多参考" class="headerlink" title="更多参考"></a>更多参考</h2><p>[1].<a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2018/09/vimrc.html">http://www.ruanyifeng.com/blog/2018/09/vimrc.html</a><br>[2].<a target="_blank" rel="noopener" href="https://dougblack.io/words/a-good-vimrc.html">https://dougblack.io/words/a-good-vimrc.html</a><br>[3].<a target="_blank" rel="noopener" href="http://vimdoc.sourceforge.net/htmldoc/options.html">http://vimdoc.sourceforge.net/htmldoc/options.html</a><br>[4].<a target="_blank" rel="noopener" href="https://github.com/amix/vimrc/blob/master/vimrcs/basic.vim">https://github.com/amix/vimrc/blob/master/vimrcs/basic.vim</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1473,7 +1605,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-count">32</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1484,7 +1616,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-count">47</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -1559,7 +1691,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

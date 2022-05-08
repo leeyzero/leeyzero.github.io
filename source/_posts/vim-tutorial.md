@@ -1,10 +1,10 @@
 ---
-title: vim入门
+title: Vim入门
 date: 2020-10-10 23:38:46
 categories:
-- shell
+- Linux
 tags:
-- vim
+- Vim
 ---
 
 相对于IDE，vim的学习成本较高，但一旦熟悉vim后，开发效率是非常高的。vim的命令非常多，但在工作中常用的却比较少，本着实用主义，参考[Learn Vim Progressively](http://yannesposito.com/Scratch/en/blog/Learn-Vim-Progressively/)，整理最有用的命令，也便自己以后查阅。下面涉及到`ctrl`键的组合操作，如`ctrl`和`r`组合，用`<C-r>`表示

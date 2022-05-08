@@ -5,7 +5,6 @@ categories:
 - 分布式系统
 tags:
 - 系统设计
-- end-to-end
 ---
 
 最近又看了一遍 [End-To-End Argument In System Design](http://web.mit.edu/saltzer/www/publications/endtoend/endtoend.pdf)，有一些新的思考，但都集中在一些点上，不够系统，在此先记录下来，后续有新的想法再做补充和整理。

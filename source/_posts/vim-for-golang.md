@@ -1,10 +1,11 @@
 ---
-title: vim配置golang开发环境
+title: Vim配置Go开发环境
 date: 2020-10-10 23:43:20
 categories:
-- 环境搭建
+- 开发工具&环境
 tags:
-- vim 
+- Linux
+- Vim 
 - Go 
 ---
 

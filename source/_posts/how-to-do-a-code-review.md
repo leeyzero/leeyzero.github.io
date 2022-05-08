@@ -2,7 +2,7 @@
 title: 如何做Code Review
 date: 2021-04-02 17:12:17
 categories:
-- 程序员的自我修养
+- 随笔
 tags:
 - Code Review
 ---

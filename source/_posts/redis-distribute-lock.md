@@ -4,7 +4,7 @@ date: 2021-01-24 09:10:54
 categories:
 - 分布式系统
 tags: 
-- redis
+- Redis
 - 分布式锁
 ---
 

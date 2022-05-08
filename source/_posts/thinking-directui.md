@@ -2,7 +2,7 @@
 title: 关于DirectUI的一些思考
 date: 2020-10-10 23:11:56
 categories:
-- windows
+- Windows
 tags:
 - DirectUI
 - Windowless

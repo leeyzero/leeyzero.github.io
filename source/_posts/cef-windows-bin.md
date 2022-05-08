@@ -2,9 +2,9 @@
 title: CEF Windows环境二进制发布
 date: 2020-10-10 22:34:29
 categories:
-- windows
+- Windows
 tags:
-- cef
+- CEF
 ---
 
 [CEF](https://bitbucket.org/chromiumembedded/cef)(The Chromium Embedded Framework) 是*Marshall Greenblatt*于2008年基于 [Google Chromium](http://www.chromium.org/Home) 项目创建由BSD开源协议授权的开源项目。它和Chromium项目不同之处在于，Chromium项目侧重于Google Chrome应用开发，而CEF侧重于使浏览器更容易内嵌到第三方应用中。CEF屏蔽了Chromium和

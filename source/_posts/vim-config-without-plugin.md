@@ -1,11 +1,11 @@
 ---
-title: vim无插件配置
+title: Vim无插件配置
 date: 2020-10-09 23:00:56
 categories:
-- 环境搭建
+- 开发工具&环境
 tags:
-- linux
-- vim
+- Linux
+- Vim
 ---
 
 [vim](https://en.wikipedia.org/wiki/Vim_(text_editor))是unix下一款非常强大的文本编辑器。vim本身支持很多个性化的配置，根据自身需求，合理的配置vim，能够很好的提高开发效率。本文介绍vim下无插件的常用配置，关于配置vim有一个非常重要的原则就是：**不要将你不明白的配置项写到配置文件中。**

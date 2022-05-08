@@ -2,7 +2,7 @@
 title: 使用manifest管理应用程序的依赖文件
 date: 2020-10-10 22:47:20
 categories:
-- windows
+- Windows
 tags:
 - manifest
 ---

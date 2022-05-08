@@ -2,11 +2,9 @@
 title: OAuth2简介
 date: 2021-09-21 23:15:52
 categories:
-- 学习笔记 
+- 协议标准 
 tags:
 - OAuth2
-- 认证
-- 授权
 ---
 
 **开放授权**（OAuth, **O**pen **Auth**orization）是一个[开放标准](https://en.wikipedia.org/wiki/Open_standard)，允许用户让第三方应用访问该用户在某一网站上存储的私密的资源（如照片，视频，联系人列表等），而无需将用户名的密码提供给第三方应用。OAuth2.0是OAuth的2.0版本。本文主要介绍OAuth2的授权流程。

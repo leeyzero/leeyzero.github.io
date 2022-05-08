@@ -24,7 +24,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Dropbox同步原理">
 <meta property="og:url" content="http://example.com/2021/05/23/dropbox-file-synchronization/index.html">
-<meta property="og:site_name" content="leeyzero的博客">
+<meta property="og:site_name" content="LeeYzero的博客">
 <meta property="og:description" content="文件同步是利用网络将多个电脑或移动设备之间的文件进行同步的网络服务。文件同步的本质是对比网络上两台设备之间的文件变更，然后将文件的不同部分通过网络进行传输，以达到文件同步的目的。本文介绍dropbox的文件同步实现原理。 基本概念文件系统在本地电脑上，一个文件可以用文件路径来标识。但对于dropbox需要支持共享目录，定义了名字空间（namespace）的概念，用于对传统文件系统的抽象。每一个共享">
 <meta property="og:locale">
 <meta property="og:image" content="http://example.com/images/dropbox-file-synchronization/dropboxfileformat1.png">
@@ -34,11 +34,10 @@
 <meta property="og:image" content="http://example.com/images/dropbox-file-synchronization/protocol41.png">
 <meta property="og:image" content="http://example.com/images/dropbox-file-synchronization/protocol52.png">
 <meta property="article:published_time" content="2021-05-23T14:44:23.000Z">
-<meta property="article:modified_time" content="2021-05-23T14:55:58.608Z">
+<meta property="article:modified_time" content="2022-05-08T15:30:36.878Z">
 <meta property="article:author" content="leeyzero">
-<meta property="article:tag" content="dropbox">
 <meta property="article:tag" content="文件同步">
-<meta property="article:tag" content="云盘">
+<meta property="article:tag" content="Dropbox">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/images/dropbox-file-synchronization/dropboxfileformat1.png">
 
@@ -55,7 +54,7 @@
   };
 </script>
 
-  <title>Dropbox同步原理 | leeyzero的博客</title>
+  <title>Dropbox同步原理 | LeeYzero的博客</title>
   
 
 
@@ -106,7 +105,7 @@
 
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">leeyzero的博客</h1>
+      <h1 class="site-title">LeeYzero的博客</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
       <p class="site-subtitle" itemprop="description">业精于勤，行成于思</p>
@@ -185,7 +184,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="leeyzero的博客">
+      <meta itemprop="name" content="LeeYzero的博客">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -198,10 +197,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-05-23 22:44:23 / Modified: 22:55:58" itemprop="dateCreated datePublished" datetime="2021-05-23T22:44:23+08:00">2021-05-23</time>
+              <time title="Created: 2021-05-23 22:44:23" itemprop="dateCreated datePublished" datetime="2021-05-23T22:44:23+08:00">2021-05-23</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-05-08 23:30:36" itemprop="dateModified" datetime="2022-05-08T23:30:36+08:00">2022-05-08</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -268,9 +273,8 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/dropbox/" rel="tag"><i class="fa fa-tag"></i> dropbox</a>
               <a href="/tags/%E6%96%87%E4%BB%B6%E5%90%8C%E6%AD%A5/" rel="tag"><i class="fa fa-tag"></i> 文件同步</a>
-              <a href="/tags/%E4%BA%91%E7%9B%98/" rel="tag"><i class="fa fa-tag"></i> 云盘</a>
+              <a href="/tags/Dropbox/" rel="tag"><i class="fa fa-tag"></i> Dropbox</a>
           </div>
 
         
@@ -359,18 +363,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-count">34</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">48</span>
+        <span class="site-state-item-count">40</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

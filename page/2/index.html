@@ -163,6 +163,103 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/08/end-to-end-principle/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="leeyzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/06/08/end-to-end-principle/" class="post-title-link" itemprop="url">端到端设计原则</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-06-08 01:01:17" itemprop="dateCreated datePublished" datetime="2021-06-08T01:01:17+08:00">2021-06-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-05-08 23:24:00" itemprop="dateModified" datetime="2022-05-08T23:24:00+08:00">2022-05-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式系统</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>最近又看了一遍 <a target="_blank" rel="noopener" href="http://web.mit.edu/saltzer/www/publications/endtoend/endtoend.pdf">End-To-End Argument In System Design</a>，有一些新的思考，但都集中在一些点上，不够系统，在此先记录下来，后续有新的想法再做补充和整理。</p>
+<h2 id="核心观点"><a href="#核心观点" class="headerlink" title="核心观点"></a>核心观点</h2><p>这篇论文在由MIT计算机科学实验室发表于1984年，是一篇非常经典的关于系统设计的论文。论文论证了分布式系统设计的一个事实：<strong>端到端的可靠通信只能由通信的两端（End-Point）来保证，而中间的媒介（如消息中间件、网关、路由器以及TCP协议栈等）只能提高通信效率，但无法保证通信两端的可靠性。</strong></p>
+<p><strong>在一个系统设计中，系统设计师的主要工作是对功能进行合理抽象，明确定义功能边界。</strong>将功能职责进行合理划分的设计原则是系统设计师最重要的工具之一，端到端设计原则便是这样的工具，它在分布式系统设计中，对功能职责的划分起了一定的指导作用。</p>
+<h2 id="举例说明"><a href="#举例说明" class="headerlink" title="举例说明"></a>举例说明</h2><p>论文中给出了一个两个主机间的文件传输为例来说明为什么端到端的可靠通信只能由通信的两端来保证。考虑要实现一个应用程序，用于将主机A上的文件传输到另一个远程主机B上。整个过程可以抽象以下5个步骤：</p>
+<p>1、在主机A上的应用程序按固定大小的块从主机A的磁盘中读取文件。</p>
+<p>2、在主机A上的应用程序将数据通过数据通信系统进行传输，数据通信系统使用某种数据传输协议，将数据拆分成数据包进行传输。</p>
+<p>3、数据通信网络将数据从主机A传输至主机B。</p>
+<p>4、在主机B上的应用程序从数据通信系统中按相册协议读取出数据。</p>
+<p>5、在主机B上的应用程序将接收到的数据写入主机B的磁盘上。</p>
+<p>在这个模型中，任何一步出错都会造成传输失败，主要有以下问题：</p>
+<p>1、假定文件被正确存储在A主机上，读取的时候，由于磁盘损坏等原因可能造成读取的数据不正确。</p>
+<p>2、在主机A或主机B上的应用程序，由于程序缺陷（比如拷贝数据错误等）造成数据错误。</p>
+<p>3、处理器或内存在拷贝、缓存时可能出现暂时的错误。</p>
+<p>4、通信过程可能出现位错误、丢包或重传等问题。</p>
+<p>5、在传输过程中主机可能出现崩溃。</p>
+<p>对于这个例子，如果我们先抛开两端（也就是主机A和主机B上的应用程序），在两端之间的中间媒介，如磁盘、内存、数据通信系统等即使通过冗余、错误检查、超时重试、故障恢复等手段保证其可靠性，仍然不能保证上述第2点出问题，也就是端本身造成的数据错误，最终还是需要端做相同的事情来保证可靠性。</p>
+<p>如果对上面的例子还是没理解，我再举一个现实生活中的例子，比如A跟B打电话，A告诉B他中彩票了。我们把A跟B当端点，在这个过程中，如果因为A或B的手机信号问题，造成B没有听清楚，那么这相当于是中间媒介故障造成这次通话异常；现在假设A和B的手机以及周围信号都没有问题（通过各种手段保证中间媒介的可靠性），A说的话能正常传达了B的手机（注意是B的手机），那是不是B就一定听到了呢？也不一定，有可能B此时正在想别的事情，或被其它人打扰而在大脑中没有接收到B传达的信息，这种情况就相当于上述两端的应用程序缺陷。此时B可以对A说，不好意思，没听清楚，你再说一遍，A重新说了一遍后B得知了A中彩票的消息，这种情况相当于上述说的端来保障通信可靠性。</p>
+<p>通过以述例子，我们知道端到端的通信只有两端才能保证可靠性，中间媒介层去做可靠性保证显得多余了，那是不是说中间媒体层就不需要做可靠性保证了呢？这就引出论文的另一个观点：<strong>中间媒介只能提高通信效率，而不能保证通信两端的可靠性</strong>。那如何理解这句话呢？</p>
+<p>就拿上述文件传输的例子，如果在一个网络非常差的环境下传输一个大文件，如果只靠端来保证可靠性的话，失败率必定非常高（通常来说，应用程数据分片拆分比网络传输的数据包大很多）。但如果在数据通信系统中（如TCP协议栈）支持数据超时重传、数据校验，那就会极大提升端系统的传输成功率。</p>
+<h2 id="正确识别端"><a href="#正确识别端" class="headerlink" title="正确识别端"></a>正确识别端</h2><p>那么怎么界定端呢？这个就需要根据实际需求来取舍了。比如对一个语音传输系统，如果端是人的话，是应该优先保证实时性，再考虑正确性，在传输过程中是可以容忍少许包损坏或噪音的；但如果端是一个录音程序，则需要优先考虑正确性，再考虑实效性，可以容忍延迟，但不能容忍包损坏或错误。</p>
+<h2 id="一些思考"><a href="#一些思考" class="headerlink" title="一些思考"></a>一些思考</h2><p>1、这篇论文对TCP/IP分层协议设计影响深远，分层增强了模块化，界定每个层次的功能职责，也就是降低了整体的复杂度。<strong>纵观整个软件发展的历史，其实就是在降低软件的复杂度，分层、模块化、设计模式、DDD、封装思想无一不是在解决软件复杂性这个问题。</strong>用Unix设计哲学来说就是KISS（Keep It Simple and Stupid）。</p>
+<p>2、<strong>设计的本质就是做trade-off</strong>，端到端设计原则只是提供一种指导思想，就想正确识别端中列举的例子，需要根据具体需求，更多的是根据现有资源，人力、物力、市场、基础设施等去做平衡来博取最大化ROI。</p>
+<p>3、<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/55311553">知乎</a> 上提到一种克服端到端的方法（其实本质上没有逃脱端到端原则），通过反转中间件和APP的角色（无处不在的依赖倒置原则），让中间件变成End-Point，当APP通过注入（inject）的方式成为中间件框架中的一部分逻辑。</p>
+<h2 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h2><p>[1]. <a target="_blank" rel="noopener" href="http://web.mit.edu/saltzer/www/publications/endtoend/endtoend.pdf">End-To-End Argument In System Design</a><br>[2]. <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/55311553">End to End Argument(可能是最重要的系统设计论文)</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/23/dropbox-file-synchronization/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1200,172 +1297,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/10/makefile-tutorial/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="leeyzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/10/makefile-tutorial/" class="post-title-link" itemprop="url">Makefile入门</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-10-10 23:48:19" itemprop="dateCreated datePublished" datetime="2020-10-10T23:48:19+08:00">2020-10-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:34:30" itemprop="dateModified" datetime="2022-05-08T23:34:30+08:00">2022-05-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Make_(software)">make</a>是一个自动化构建工具，广泛应用于Unix及其类Unix系统中。make最先应用于编译C语言项目，不仅如此，只要某个文件发生变化就需要重新构建的项目都可以使用make工具进行构建。</p>
-<p>Makefile是可以被make解析的特定格式的文本文件。其语法简单，当我们构建一个程序时，其工作原理大致为：make首先解析Makefile，查找构建应用的一系列依赖，并检查每个依赖文件是否过期（是否发生变化），如果发生过期，即重新构建变化的依赖文件。</p>
-<h2 id="语法规则"><a href="#语法规则" class="headerlink" title="语法规则"></a>语法规则</h2><p>语法规则很简单，Makefile文件是由一系列规则(rule)组成，每个规则语法如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;target&gt; : &lt;prerequisites&gt; </span><br><span class="line">[tab]  &lt;commands&gt;</span><br></pre></td></tr></table></figure>
-
-<p>对每个规则，target是必须的，prerequisites和commands是可选的，commands前面必须是一个tab。Makefile文件中至少有一个规则。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; cat Makefile</span><br><span class="line">tutorial:</span><br><span class="line">  echo &quot;this is Makefile tutorial&quot;</span><br></pre></td></tr></table></figure>
-
-<p>我们可以通过make来执行上面规则:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; make tutorial</span><br><span class="line">echo &quot;this is Makefile tutorial&quot;</span><br><span class="line">this is Makefile tutorial</span><br></pre></td></tr></table></figure>
-<p>默认情况下，如果我们没有指定目标(target)，make命令会执行第一条规则。上面例子中，target为<code>tutorial</code>，前置条件（prerequisites）为空，命令（commands）为<code>echo &quot;this is Makefile tutorial&quot;</code>。我们发现上面例子中除了输出结果，还把命令也输出，这叫回显，可以在命令前加上<code>@</code>关闭回显，如：<code>@echo &quot;this is Makefile tutorial&quot;</code></p>
-<h3 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h3><p>一个目标即构成一条规则，目标通常是文件名，指明make命令要构建的对象。目标可以是一个文件名，也可以是多个文件名，中间用空格分隔。如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a.o b.o: a.h a.cpp a.h b.cpp</span><br><span class="line">  g++ -c a.cpp b.cpp</span><br></pre></td></tr></table></figure>
-
-<p>除了文件名，目标还可以是某个操作的名字，如上面例子中的<code>tutorial</code>。</p>
-<h3 id="前置条件"><a href="#前置条件" class="headerlink" title="前置条件"></a>前置条件</h3><p>前置条件通常是一组文件名，之间用空格分隔。它指定了”目标”是否重新构建的判断标准：只要有一个前置文件不存在，或者有过更新（前置文件的last-modification时间戳比目标的时间戳新），”目标”就需要重新构建。下面规则是创建一个source.txt文件：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; cat Makefile</span><br><span class="line">source.txt:</span><br><span class="line">  echo &quot;this is source file&quot; &gt;&gt; source.txt</span><br><span class="line"></span><br><span class="line">result.txt: source.txt</span><br><span class="line">  cp source.txt result.txt</span><br></pre></td></tr></table></figure>
-
-<p>第一次执行<code>make result.txt</code>，会创建source.txt，并将source.txt中的内容拷贝到result.txt中，当我们再次执行<code>make result.txt</code>时，终端会输出：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make: &#39;result.txt&#39; is up to date.</span><br></pre></td></tr></table></figure>
-<p>这是由于source.txt已经创建，且没有变化，所以不会执行任何操作。如果我们修改一下source.txt，如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">touch source.txt</span><br></pre></td></tr></table></figure>
-<p>再执行<code>make source.txt</code> 试试看。</p>
-<h3 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h3><p>命令（commands）表示如何更新目标文件，由一行或多行的shell命令组成。它是构建”目标”的具体指令，它的运行结果通常就是生成目标文件。</p>
-<p>需要注意的是：</p>
-<ul>
-<li>每个命令前需要有一个tab；</li>
-<li>每行命令在一个单独的shell中执行。这些shell之间没有继承关系。</li>
-</ul>
-<p>如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var-lost:</span><br><span class="line">    export foo&#x3D;bar</span><br><span class="line">    echo &quot;foo&#x3D;[$$foo]&quot;</span><br></pre></td></tr></table></figure>
-<p>上面代码执行后<code>make var-lost</code>，取不到foo的值。因为两行命令在两个不同的进程执行。一个解决办法是将两行命令写在一行，中间用分号分隔。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var-kept:</span><br><span class="line">    export foo&#x3D;bar; echo &quot;foo&#x3D;[$$foo]&quot;</span><br></pre></td></tr></table></figure>
-
-<p>或在换行符前加反斜杠转义。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var-kept:</span><br><span class="line">    export foo&#x3D;bar; \</span><br><span class="line">    echo &quot;foo&#x3D;[$$foo]&quot;</span><br></pre></td></tr></table></figure>
-
-<h2 id="变量与注释"><a href="#变量与注释" class="headerlink" title="变量与注释"></a>变量与注释</h2><p>变量和注释不是必须的，但当Makefile文件比较大时，变量和注释将会非常有用，毕竟代码首先是给人读的。</p>
-<h3 id="自定义变量"><a href="#自定义变量" class="headerlink" title="自定义变量"></a>自定义变量</h3><p>Makefile中的变量没有类型，全是字符型，定义一个变量也比较简单，如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CFLAGS &#x3D; -g -Wall</span><br><span class="line">CC &#x3D; g++</span><br><span class="line">RM &#x3D; &#x2F;bin&#x2F;rm -f</span><br></pre></td></tr></table></figure>
-<p>当定义好变量后，如果使用变量中存储的值呢？获取变量的值跟shell类似：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$&#123;varname&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h3><p>注释只需要在前面加上<code>#</code>即可，如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#this is a comment</span><br></pre></td></tr></table></figure>
-
-<h3 id="内置变量"><a href="#内置变量" class="headerlink" title="内置变量"></a>内置变量</h3><p>除了自定义的变量外，make命令提供一系列内置变量，比如，<code>$(CC)</code> 指向当前使用的编译器，<code>$(MAKE)</code> 指向当前使用的make工具。这主要是为了跨平台的兼容性，详细的内置变量清单见<a target="_blank" rel="noopener" href="https://www.gnu.org/software/make/manual/html_node/Implicit-Variables.html">手册</a>。</p>
-<h3 id="自动变量"><a href="#自动变量" class="headerlink" title="自动变量"></a>自动变量</h3><p>make命令还提供一些自动变量，它们的值与当前规则有关。主要有以下几个。</p>
-<ul>
-<li>$@</li>
-</ul>
-<p>指代当前目标，即make构建时指定的目标，如<code>make main</code>中<code>$@</code>为main。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">main: main.o</span><br><span class="line">	$&#123;CC&#125; $&#123;CFLAGS&#125; -o $@ $^</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>$&lt;</li>
-</ul>
-<p>指代第一个前置条件，如规则<code>rule: p1 p2</code>中的<code>$&lt;</code>为p1。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a.txt: b.txt c.txt</span><br><span class="line">    cp $&lt; $@</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>$^</li>
-</ul>
-<p>指代所有前置条件，中间是空格隔开。如规则<code>rule: p1 p2</code>中的<code>$^</code>为p1 p2。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">main.o: main.cpp</span><br><span class="line">	$&#123;CC&#125; $&#123;CFLAGS&#125; -c $^</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>$?</li>
-</ul>
-<p>指代比目标更新的所有前置条件，之间以空格分隔。比如，规则为 <code>rule: p1 p2</code>，其中 p2 的时间戳比 rule新，$?就指代p2。</p>
-<ul>
-<li>$*</li>
-</ul>
-<p>指代匹配符 % 匹配的部分， 比如% 匹配 f1.txt 中的f1 ，$* 就表示 f1。</p>
-<p>更多自动变更参考<a target="_blank" rel="noopener" href="http://www.gnu.org/software/make/manual/make.html#Automatic-Variables">Automatic-Variables</a>.</p>
-<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p>我们以构建一个c++的hello world程序为例：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; cat main.cpp</span><br><span class="line">#include &lt;iostream&gt;</span><br><span class="line"></span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;hello world&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>Makefile内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; cat Makefile</span><br><span class="line">CFLAGS &#x3D; -g -Wall</span><br><span class="line">CC &#x3D; g++</span><br><span class="line">RM &#x3D; &#x2F;bin&#x2F;rm -f</span><br><span class="line"></span><br><span class="line">all: main</span><br><span class="line"></span><br><span class="line">main: main.o</span><br><span class="line">	$&#123;CC&#125; $&#123;CFLAGS&#125; -o $@ $^</span><br><span class="line"></span><br><span class="line">main.o: main.cpp</span><br><span class="line">	$&#123;CC&#125; $&#123;CFLAGS&#125; -c $^</span><br><span class="line"></span><br><span class="line">clean:</span><br><span class="line">	$&#123;RM&#125; *.o main</span><br></pre></td></tr></table></figure>
-
-<p>接下来我们就可以利用make进行构建了：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; make</span><br></pre></td></tr></table></figure>
-<p>没有指定规则时，默认执行第一条规则，在这个例子中为<code>all</code>。<br>当需要清除产生的中间文件和可执行文件执行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; make clean</span><br></pre></td></tr></table></figure>
-
-<h2 id="进一步学习"><a href="#进一步学习" class="headerlink" title="进一步学习"></a>进一步学习</h2><ul>
-<li>在实际项目中，项目文件成千上万个，而且分布在不同目录下，如果编写规则进行构建呢？</li>
-<li>当我们有很多依赖时，是不是需要我们逐个手写这些规则呢？</li>
-<li>make只能编译c/c++吗？</li>
-</ul>
-<p>有了以上一些基础知识，就可以继续学习更多高级用法了。你会发现make会让你的构建过程更高效、自动化。</p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1].<a target="_blank" rel="noopener" href="https://www.wooster.edu/_media/files/academics/areas/computer-science/resources/makefile-tut.pdf">https://www.wooster.edu/_media/files/academics/areas/computer-science/resources/makefile-tut.pdf</a><br>[2].<a target="_blank" rel="noopener" href="http://www.gnu.org/software/make/manual/make.html#Makefile-Contents">http://www.gnu.org/software/make/manual/make.html#Makefile-Contents</a><br>[3].<a target="_blank" rel="noopener" href="https://thoughtbot.com/blog/the-magic-behind-configure-make-make-install#what-does-all-of-this-do">https://thoughtbot.com/blog/the-magic-behind-configure-make-make-install#what-does-all-of-this-do</a><br>[4].<a target="_blank" rel="noopener" href="https://gist.github.com/isaacs/62a2d1825d04437c6f08">https://gist.github.com/isaacs/62a2d1825d04437c6f08</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1436,18 +1367,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">35</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">40</span>
+        <span class="site-state-item-count">41</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

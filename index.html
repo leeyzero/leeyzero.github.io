@@ -163,6 +163,263 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/05/15/thinking-about-unittest/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="leeyzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/05/15/thinking-about-unittest/" class="post-title-link" itemprop="url">单元测试的实践与思考</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-05-15 17:06:38 / Modified: 17:12:17" itemprop="dateCreated datePublished" datetime="2022-05-15T17:06:38+08:00">2022-05-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">测试</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>在个人的工作经验中，经历过至少5个团队，发现其中有一个共性是：极少有团队注重单元测试，甚至当我想在团队中倡导单元测试时，有个研发经理跟我表达单元测试没有任何意义的结论。我不知道这是个人的不幸呢，还是整个中国互联网公司的现状如此？</p>
+<p>本文介绍单元测试的意义以及编写可测试代码的一些原则和思考。</p>
+<h2 id="什么是单元测试"><a href="#什么是单元测试" class="headerlink" title="什么是单元测试"></a>什么是单元测试</h2><blockquote>
+<p>单元测试是一段<strong>自动化</strong>的代码，这段代码调用被测试的<strong>工作单元</strong>，之后对这个单元的单个最终结果的某些假设进行检验。单元测试几乎都是用单元测试框架编写的。单元测试容易编写，能够快速运行。单元测试<strong>可靠、可读、并且可维护。</strong>只要产品代码不发生变化，单元测试的结果是稳定的。</p>
+<p>——<a target="_blank" rel="noopener" href="https://piazza.com/class_profile/get_resource/j11t8bsxngk3r3/j2lw6zcyt5t6lu">The Art of Unit Testing</a></p>
+</blockquote>
+<p>工作单元是指从调用系统的一个公共方法到产生一个测试可见的最终结果，其间这个系统发生的行为总称为一个工作单元。一个单元可以小到只包含一个方法，也可以大到包括实现某个功能的多个类和函数。</p>
+<h2 id="为什么需要单元测试"><a href="#为什么需要单元测试" class="headerlink" title="为什么需要单元测试"></a>为什么需要单元测试</h2><p>单元测试对提高产品质量非常重要，也是开发人员提高代码质量，加深理解类和功能需求的最佳手段之一。</p>
+<h3 id="测试金字塔"><a href="#测试金字塔" class="headerlink" title="测试金字塔"></a>测试金字塔</h3><img src="/images/thinking-about-unittest/1.png" alt="1" style="zoom:80%;" />
+
+<p>测试金字塔（<a target="_blank" rel="noopener" href="https://martinfowler.com/articles/practical-test-pyramid.html#TheTestPyramid">The Test Pyramid</a>）是一条很好的经验法则，表明从单元测试（Unit Tests)、集成测试(Integration Tests）、UI测试（UI Tests）以及端到端测试（End-to-End Tests）成金字塔结构。从金字塔底部至顶部，主要关注三点：</p>
+<ul>
+<li>层次越高，集成度越高</li>
+<li>层次越高，测试速度越慢</li>
+<li>层次越高，测试数量越少</li>
+</ul>
+<p><strong>单元测试</strong>处于测试金字塔最底层，是集成测试、UI测试、端到端测试的基础。它的集成度最低，可以完成独立于其它组件单独运行；它的测试速度非常快，代码变更后可以随时、快速测试代码变更影响；它的测试数量最多，可以100%覆盖代码逻辑。</p>
+<p>测试金字塔给我们一个直观的展示，表明单元测试在整个测试体系下的重要性，它的具体优点如下。</p>
+<h3 id="单元测试的优点"><a href="#单元测试的优点" class="headerlink" title="单元测试的优点"></a>单元测试的优点</h3><p><strong>单元测试有利于更早发现软件缺陷，降低修复成本</strong></p>
+<p>据统计，大约有80%的错误是在软件设计阶段引入的，并且修复一个软件错误所需要的费用随着软件生命周期的进展而上升。错误发现的越晚，修复它的费用就越高，而且呈指数增长的趋势。</p>
+<p><strong>单元测试有利于开发者增加变更代码的信息</strong></p>
+<p>开发者如果对代码变更带来不确定的影响，会迫使开发者尽量少的引入变更，即便这个变更是合理的。单元测试会让开发者对自己的变更更自信，也更有利于持续对代码进行重构。</p>
+<p><strong>单元测试有利于代码重用</strong></p>
+<p>单元测试的目标是对相互独立的单元进行验证，为了保证可测试性，需要将单元拆分的尽量小，减小单元的复杂度，这样有利于测试，也利于代码复用。</p>
+<p><strong>单元测试能提供一份良好的接口使用文档</strong></p>
+<p>代码和接口文档同步广为开发人员诟病，使用别人的接口人档时，经常吐槽文档写的不好，接口文档没有实时更新。当自己变更代码后，却时常忘记同步接口文档。</p>
+<p>单元测试天然和代码逻辑实时同步，为了让测试通过，代码逻辑变更要求测试同步变更（注意单元测试不等于TDD）。可以认为单元测试是系统内部的一个虚拟用户，它站在开发者用户角度使用系统内部API，以更精确、更细粒度的方式测试系统行为。</p>
+<p><strong>单元测试能够提高软件开发速度</strong></p>
+<p>在人月神话中，有一条经验法则：在整个软件开发周期中，编码时间只占1/6。虽然写单元测试要花费额外的成本（基本增加一倍），但它缩减集成测试、端到端测试的时间，定位BUG也会更迅速，最终的效果是整体交付时间减少，软件缺陷数减少。</p>
+<h3 id="单元测试的缺点"><a href="#单元测试的缺点" class="headerlink" title="单元测试的缺点"></a>单元测试的缺点</h3><p>了解了单元测试的优点之后，还有必要了解它的局限性。这有助于我们对单元测试有一个更全面的认识。</p>
+<ul>
+<li>单元测试不能测试出软件的所有问题</li>
+<li>单元测试在测试金字塔的最底层，不能测试和外部系统交互的边界</li>
+<li>单元测试本身是模拟系统行为，可能并不能反映真实系统行为</li>
+<li>编码阶段需要花费更多时间编写测试代码</li>
+</ul>
+<h2 id="为什么你的代码不容易测试"><a href="#为什么你的代码不容易测试" class="headerlink" title="为什么你的代码不容易测试"></a>为什么你的代码不容易测试</h2><p>当你开始着手编写单元测试时，你有没有发现你很难对你的代码编写单元测试。你有没有思考过为什么会这样？在看后续的内容之前，先尝试思考一下下面的问题：</p>
+<ul>
+<li>为什么无状态、确定输入和输出的函数容易测试？</li>
+<li>为什么依赖具体资源（文件系统、数据库、网络、线程、时间等）的类不容易测试？</li>
+<li>为什么依赖于全局状态的类不容易测试？</li>
+</ul>
+<h2 id="软件设计原则"><a href="#软件设计原则" class="headerlink" title="软件设计原则"></a>软件设计原则</h2><p>计算机软件经过几十年的发展，造就了如今的信息化时代。无数软件设计大师在软件开发过程中总结历史经验教训，提炼出这些原则，让我们少走了很多弯路。</p>
+<p>需要注意的是原则是死的，人是活的。这些原则更多的是多通用场景考虑，场景不同，解决问题的思路也可能不一样，在实际应用时不要被原则束缚了。本文只是简单介绍一下这些原则，有助于我们理解如何编写可测试的代码。</p>
+<h3 id="基本原则"><a href="#基本原则" class="headerlink" title="基本原则"></a>基本原则</h3><p><strong>Don’t Repeat Yourself（DRY）</strong></p>
+<p>重复代码使得代码维护变得更困难。逻辑变更时，都可能产生BUG或者让代码变更更困难。这可以通过DRY原则来达到代码重用。</p>
+<p>DRY 原则指出：系统中的每一条知识都必须有一个单一的（single）、明确的（unambiguous）、权威的（authoritative）的表示。</p>
+<p><strong>Keep It Simple Stupid（KISS）</strong></p>
+<p>KISS 原则指出：大多数系统如果保持简单而不是复杂化时，则效果最好。因此，简单性应该是设计的关键目标，应该避免不必要的复杂性。</p>
+<p><strong>You Aren’t Gonna Need It（YAGNI）</strong></p>
+<p>YAGNI 是一种极限编程 (Extreme Programming，XP) 实践，它指出：总在你真正需要的时候才去实现它们，而不是在你预见到你需要它们的时候去实现。</p>
+<p>更多基本原则参考：<a target="_blank" rel="noopener" href="https://workat.tech/machine-coding/tutorial/software-design-principles-dry-yagni-eytrxfhz1fla">Software Design Principles (Basics) | DRY, YAGNI, KISS, etc</a></p>
+<h3 id="SOLID原则"><a href="#SOLID原则" class="headerlink" title="SOLID原则"></a>SOLID原则</h3><p>SOLID原则是5个软件设计原则，最早由 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Robert_C._Martin">Robert C. Martin (Uncle Bob)</a> 在他的论文 <a target="_blank" rel="noopener" href="http://staff.cs.utu.fi/~jounsmed/doos_06/material/DesignPrinciplesAndPatterns.pdf">Design Principles and<br>Design Patterns</a> 中提出。SOLID原则旨在让软件设计更具可理解性、维护性和灵活性。其中SOLID是以下5个原则的缩写：</p>
+<ul>
+<li><strong>S</strong>ingle Responsibility Principle（SRP），单一职责原则</li>
+<li><strong>O</strong>pen Closed Principle（OCP），开放封闭原则</li>
+<li><strong>L</strong>iskov Substitution Principle（LSP），Liskov替换原则</li>
+<li><strong>I</strong>nterface Segregation Principle（ISP），接口隔离原则</li>
+<li><strong>D</strong>ependency Inversion Principle（DIP），依赖倒置原则</li>
+</ul>
+<p><strong>单一职责原则</strong></p>
+<blockquote>
+<p>对于一个软件实体（类、模块、函数）而言，应该只有一个引起它变化的原因。换句话说，每个类只承担一个职责。</p>
+</blockquote>
+<p>单一职责原则是最容易理解的原则，但也是最难应用的原则。因为对于职责界定，需要大量的经验和专业背景知识。</p>
+<p>你的类责任越多，你就越需要经常变更它。由于它们不会相互独立，因此更改一项职责可能会影响另一项职责。</p>
+<p><strong>开放封闭原则</strong></p>
+<blockquote>
+<p>软件实体（类、模块、函数）等应该对扩展开放，对修改封闭。</p>
+</blockquote>
+<p>这也是我们常说的向前兼容，向后扩展。开放封闭原则的关键是<strong>抽象（Abstraction）</strong>。将业务需求抽象为接口，接口不应该根据新需要而改变，接口是可扩展的，新的需求可以通过实现类来扩展。</p>
+<p><strong>Liskov替换原则</strong></p>
+<blockquote>
+<p>使用指向基类的指针或引用的函数必须能够在透明的情况下使用派生类的对象。</p>
+</blockquote>
+<p>Liskov 替换原则指出子类应该可以替换它们的基类。无论在何处使用派生类，派生类都应该可以替代它们的基类。</p>
+<p><strong>接口隔离原则</strong></p>
+<blockquote>
+<p>许多特定于客户端的接口优于一个通用接口。</p>
+</blockquote>
+<p>不应强迫客户依赖他们不使用的接口。拥有更小的接口比拥有更少、更胖的接口要好。接口应该更多地依赖于调用它的代码，而不是实现它的代码。</p>
+<p><strong>依赖倒置原则</strong></p>
+<blockquote>
+<p>依赖于抽象，而不是具体的实现。</p>
+</blockquote>
+<p>依赖倒置原则指出“依赖于抽象，而不是具体实现”。这意味着对于一个类，如果依赖于其它类，应该依赖于其它类的抽象（接口），而不是具体的实现。</p>
+<p>更多关于SOLID原则请参考：<a target="_blank" rel="noopener" href="https://workat.tech/machine-coding/tutorial/solid-design-principles-8yu7bjegrxs5">SOLID Design Principles | Software Design Principles | Uncle Bob</a></p>
+<h3 id="Demeter原则"><a href="#Demeter原则" class="headerlink" title="Demeter原则"></a>Demeter原则</h3><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Law_of_Demeter">Demeter原则</a>（<strong>L</strong>aw <strong>o</strong>f <strong>D</strong>emeter，<strong>LoD</strong>），也被称作最小知识原则（Principle of Least Knowledge），是一种松耦合软件设计的指导原则。可以形式化的总结为：</p>
+<ul>
+<li>每个单元对于其他的单元只能拥有有限的知识：只是与当前单元紧密联系的单元；</li>
+<li>每个单元只能和它的朋友交谈：不能和陌生单元交谈；</li>
+<li>只和自己直接的朋友交谈。</li>
+</ul>
+<h2 id="编写可测试代码的套路"><a href="#编写可测试代码的套路" class="headerlink" title="编写可测试代码的套路"></a>编写可测试代码的套路</h2><h3 id="可测试代码的本质"><a href="#可测试代码的本质" class="headerlink" title="可测试代码的本质"></a>可测试代码的本质</h3><p><strong>编写可测试代码的关键是预留测试接口</strong>。单元测试可以看作是系统的内部用户。对被测试的单元，单元测试构造特定输入以校验相应的输出，测试接口用于单元测试构造输入。</p>
+<p><strong>单元测试的艺术在于如何优雅地编写测试接口。</strong></p>
+<p>回到上文的问题，如果一个函数无状态（不依赖于全局状态），有确定性的输入和输出，它本身就是最好的测试接口，只需要构造确定的输出，就能得到确定的输出；对于一个类，如果类本身有状态，而这个类没有提供测试接口修改这些状态，将很难覆盖类内部逻辑；如果这个类依赖于特定资源，相当于依赖于具体实现，这些实现通常是不确定或难以构造的，同样会导致代码难以测试。</p>
+<p>如果你明白<strong>预留测试接口</strong>的真正含义，本文已经其它东西可以告诉了。如果把软件设计原则看作是<strong>道</strong>，那下面介绍的便是<strong>术</strong>，也就是武侠中的招式。这些招式遵循软件设计原则，是对通用场景下的模式总结。对于编写可测试代码来说，应用最多的原则按优先级排序如下：</p>
+<ul>
+<li>依赖倒置原则</li>
+<li>单一职责原则</li>
+<li>Demeter原则</li>
+</ul>
+<h3 id="编写可测试代码指南"><a href="#编写可测试代码指南" class="headerlink" title="编写可测试代码指南"></a>编写可测试代码指南</h3><p>以下指南来自于 <a target="_blank" rel="noopener" href="http://misko.hevery.com/about/">Miško Hevery</a> 的文章 <a target="_blank" rel="noopener" href="http://misko.hevery.com/code-reviewers-guide/">Guide: Writing Testable Code</a>，本文以自己的理解做简单解释，具体细节和示例请参考原文。</p>
+<p><a target="_blank" rel="noopener" href="http://misko.hevery.com/code-reviewers-guide/flaw-constructor-does-real-work/"><strong>深入理解构造函数</strong></a></p>
+<p>还记得上文提到的测试接口吗？构造函数是设定类的初始状态，如果公有接口没有足够的能力修改类的内部状态，测试时就很难通过变更类的内部状态以达到测试目的。</p>
+<p><strong>警告信号</strong></p>
+<ul>
+<li>构造函数中使用new关键字</li>
+<li>构造函数中调用静态方法</li>
+<li>构造函数中赋值非类的属性</li>
+<li>构造函数中没有初始化所有状态（如，使用Initialize）</li>
+<li>构造函数中包括控制逻辑</li>
+<li>构造函数中包含复杂的构造对象图</li>
+</ul>
+<p><strong>解决办法</strong></p>
+<ul>
+<li>依赖倒置原则</li>
+<li>Liskov原则</li>
+<li>Demeter原则</li>
+<li>工厂（Factory）、构造器（Builder）</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="http://misko.hevery.com/code-reviewers-guide/flaw-digging-into-collaborators/"><strong>深入理解对象</strong></a></p>
+<p>一个业务逻辑可能需要多个类进行通信完成。类与类之间的通信也可以称为数据流向，或依赖关系。Demeter原则让类之间的依赖程序降至最低，依赖注入可以为测试预留接入。</p>
+<p><strong>警告信号</strong></p>
+<ul>
+<li>传入的对象没有直接使用，而是间接使用了对象的对象</li>
+<li>违反Demeter原则</li>
+<li>警惕根对象：context、environment、container、manager等</li>
+</ul>
+<p><strong>解决办法</strong></p>
+<ul>
+<li>Demeter原则</li>
+<li>依赖注入(Dependency Injection)</li>
+<li>组合优于继承</li>
+<li>区分值对象和服务对象</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="http://misko.hevery.com/code-reviewers-guide/flaw-brittle-global-state-singletons/"><strong>全局状态和单例</strong></a></p>
+<p>单例本质上也是一种全局状态。全局状态如果被类所依赖，那这个全局状态将在所有依赖对象之间传递，相互影响。由于对象之间间接影响，一个类的单元测试改变状态后，无形中影响到另一个类的状态，造成另一个的单元测试不通过，在实际系统中，这种情况很容易产生BUG，而且难以调试。</p>
+<p>大家可能会对全局状态有个误解，认为所有的全局状态都是不合理的，如果全局状态或单例仅作为根对象进行初始化，且全局状态是只读的，各个类应用依赖注入和Demeter原则，是能够不规避直接依赖于全局状态的。</p>
+<p><strong>警告信号</strong></p>
+<ul>
+<li>类中添加静态方法或静态类</li>
+<li>类中添加静态Initialize方法</li>
+<li>单例类被其它对象直接依赖</li>
+</ul>
+<p><strong>解决办法</strong></p>
+<ul>
+<li>依赖倒置原则</li>
+<li>依赖注入（Dependency Injection）</li>
+<li>Demeter原则</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="http://misko.hevery.com/code-reviewers-guide/flaw-class-does-too-much/"><strong>类承担太多职责</strong></a></p>
+<p>对于“胖”的类，单一职责原则是利器。对于一个类而言，单一职责本质上是控制类的复杂度。至于职责如何划分，依赖于具体业务形态。</p>
+<p><strong>警告信号</strong></p>
+<ul>
+<li>类或方法名中包含and</li>
+<li>类对团队的新成员难以理解</li>
+<li>类的个另属性仅仅被某个方法使用</li>
+<li>类包含的静态方法仅作用于输入参数，并且输入参数和类相关性不大</li>
+</ul>
+<p><strong>解决办法</strong></p>
+<ul>
+<li>单一职责原则</li>
+<li>接口隔离原则</li>
+<li>Demeter原则</li>
+</ul>
+<h2 id="好的单元测试的特性"><a href="#好的单元测试的特性" class="headerlink" title="好的单元测试的特性"></a>好的单元测试的特性</h2><ul>
+<li>它应该是自动化的，可重复执行的</li>
+<li>它应该很容易实现</li>
+<li>它应该第二天还有意义</li>
+<li>任何人都可以一键能运行它</li>
+<li>它应该运行速度很快</li>
+<li>它的结果应该是稳定的</li>
+<li>它应该能完全控制被测试的单元</li>
+<li>如果它失败了，应该很容易定位问题所在</li>
+</ul>
+<p>以上特性可以归结两点：</p>
+<ul>
+<li>好的单元测试代码是遵循基本软件设计原则的</li>
+<li>利用单元测试工具提高生产效率</li>
+</ul>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://piazza.com/class_profile/get_resource/j11t8bsxngk3r3/j2lw6zcyt5t6lu">The Art of Unit Testing</a></li>
+<li><a target="_blank" rel="noopener" href="https://martinfowler.com/articles/practical-test-pyramid.html#TheImportanceOftestAutomation">The Pratical Test Pyramid</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/okmWMOeBm7cCIZ1zzFr4KQ">谈有效的单元测试</a></li>
+<li><a target="_blank" rel="noopener" href="http://misko.hevery.com/code-reviewers-guide/">Guide:Writing Testable Code</a></li>
+<li><a target="_blank" rel="noopener" href="https://medium.com/feedzaitech/writing-testable-code-b3201d4538eb">Writing Testable Code</a></li>
+<li><a target="_blank" rel="noopener" href="https://workat.tech/machine-coding/tutorial/software-design-principles-dry-yagni-eytrxfhz1fla">Software Design Principles (Basics) | DRY, YAGNI, KISS, etc</a></li>
+<li><a target="_blank" rel="noopener" href="https://workat.tech/machine-coding/tutorial/solid-design-principles-8yu7bjegrxs5">SOLID Design Principles | Software Design Principles | Uncle Bob</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/05/08/deploy-codeserver-on-centos/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1421,103 +1678,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/08/end-to-end-principle/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="leeyzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/06/08/end-to-end-principle/" class="post-title-link" itemprop="url">端到端设计原则</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-06-08 01:01:17" itemprop="dateCreated datePublished" datetime="2021-06-08T01:01:17+08:00">2021-06-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:24:00" itemprop="dateModified" datetime="2022-05-08T23:24:00+08:00">2022-05-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式系统</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>最近又看了一遍 <a target="_blank" rel="noopener" href="http://web.mit.edu/saltzer/www/publications/endtoend/endtoend.pdf">End-To-End Argument In System Design</a>，有一些新的思考，但都集中在一些点上，不够系统，在此先记录下来，后续有新的想法再做补充和整理。</p>
-<h2 id="核心观点"><a href="#核心观点" class="headerlink" title="核心观点"></a>核心观点</h2><p>这篇论文在由MIT计算机科学实验室发表于1984年，是一篇非常经典的关于系统设计的论文。论文论证了分布式系统设计的一个事实：<strong>端到端的可靠通信只能由通信的两端（End-Point）来保证，而中间的媒介（如消息中间件、网关、路由器以及TCP协议栈等）只能提高通信效率，但无法保证通信两端的可靠性。</strong></p>
-<p><strong>在一个系统设计中，系统设计师的主要工作是对功能进行合理抽象，明确定义功能边界。</strong>将功能职责进行合理划分的设计原则是系统设计师最重要的工具之一，端到端设计原则便是这样的工具，它在分布式系统设计中，对功能职责的划分起了一定的指导作用。</p>
-<h2 id="举例说明"><a href="#举例说明" class="headerlink" title="举例说明"></a>举例说明</h2><p>论文中给出了一个两个主机间的文件传输为例来说明为什么端到端的可靠通信只能由通信的两端来保证。考虑要实现一个应用程序，用于将主机A上的文件传输到另一个远程主机B上。整个过程可以抽象以下5个步骤：</p>
-<p>1、在主机A上的应用程序按固定大小的块从主机A的磁盘中读取文件。</p>
-<p>2、在主机A上的应用程序将数据通过数据通信系统进行传输，数据通信系统使用某种数据传输协议，将数据拆分成数据包进行传输。</p>
-<p>3、数据通信网络将数据从主机A传输至主机B。</p>
-<p>4、在主机B上的应用程序从数据通信系统中按相册协议读取出数据。</p>
-<p>5、在主机B上的应用程序将接收到的数据写入主机B的磁盘上。</p>
-<p>在这个模型中，任何一步出错都会造成传输失败，主要有以下问题：</p>
-<p>1、假定文件被正确存储在A主机上，读取的时候，由于磁盘损坏等原因可能造成读取的数据不正确。</p>
-<p>2、在主机A或主机B上的应用程序，由于程序缺陷（比如拷贝数据错误等）造成数据错误。</p>
-<p>3、处理器或内存在拷贝、缓存时可能出现暂时的错误。</p>
-<p>4、通信过程可能出现位错误、丢包或重传等问题。</p>
-<p>5、在传输过程中主机可能出现崩溃。</p>
-<p>对于这个例子，如果我们先抛开两端（也就是主机A和主机B上的应用程序），在两端之间的中间媒介，如磁盘、内存、数据通信系统等即使通过冗余、错误检查、超时重试、故障恢复等手段保证其可靠性，仍然不能保证上述第2点出问题，也就是端本身造成的数据错误，最终还是需要端做相同的事情来保证可靠性。</p>
-<p>如果对上面的例子还是没理解，我再举一个现实生活中的例子，比如A跟B打电话，A告诉B他中彩票了。我们把A跟B当端点，在这个过程中，如果因为A或B的手机信号问题，造成B没有听清楚，那么这相当于是中间媒介故障造成这次通话异常；现在假设A和B的手机以及周围信号都没有问题（通过各种手段保证中间媒介的可靠性），A说的话能正常传达了B的手机（注意是B的手机），那是不是B就一定听到了呢？也不一定，有可能B此时正在想别的事情，或被其它人打扰而在大脑中没有接收到B传达的信息，这种情况就相当于上述两端的应用程序缺陷。此时B可以对A说，不好意思，没听清楚，你再说一遍，A重新说了一遍后B得知了A中彩票的消息，这种情况相当于上述说的端来保障通信可靠性。</p>
-<p>通过以述例子，我们知道端到端的通信只有两端才能保证可靠性，中间媒介层去做可靠性保证显得多余了，那是不是说中间媒体层就不需要做可靠性保证了呢？这就引出论文的另一个观点：<strong>中间媒介只能提高通信效率，而不能保证通信两端的可靠性</strong>。那如何理解这句话呢？</p>
-<p>就拿上述文件传输的例子，如果在一个网络非常差的环境下传输一个大文件，如果只靠端来保证可靠性的话，失败率必定非常高（通常来说，应用程数据分片拆分比网络传输的数据包大很多）。但如果在数据通信系统中（如TCP协议栈）支持数据超时重传、数据校验，那就会极大提升端系统的传输成功率。</p>
-<h2 id="正确识别端"><a href="#正确识别端" class="headerlink" title="正确识别端"></a>正确识别端</h2><p>那么怎么界定端呢？这个就需要根据实际需求来取舍了。比如对一个语音传输系统，如果端是人的话，是应该优先保证实时性，再考虑正确性，在传输过程中是可以容忍少许包损坏或噪音的；但如果端是一个录音程序，则需要优先考虑正确性，再考虑实效性，可以容忍延迟，但不能容忍包损坏或错误。</p>
-<h2 id="一些思考"><a href="#一些思考" class="headerlink" title="一些思考"></a>一些思考</h2><p>1、这篇论文对TCP/IP分层协议设计影响深远，分层增强了模块化，界定每个层次的功能职责，也就是降低了整体的复杂度。<strong>纵观整个软件发展的历史，其实就是在降低软件的复杂度，分层、模块化、设计模式、DDD、封装思想无一不是在解决软件复杂性这个问题。</strong>用Unix设计哲学来说就是KISS（Keep It Simple and Stupid）。</p>
-<p>2、<strong>设计的本质就是做trade-off</strong>，端到端设计原则只是提供一种指导思想，就想正确识别端中列举的例子，需要根据具体需求，更多的是根据现有资源，人力、物力、市场、基础设施等去做平衡来博取最大化ROI。</p>
-<p>3、<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/55311553">知乎</a> 上提到一种克服端到端的方法（其实本质上没有逃脱端到端原则），通过反转中间件和APP的角色（无处不在的依赖倒置原则），让中间件变成End-Point，当APP通过注入（inject）的方式成为中间件框架中的一部分逻辑。</p>
-<h2 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h2><p>[1]. <a target="_blank" rel="noopener" href="http://web.mit.edu/saltzer/www/publications/endtoend/endtoend.pdf">End-To-End Argument In System Design</a><br>[2]. <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/55311553">End to End Argument(可能是最重要的系统设计论文)</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1588,18 +1748,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">35</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">40</span>
+        <span class="site-state-item-count">41</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

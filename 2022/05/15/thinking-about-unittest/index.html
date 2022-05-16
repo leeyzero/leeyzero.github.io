@@ -20,16 +20,16 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="在个人的工作经验中，经历过至少5个团队，发现其中有一个共性是：极少有团队注重单元测试，甚至当我想在团队中倡导单元测试时，有个研发经理跟我表达单元测试没有任何意义的结论。我不知道这是个人的不幸呢，还是整个中国互联网公司的现状如此？ 本文介绍单元测试的意义以及编写可测试代码的一些原则和思考。 什么是单元测试 单元测试是一段自动化的代码，这段代码调用被测试的工作单元，之后对这个单元的单个最终结果的某些假">
+  <meta name="description" content="从个人经历过的多个团队中，发现有一个共性是：极少有团队注重单元测试。甚至当我想在团队中倡导单元测试时，有个研发经理跟我表达单元测试没有任何意义的结论。我不知道这是个人的不幸呢，还是整个中国互联网公司的现状如此？ 本文算是给单元测试”正名”，介绍单元测试的意义以及编写可测试代码的一些原则和思考。 什么是单元测试 单元测试是一段自动化的代码，这段代码调用被测试的工作单元，之后对这个单元的单个最终结果的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="单元测试的实践与思考">
 <meta property="og:url" content="http://example.com/2022/05/15/thinking-about-unittest/index.html">
 <meta property="og:site_name" content="LeeYzero的博客">
-<meta property="og:description" content="在个人的工作经验中，经历过至少5个团队，发现其中有一个共性是：极少有团队注重单元测试，甚至当我想在团队中倡导单元测试时，有个研发经理跟我表达单元测试没有任何意义的结论。我不知道这是个人的不幸呢，还是整个中国互联网公司的现状如此？ 本文介绍单元测试的意义以及编写可测试代码的一些原则和思考。 什么是单元测试 单元测试是一段自动化的代码，这段代码调用被测试的工作单元，之后对这个单元的单个最终结果的某些假">
+<meta property="og:description" content="从个人经历过的多个团队中，发现有一个共性是：极少有团队注重单元测试。甚至当我想在团队中倡导单元测试时，有个研发经理跟我表达单元测试没有任何意义的结论。我不知道这是个人的不幸呢，还是整个中国互联网公司的现状如此？ 本文算是给单元测试”正名”，介绍单元测试的意义以及编写可测试代码的一些原则和思考。 什么是单元测试 单元测试是一段自动化的代码，这段代码调用被测试的工作单元，之后对这个单元的单个最终结果的">
 <meta property="og:locale">
 <meta property="og:image" content="http://example.com/images/thinking-about-unittest/1.png">
 <meta property="article:published_time" content="2022-05-15T09:06:38.000Z">
-<meta property="article:modified_time" content="2022-05-15T09:12:17.142Z">
+<meta property="article:modified_time" content="2022-05-16T02:49:32.489Z">
 <meta property="article:author" content="leeyzero">
 <meta property="article:tag" content="单元测试">
 <meta name="twitter:card" content="summary">
@@ -191,10 +191,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2022-05-15 17:06:38 / Modified: 17:12:17" itemprop="dateCreated datePublished" datetime="2022-05-15T17:06:38+08:00">2022-05-15</time>
+              <time title="Created: 2022-05-15 17:06:38" itemprop="dateCreated datePublished" datetime="2022-05-15T17:06:38+08:00">2022-05-15</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-05-16 10:49:32" itemprop="dateModified" datetime="2022-05-16T10:49:32+08:00">2022-05-16</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -216,8 +222,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>在个人的工作经验中，经历过至少5个团队，发现其中有一个共性是：极少有团队注重单元测试，甚至当我想在团队中倡导单元测试时，有个研发经理跟我表达单元测试没有任何意义的结论。我不知道这是个人的不幸呢，还是整个中国互联网公司的现状如此？</p>
-<p>本文介绍单元测试的意义以及编写可测试代码的一些原则和思考。</p>
+        <p>从个人经历过的多个团队中，发现有一个共性是：极少有团队注重单元测试。甚至当我想在团队中倡导单元测试时，有个研发经理跟我表达单元测试没有任何意义的结论。我不知道这是个人的不幸呢，还是整个中国互联网公司的现状如此？</p>
+<p>本文算是给单元测试”正名”，介绍单元测试的意义以及编写可测试代码的一些原则和思考。</p>
 <h2 id="什么是单元测试"><a href="#什么是单元测试" class="headerlink" title="什么是单元测试"></a>什么是单元测试</h2><blockquote>
 <p>单元测试是一段<strong>自动化</strong>的代码，这段代码调用被测试的<strong>工作单元</strong>，之后对这个单元的单个最终结果的某些假设进行检验。单元测试几乎都是用单元测试框架编写的。单元测试容易编写，能够快速运行。单元测试<strong>可靠、可读、并且可维护。</strong>只要产品代码不发生变化，单元测试的结果是稳定的。</p>
 <p>——<a target="_blank" rel="noopener" href="https://piazza.com/class_profile/get_resource/j11t8bsxngk3r3/j2lw6zcyt5t6lu">The Art of Unit Testing</a></p>
@@ -397,6 +403,9 @@
 <li>好的单元测试代码是遵循基本软件设计原则的</li>
 <li>利用单元测试工具提高生产效率</li>
 </ul>
+<h2 id="重新思考单元测试"><a href="#重新思考单元测试" class="headerlink" title="重新思考单元测试"></a>重新思考单元测试</h2><p>对个人来讲，单元测试是一项基本技能，是从软件开发从业人员职业素养的体现。学习单元测试的基本技能能够让代码质量得到比较大的提升，同时能够尽早规避一些BUG，减少了很多后期排查问题的时间。</p>
+<p>对团队而言，单元测试更多的体现一种文化传承和专业程度。现在很多团队都在倡导所谓的快速迭代、敏捷开发，殊不知很多团队只是借敏捷的概念在做软件开发，只是在做软件开发，而不是软件工程。</p>
+<p>对整个中国互联网来看，经历了30年的快速发展，不可否认取得非常大的成就。但从头部互联网企业来看，还是主要集中在C端消费互联网。在专业领域上，我们太缺乏领域技术专家去突破瓶颈。而这也从侧面反映虽然中国互联网的软件开发从业人员非常多，但整体素质偏低。996、35岁被优化、学而优则仕，这是中国互联网的现状。这跟单元测试有什么关系吗？我只想说大部分团队其实没有走在正确的软件工程道路上，特别是做业务开发的团队。</p>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
 <li><a target="_blank" rel="noopener" href="https://piazza.com/class_profile/get_resource/j11t8bsxngk3r3/j2lw6zcyt5t6lu">The Art of Unit Testing</a></li>
 <li><a target="_blank" rel="noopener" href="https://martinfowler.com/articles/practical-test-pyramid.html#TheImportanceOftestAutomation">The Pratical Test Pyramid</a></li>
@@ -487,7 +496,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="nav-number">1.</span> <span class="nav-text">什么是单元测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="nav-number">2.</span> <span class="nav-text">为什么需要单元测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E9%87%91%E5%AD%97%E5%A1%94"><span class="nav-number">2.1.</span> <span class="nav-text">测试金字塔</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E7%9A%84%E4%BC%98%E7%82%B9"><span class="nav-number">2.2.</span> <span class="nav-text">单元测试的优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-number">2.3.</span> <span class="nav-text">单元测试的缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%A0%E7%9A%84%E4%BB%A3%E7%A0%81%E4%B8%8D%E5%AE%B9%E6%98%93%E6%B5%8B%E8%AF%95"><span class="nav-number">3.</span> <span class="nav-text">为什么你的代码不容易测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99"><span class="nav-number">4.</span> <span class="nav-text">软件设计原则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%88%99"><span class="nav-number">4.1.</span> <span class="nav-text">基本原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SOLID%E5%8E%9F%E5%88%99"><span class="nav-number">4.2.</span> <span class="nav-text">SOLID原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Demeter%E5%8E%9F%E5%88%99"><span class="nav-number">4.3.</span> <span class="nav-text">Demeter原则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E5%86%99%E5%8F%AF%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81%E7%9A%84%E5%A5%97%E8%B7%AF"><span class="nav-number">5.</span> <span class="nav-text">编写可测试代码的套路</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81%E7%9A%84%E6%9C%AC%E8%B4%A8"><span class="nav-number">5.1.</span> <span class="nav-text">可测试代码的本质</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E5%86%99%E5%8F%AF%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81%E6%8C%87%E5%8D%97"><span class="nav-number">5.2.</span> <span class="nav-text">编写可测试代码指南</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A5%BD%E7%9A%84%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E7%9A%84%E7%89%B9%E6%80%A7"><span class="nav-number">6.</span> <span class="nav-text">好的单元测试的特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">7.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="nav-number">1.</span> <span class="nav-text">什么是单元测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="nav-number">2.</span> <span class="nav-text">为什么需要单元测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E9%87%91%E5%AD%97%E5%A1%94"><span class="nav-number">2.1.</span> <span class="nav-text">测试金字塔</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E7%9A%84%E4%BC%98%E7%82%B9"><span class="nav-number">2.2.</span> <span class="nav-text">单元测试的优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-number">2.3.</span> <span class="nav-text">单元测试的缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%A0%E7%9A%84%E4%BB%A3%E7%A0%81%E4%B8%8D%E5%AE%B9%E6%98%93%E6%B5%8B%E8%AF%95"><span class="nav-number">3.</span> <span class="nav-text">为什么你的代码不容易测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99"><span class="nav-number">4.</span> <span class="nav-text">软件设计原则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%88%99"><span class="nav-number">4.1.</span> <span class="nav-text">基本原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SOLID%E5%8E%9F%E5%88%99"><span class="nav-number">4.2.</span> <span class="nav-text">SOLID原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Demeter%E5%8E%9F%E5%88%99"><span class="nav-number">4.3.</span> <span class="nav-text">Demeter原则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E5%86%99%E5%8F%AF%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81%E7%9A%84%E5%A5%97%E8%B7%AF"><span class="nav-number">5.</span> <span class="nav-text">编写可测试代码的套路</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81%E7%9A%84%E6%9C%AC%E8%B4%A8"><span class="nav-number">5.1.</span> <span class="nav-text">可测试代码的本质</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E5%86%99%E5%8F%AF%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81%E6%8C%87%E5%8D%97"><span class="nav-number">5.2.</span> <span class="nav-text">编写可测试代码指南</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A5%BD%E7%9A%84%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E7%9A%84%E7%89%B9%E6%80%A7"><span class="nav-number">6.</span> <span class="nav-text">好的单元测试的特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E6%96%B0%E6%80%9D%E8%80%83%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="nav-number">7.</span> <span class="nav-text">重新思考单元测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">8.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

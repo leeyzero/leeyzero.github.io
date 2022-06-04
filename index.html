@@ -9,6 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
   <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
 
 <link rel="stylesheet" href="/css/main.css">
 
@@ -17,20 +18,20 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"leeyzero.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="LeeYzero的博客">
-<meta property="og:url" content="http://example.com/index.html">
+<meta property="og:url" content="https://leeyzero.github.io/index.html">
 <meta property="og:site_name" content="LeeYzero的博客">
 <meta property="og:description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
 <meta property="og:locale">
 <meta property="article:author" content="leeyzero">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/">
+<link rel="canonical" href="https://leeyzero.github.io/">
 
 
 <script id="page-configurations">
@@ -163,7 +164,181 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/05/15/thinking-about-unittest/">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/05/31/technical-writting-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="leeyzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/05/31/technical-writting-2/" class="post-title-link" itemprop="url">【翻译】 Google技术写作（二）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-05-31 09:53:16" itemprop="dateCreated datePublished" datetime="2022-05-31T09:53:16+08:00">2022-05-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-06-05 00:12:48" itemprop="dateModified" datetime="2022-06-05T00:12:48+08:00">2022-06-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>本文翻译自 <a target="_blank" rel="noopener" href="https://developers.google.com/tech-writing/overview">Google Technical Writing Courses</a>，是Google推出的技术写作课程，该课程包含两个部分，本文是第二部分。</p>
+<ul>
+<li><a href="/2022/05/31/technical-writting-1/" title="技术写作（一）">技术写作（一）</a>：教你如何写出更清晰的技术文档，是学习第二部分的基础。</li>
+<li><a href="/2022/05/31/technical-writting-2/" title="技术写作（二）">技术写作（二）</a>：帮助你提升技术沟通技巧。
+
+</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/05/31/technical-writting-2/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/05/31/technical-writting-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="leeyzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/05/31/technical-writting-1/" class="post-title-link" itemprop="url">【翻译】 Google技术写作（一）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-05-31 09:49:26" itemprop="dateCreated datePublished" datetime="2022-05-31T09:49:26+08:00">2022-05-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-06-05 00:12:30" itemprop="dateModified" datetime="2022-06-05T00:12:30+08:00">2022-06-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>本文翻译自 <a target="_blank" rel="noopener" href="https://developers.google.com/tech-writing/overview">Google Technical Writing Courses</a>，是Google推出的技术写作课程，该课程包含两个部分，本文是第一部分。</p>
+<ul>
+<li><a href="/2022/05/31/technical-writting-1/" title="技术写作（一）">技术写作（一）</a>：教你如何写出更清晰的技术文档，是学习第二部分的基础。</li>
+<li><a href="/2022/05/31/technical-writting-2/" title="技术写作（二）">技术写作（二）</a>：帮助你提升技术沟通技巧。
+
+</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/05/31/technical-writting-1/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/05/15/thinking-about-unittest/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -429,7 +604,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/05/08/deploy-codeserver-on-centos/">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/05/08/deploy-codeserver-on-centos/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -555,7 +730,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/05/06/go-concurrency-in-action-md/">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/05/06/go-concurrency-in-action-md/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -609,7 +784,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>之前写过一篇<a target="_blank" rel="noopener" href="https://leeyzero.github.io/2021/07/02/go-concurrency-pattern/">Go并发编程模式</a>，相对比较片面。最近系统看了下<a target="_blank" rel="noopener" href="https://edu.anarcho-copy.org/Programming%20Languages/Go/Concurrency%20in%20Go.pdf">Concurrency in Go</a>, 结合自身的一些实践，形成本文，算是一个读书笔记吧。</p>
+          <h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>之前写过一篇<a href="https://leeyzero.github.io/2021/07/02/go-concurrency-pattern/">Go并发编程模式</a>，相对比较片面。最近系统看了下<a target="_blank" rel="noopener" href="https://edu.anarcho-copy.org/Programming%20Languages/Go/Concurrency%20in%20Go.pdf">Concurrency in Go</a>, 结合自身的一些实践，形成本文，算是一个读书笔记吧。</p>
 <h2 id="为什么需要并发？"><a href="#为什么需要并发？" class="headerlink" title="为什么需要并发？"></a>为什么需要并发？</h2><p>摩尔定律逐渐失效，数据规模的不断增长需要充分挖掘多核计算机性能，而并发编程是利器：</p>
 <blockquote>
 <p>Concurrency is the next major revolution in how we write software.</p>
@@ -835,7 +1010,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/02/20/mr-impl/">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/02/20/mr-impl/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -995,7 +1170,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/28/upload-multi-files-with-go-md/">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/11/28/upload-multi-files-with-go-md/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -1092,7 +1267,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/21/oauth2-intro/">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/09/21/oauth2-intro/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -1225,7 +1400,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/29/gin-tutorial/">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/08/29/gin-tutorial/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -1394,7 +1569,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/27/reading-ddia-md/">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/07/27/reading-ddia-md/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -1456,222 +1631,6 @@
 <p>第二部分介绍了分布式数据，包括数据复制、分区、事务等。个人感觉最精彩的部分在于阐述分布式系统的挑战以及一致性问题。看完这部分，你就知道为什么设计一个分布式系统这么难，以及各种分布式数据库系统如何在可靠性、可用性之间寻找平衡。</p>
 <p>第三部分介绍派生数据，包括批处理系统、流处理系统以及数据库系统的发展趋势。这部分说明了为什么消息系统（数据流）也是一种数据库，讨论了派生数据和数据源，批处理和流数据的关系以及在应用系统中的价值和定位。这部分让我现有的知识，比如关系型数据库、消息队列、批处理系统(Map-Reduce)、流处理系统之间产生了化学反应，把整块知识串起来了。</p>
 <p>这本书对我最大的价值在于，它在广度上极大提升我对数据库的认识，同时对各数据库原理有了一定的了解。有些人批评这本书在深度不够，实践上也不够具体。我想说这恰好是作者拿捏得当的地方，它看起来像是一本对数据度的综述，但同时剖析了各种数据库的核心原理，而且是以比较通俗的语言描述，全书基本没有复杂的公式和理论证明，这在一定程度上降低了阅读门槛，同时让读者知其然并知其所以然，关于更深入的讨论，作者提供了很多高质量的引用文献。对一些关键原理的总结上也是非常到位的，比如最后一章中关系数据库的端到端问题，可以说对端到端原则 <a target="_blank" rel="noopener" href="http://web.mit.edu/saltzer/www/publications/endtoend/endtoend.pdf">End-To-End Argument In System Design</a> 的精简。关于实践上，并不是这本书的重点，这本书已经超过500页了，如果再针对各项数据库技术详细讨论具体实践，估计书的厚度就控制不住了，同时也会让这本书缺乏重点。关于实践，最好还是看具体数据库的相关书籍。但如果先看了这本，再看其它数据库应用的书籍，会在宏观上有一个整体的认识，同时对各数据库的应用场景，优缺点也有一个大致的了解，读起来会更事半功倍。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/12/questions-worth-thinking-about/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="leeyzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/12/questions-worth-thinking-about/" class="post-title-link" itemprop="url">几个值得思考的问题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-07-12 23:35:50" itemprop="dateCreated datePublished" datetime="2021-07-12T23:35:50+08:00">2021-07-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:35:00" itemprop="dateModified" datetime="2022-05-08T23:35:00+08:00">2022-05-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9A%8F%E7%AC%94/" itemprop="url" rel="index"><span itemprop="name">随笔</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>今天从老东家离职了，在老东家度过了人生中黄金的5年，细细想来，虽然走了很多弯路，但最终走到了正确的道路上。关于为什么要离职，其实是一个值得思考的问题。按照马云爸爸的说法，离职无非是两种原因：要么是受到委屈，要么是为了钱。诚然，我目前还没有脱离这个层次，但经过8年的社会工作洗礼，至少还对其它的追求有点念想，希望5年后再看这篇文章时不会被生活磨平了棱角。</p>
-<p>这次离职更多的还是个人职业发展问题。对个人职业发展还是有一个比较明确的目标，但在执行路径上其实并不是很清晰。每一次选择都是为了向目标最近一点，但这个选择是否正确，短期来看其实是很难判断的。对于离职，有几个值得思考的问题，虽然自己有做过思考，但还未做理性的分析。这几个问题是：</p>
-<p>1、离职是不是在逃避问题？<br>2、从A团队离职的原因？针对这些原因有没有去做改变？<br>3、在B团队会不会有同样的问题？针对这些问题又将如何去应对？<br>4、2-3后，你想成为什么样的人？<br>5、你内心的源动力是什么？如果只是靠外界驱动，这种驱动力是不稳定的。</p>
-<p>对于这些问题，的确值得思考，有些问题其实是有明确答案的，有些问题直到目前也还没有想得很清楚，这其实是一种思维惰性，也可以说是自己的天花板，目前正在想办法突破，也算是今年的一个小目标吧。先将问题记录于此，也供网友参考，待到自己真正想清楚那天，再写一篇文章回答这些问题，希望这天不会太久！</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/02/go-concurrency-pattern/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="leeyzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/02/go-concurrency-pattern/" class="post-title-link" itemprop="url">Go并发编程模式</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-07-02 23:38:31" itemprop="dateCreated datePublished" datetime="2021-07-02T23:38:31+08:00">2021-07-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:22:47" itemprop="dateModified" datetime="2022-05-08T23:22:47+08:00">2022-05-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>并发是Go语言最重要的语言特性之一，是Go语言区别于其它语言的重要特征。Go语言原生支持并发，可以充分发挥多核CPU的机器性能，同时在语言层面上，Go以十分简洁的语法提供丰富的并发能力，让并发编程并得简单。本文总结Go语言并发编程的常用模式，模式也就是我们说的套路，先学会模仿，再学会融汇贯通，最后才能创造出新的模式，这就是所谓的无招胜有招吧。</p>
-<h2 id="Go对并发的支持"><a href="#Go对并发的支持" class="headerlink" title="Go对并发的支持"></a>Go对并发的支持</h2><p>对于桌面客户端应用程序，为了提升客户端的运行效率和简化多线程编程，通常的做法是在客户端启动时，启动三个常驻线程，分别是UI线程，逻辑线程和IO线程。每个线程维护一个事件循环，线程之间通信（数据传输）只能通过消息队列进行传递，消息队列是线程安全。</p>
-<p>这么做主要有两个好处，一是常驻线程避免创建和销毁线程的开销，多核情况下，通常没有线程上下文切换，线程运行效率高。二是通过消息队列传递数据，各个线程对数据进行操作时不用所以资源竞争问题，这极大降低了多线程编程的难度，并且设计出的程序也更简单，更容易理解。</p>
-<p>接触到Go之后，才知道这种编程模型其实就是C. A. R. Hoare的<a target="_blank" rel="noopener" href="http://www.usingcsp.com/">Communicating Sequential Processes, CSP</a>。Go语言原生支持并发（goroutine）和通道（channel），并且还提供了<a target="_blank" rel="noopener" href="https://golang.org/ref/spec#Select_statements">select</a>对多路通道进行控制，极大简化了并发编程的难度。</p>
-<p>接下来，本文将介绍Go并发编程的常用模式。本文并不适合没有Go语言基础的读者，在阅读以下内容前，请先查阅以下内容：</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://golang.org/ref/spec">The Go Programming Language Specification</a></li>
-<li><a target="_blank" rel="noopener" href="https://golang.org/doc/effective_go">Effective Go</a></li>
-</ul>
-<h2 id="基本原则"><a href="#基本原则" class="headerlink" title="基本原则"></a>基本原则</h2><p>正如文章 <a target="_blank" rel="noopener" href="https://blog.golang.org/codelab-share">Share Memory By Communicating</a> 所概括的：</p>
-<blockquote>
-<p><em>Do not communicate by sharing memory; instead, share memory by communicating.</em></p>
-</blockquote>
-<p>这跟传统多线程编程有着本质的区别：传统多线程编程是通过共享状态进行通信，为了防止共享状态存在竞争问题，通常是使用一些同步原语，如互斥量、临界区、信号量等对共享状态进行同步；而Go语言中的并发编程是通过使用channel在goroutine之间传递消息，这种能够保证在某一时刻goroutine能够对数据进行独占访问，不存在资源竞争问题。</p>
-<h2 id="Fan-out-Fan-in"><a href="#Fan-out-Fan-in" class="headerlink" title="Fan-out, Fan-in"></a>Fan-out, Fan-in</h2><p><strong>多个处理函数可以从同一个channel中读取数据，直到channel关闭，这称为Fan-out。同一个处理函数通过对多个输入channel进行多路复用，并将多个输入channel定向到一个单一的channel中，当多个输入channel均关闭后，将单一channel也关闭，这被称为Fan-in。</strong></p>
-<img src="/images/go-concurency-pattern/fan-out.png" alt="image" style="zoom:45%;" /> 
-
-<img src="/images/go-concurency-pattern/fan-in.png" alt="image" style="zoom:45%;" />
-
-<p>Fan-out, Fan-in有点像算法中的divide-conquer-combine。Fan-out模式提供一种分治处理的能力，将任务拆分成一组并发的worker进行处理，可以充分利用机器CPU和I/O。Fan-in则将各worker处理的结果进行合并，收拢到统一入口，可以对整体结果做一些加工处理。 </p>
-<h2 id="Pipeline"><a href="#Pipeline" class="headerlink" title="Pipeline"></a>Pipeline</h2><p><strong>在Go语言中，Pipeline是一系列通过channel连接的处理阶段，每个阶段可以理解为由一组goroutine运行的相同函数。</strong>对于每个阶段，goroutine的处理流程大致为：</p>
-<ul>
-<li>通过输入channel从上游（上一阶段）接收数据；</li>
-<li>处理数据并生成新的数据；</li>
-<li>将新生成的数据通过输出channel发送给下游（下一阶段）；</li>
-</ul>
-<p>除了第一个阶段和最后一个阶段外，每个阶段都有一个或多个输入和输出channel。第一个阶段被称为源（source）或生产者（producer），最后一个阶段，被称为槽（sink）或消费者（consumer）。</p>
-<p>对于pipeline的惯用法，有两条指导原则：</p>
-<ul>
-<li>对于每个阶段，当向输出channel发送完数据后应该即时关闭channel。</li>
-<li>对于每个阶段，持续从输入channel中读取数据，直到channel被关闭或被取消（下面会单独介绍取消操作）。</li>
-</ul>
-<h2 id="Timeout"><a href="#Timeout" class="headerlink" title="Timeout"></a>Timeout</h2><p>并发编程通常要处理超时的问题，在实际应用中，通过网络请求获取远端数据就是一个很典型的例子。为了不阻塞当前线程，通过需要在网络线程（也称为I/O线程）去发送网络请求，由于网络通常是不可靠的，通常需要设置一个超时时间，如果在既定的超时时间范围内，请求还是没有完成，就取消网络请求。</p>
-<p>在Go语言中通过Goroutine开启一个并发任务，通过channel在Goroutine之间通信，使用select对控制多个channel。对于timeout，可以直接使用标准库函数time.After，开启一个定时器，当到达指定时间后，定时器会往channel中发送一个消息，如下例：</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Request</span><span class="params">(query <span class="keyword">string</span>)</span> &lt;-<span class="title">chan</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(query <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">      	<span class="comment">// 模拟请求耗时较长</span></span><br><span class="line">        time.Sleep(<span class="number">3</span> * time.Second)</span><br><span class="line">        out &lt;- <span class="string">&quot;world&quot;</span></span><br><span class="line">    &#125;(query)</span><br><span class="line">    <span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    out := Request(<span class="string">&quot;hello&quot;</span>)</span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> result := &lt;-out:</span><br><span class="line">        fmt.Println(<span class="string">&quot;fetch result:&quot;</span>, result)</span><br><span class="line">    <span class="keyword">case</span> &lt;-time.After(<span class="number">1</span> * time.Second):</span><br><span class="line">        fmt.Println(<span class="string">&quot;timeout&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="Cancellation"><a href="#Cancellation" class="headerlink" title="Cancellation"></a>Cancellation</h2><p>除了超时控制之外，并发编程中另一个经常需要处理的问题就是取消操作。和超时控制类似，取消操作是指调用方可以在对运行的goroutine进行取消。考虑一个经典的生产-消息者模型：生产者持续生产消息，消息者持续消费消息，直到应用程序终止。</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">produce</span><span class="params">(done &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> <span class="built_in">close</span>(out)</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            <span class="keyword">select</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> &lt;-time.Tick(<span class="number">100</span> * time.Millisecond):</span><br><span class="line">                out &lt;- rand.Int() % <span class="number">100</span></span><br><span class="line">            <span class="keyword">case</span> &lt;-done:</span><br><span class="line">                fmt.Println(<span class="string">&quot;producer quit&quot;</span>)</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">consume</span><span class="params">(done &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;, ch &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            <span class="keyword">select</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> n := &lt;-ch:</span><br><span class="line">                fmt.Println(n)</span><br><span class="line">            <span class="keyword">case</span> &lt;-done:</span><br><span class="line">                fmt.Println(<span class="string">&quot;consumer quit&quot;</span>)</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    done := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span><br><span class="line">    out := produce(done)</span><br><span class="line">    consume(done, out)</span><br><span class="line">    time.Sleep(<span class="number">1</span> * time.Second)</span><br><span class="line">    <span class="built_in">close</span>(done)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>在以上例子中，我们使用done来通知各gorountime退出循环，使用select来控制多个channel的接收和发送，当main函数要退出时，关闭done，goroutime product和consumer会读取到这个变化，退出循环，这样就正确的退出的goroutine。其实Go标准库中的context包已经为我们提供了类似的功能，我们只需要简单改一下代码即可：</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">produce</span><span class="params">(ctx context.Context)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> <span class="built_in">close</span>(out)</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> &lt;-time.Tick(<span class="number">100</span> * time.Millisecond):</span><br><span class="line">				out &lt;- rand.Int() % <span class="number">100</span></span><br><span class="line">			<span class="keyword">case</span> &lt;-ctx.Done():</span><br><span class="line">				fmt.Println(<span class="string">&quot;producer quit&quot;</span>)</span><br><span class="line">				<span class="keyword">return</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">consume</span><span class="params">(ctx context.Context, ch &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> n := &lt;-ch:</span><br><span class="line">				fmt.Println(n)</span><br><span class="line">			<span class="keyword">case</span> &lt;-ctx.Done():</span><br><span class="line">				fmt.Println(<span class="string">&quot;consumer quit&quot;</span>)</span><br><span class="line">				<span class="keyword">return</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	ctx, cancel := context.WithCancel(context.Background())</span><br><span class="line">	<span class="keyword">defer</span> cancel()</span><br><span class="line">	out := produce(ctx)</span><br><span class="line">	consume(ctx, out)</span><br><span class="line">	time.Sleep(<span class="number">1</span> * time.Second)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p><a target="_blank" rel="noopener" href="https://blog.golang.org/pipelines">Go Concurrency Patterns: Pipelines and cancellation</a> 中给出了一个计算文件md5的实用程序，使用了pipline，fan-out, fan-in，cancellation等常用并发编程模式，是学习Go并发编程特别好的例子。整个代码才100余行就能实例md5sum的功能，而且效率还很高。在这个小程序中，使用pipeline将整个计算过程分成三个阶段：</p>
-<ul>
-<li>遍历目录</li>
-<li>计算文件md5</li>
-<li>收集计算结果</li>
-</ul>
-<p>我对原程序做了一点点修改，引入了context包用于cancellation，当遍历文件时任何一部出现错误时，可以进行优雅退出；同时对bounded concurency部分代码做了优化，使其更简洁和更具可读性，具体代码参考<a target="_blank" rel="noopener" href="https://github.com/leeyzero/go-tools/blob/main/md5sum.go">md5sum</a>。</p>
-<p>在这个例子中，还可以加入timeout超时控制，以指定程序的执行时长，如果在指定的超时时间内未完成所有文件的md5计算，则程序提示执行超时，进行退出。增加这个功能其实比较简单，可以直接使用context.WithTimeout实现，感兴趣的读者可以自己动手进行实现。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Go语言原生支持并发操作，go、channel都成为了一等公民，同时使用select可以对多路channel发送和接收进行控制，极大降低了并发编程的难度。首先一个基本原则是goroutine之间通过通信共享内存，在此基本上我们介绍和Fan-out, Fan-in，Pipeline，Timeout，Cancellation几个常用的Go并发编程模式，最后给出了一个综合应用的例子以强化以上基本概念。</p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1] <a target="_blank" rel="noopener" href="https://blog.golang.org/codelab-share">Share Memory By Communicating</a></p>
-<p>[2] <a target="_blank" rel="noopener" href="https://blog.golang.org/pipelines">Go Concurrency Patterns: Pipelines and cancellation</a></p>
-<p>[3] <a target="_blank" rel="noopener" href="https://blog.golang.org/concurrency-timeouts">Go Concurrency Patterns: Timing out, moving on</a></p>
-<p>[4] <a target="_blank" rel="noopener" href="https://blog.golang.org/context">Go Concurrency Patterns: Context</a></p>
-<p>[5] <a target="_blank" rel="noopener" href="https://encore.dev/blog/advanced-go-concurrency">Advanced Go Concurrency</a></p>
-<p>[6] <a target="_blank" rel="noopener" href="https://barrgroup.com/Embedded-Systems/How-To/RTOS-Mutex-Semaphore">Mutexes and Semaphores Demystified</a></p>
-<p>[7] <a target="_blank" rel="noopener" href="https://github.com/golang/go/wiki/Go-Community-Slides#rethinking-classical-concurrency-patterns">Rethinking Classical Concurrency Patterns</a></p>
-<p>[8] <a target="_blank" rel="noopener" href="https://talks.golang.org/2012/concurrency.slide#1">Go Concurrency Patterns</a></p>
-<p>[9] <a target="_blank" rel="noopener" href="https://talks.golang.org/2013/advconc.slide#1">Advanced Go Concurrency Patterns</a></p>
 
       
     </div>
@@ -1757,7 +1716,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-count">37</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1768,7 +1727,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-count">43</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

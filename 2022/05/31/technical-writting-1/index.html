@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeyzero.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本文翻译自 Google Technical Writing Courses，是Google推出的技术写作课程，该课程包含两个部分，本文是第一部分。  技术写作（一）：教你如何写出更清晰的技术文档，是学习第二部分的基础。 技术写作（二）：帮助你提升技术沟通技巧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【翻译】 Google技术写作（一）">
+<meta property="og:url" content="https://leeyzero.github.io/2022/05/31/technical-writting-1/index.html">
+<meta property="og:site_name" content="LeeYzero的博客">
+<meta property="og:description" content="本文翻译自 Google Technical Writing Courses，是Google推出的技术写作课程，该课程包含两个部分，本文是第一部分。  技术写作（一）：教你如何写出更清晰的技术文档，是学习第二部分的基础。 技术写作（二）：帮助你提升技术沟通技巧。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2022-05-31T01:49:26.000Z">
+<meta property="article:modified_time" content="2022-06-04T16:12:30.036Z">
+<meta property="article:author" content="leeyzero">
+<meta property="article:tag" content="写作">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://leeyzero.github.io/2022/05/31/technical-writting-1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>【翻译】 Google技术写作（一） | LeeYzero的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LeeYzero的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">业精于勤，行成于思</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/05/31/technical-writting-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="leeyzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【翻译】 Google技术写作（一）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-05-31 09:49:26" itemprop="dateCreated datePublished" datetime="2022-05-31T09:49:26+08:00">2022-05-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-06-05 00:12:30" itemprop="dateModified" datetime="2022-06-05T00:12:30+08:00">2022-06-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文翻译自 <a target="_blank" rel="noopener" href="https://developers.google.com/tech-writing/overview">Google Technical Writing Courses</a>，是Google推出的技术写作课程，该课程包含两个部分，本文是第一部分。</p>
+<ul>
+<li><a href="/2022/05/31/technical-writting-1/" title="技术写作（一）">技术写作（一）</a>：教你如何写出更清晰的技术文档，是学习第二部分的基础。</li>
+<li><a href="/2022/05/31/technical-writting-2/" title="技术写作（二）">技术写作（二）</a>：帮助你提升技术沟通技巧。
+
+</li>
+</ul>
+<a id="more"></a>
+
+<p><strong>翻译仅供学习使用，如有侵权，立即删除。由于译者水平有限，本文不免存在遗漏或错误之处。如有疑问，请查阅原文</strong>。</p>
+<p>以下是译文。</p>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><h2 id="目标受众"><a href="#目标受众" class="headerlink" title="目标受众"></a>目标受众</h2><p>你需要有一点英语写作能力，但并不需要成为一个很强的写作者后再来学习这门课程。</p>
+<p>如果你没有接受过任何技术写作训练，本课程非常适合你。如果你已经接受一些技术写作的训练，学习本课程仍将是一种有效的复习。</p>
+<h2 id="学习目标"><a href="#学习目标" class="headerlink" title="学习目标"></a>学习目标</h2><p>这门课程教你技术写作的基础。完成本课程后，你将知道如何做以下事情：</p>
+<ul>
+<li>始终使用术语，包括缩写和首字母缩写。</li>
+<li>识别模棱两可的代码。</li>
+<li>区分主动语态和被动语态。</li>
+<li>将被动语态转成主动语态。</li>
+<li>认识主动语态优于被动语态的三种方法。</li>
+<li>培养至少三种让句子更清晰、更吸引人的策略。</li>
+<li>培养至少四种让句子更简洁的策略。</li>
+<li>理解无序列表和有序列表的区别。</li>
+<li>创建有用的列表。</li>
+<li>为段落建立有效的引导名。</li>
+<li>每个段落都聚焦到一个主题上。</li>
+<li>在文档的开头陈述文档的主要观点。</li>
+<li>确定你的目标受众。</li>
+<li>确定你的目标受众已经知道什么以及需要学习什么。</li>
+<li>了解知识的诅咒。</li>
+<li>识别和修改习语。</li>
+<li>说明文档的范围（目标）和读者。</li>
+<li>将较长的主题分解成适当部分。</li>
+<li>正确使用逗号、圆括号、冒号、破折号和分号。</li>
+<li>培养Markdown的基础技能</li>
+</ul>
+<p>成为一个杰出的工程师或技术写作者需要多年的专注练习。本课程将会提升你的技术写作技能，但不能立即把你变为一个杰出的技术写作者。</p>
+<h1 id="语法基础"><a href="#语法基础" class="headerlink" title="语法基础"></a>语法基础</h1><p>本节介绍刚刚好的语法基础知识，以便能更好的理解后面的课程。如果你已经具备这些语法知识，可以直接跳到<a href="#%E5%8D%95%E8%AF%8D">单词</a>章节继续阅读。</p>
+<p>为了简单起见，本节采取了一些捷径，实际的语法主题比本节建议的复杂得多。</p>
+<p>语法学家在词性的数量和和类型上并不完全一致。下表重点介绍与本课程相关的词性。</p>
+<table>
+<thead>
+<tr>
+<th>词性</th>
+<th>定义</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Noun<br>名词</td>
+<td>人物、地点、概念或事物</td>
+<td><strong>Sam</strong> runs <strong>races</strong>.<br><strong>山姆</strong>参加<strong>比赛</strong>。</td>
+</tr>
+<tr>
+<td>Pronoun<br>代词</td>
+<td>替代另一个名词的名词</td>
+<td>Sam runs races. <strong>He</strong> likes to compete.<br>山姆参加比赛，<strong>他</strong>喜欢竞争。</td>
+</tr>
+<tr>
+<td>Adjective<br>形容词</td>
+<td>修饰名词的单词或短语</td>
+<td>Sam wears <strong>blue</strong> shoes.<br>山姆穿<strong>蓝色</strong>的鞋子。</td>
+</tr>
+<tr>
+<td>Verb<br>动词</td>
+<td>一个动词或短语</td>
+<td>Sam <strong>runs</strong> races.<br>山姆<strong>参加</strong>比赛。</td>
+</tr>
+<tr>
+<td>Adverb<br>副词</td>
+<td>修饰动词、形容词或另一个副词的单词或短语</td>
+<td>Sam runs <strong>slowly</strong>.<br>山姆跑地<strong>慢</strong>。</td>
+</tr>
+<tr>
+<td>Preposition<br>介词</td>
+<td>指定两个名词位置关系的单词或短语</td>
+<td>Sam’s sneakers are seldom <strong>on</strong> his shelf.<br>山姆的运动鞋很少<strong>在</strong>他的鞋架上。</td>
+</tr>
+<tr>
+<td>Conjunction<br>连词</td>
+<td>连接两个名词或短语的单词</td>
+<td>Sam’s trophies <strong>and</strong> ribbons live only in his imagination.<br>山姆的奖杯<strong>和</strong>缎带只存在于他的想象中。</td>
+</tr>
+<tr>
+<td>Transition<br>过渡词</td>
+<td>连接两个句子的单词或短语</td>
+<td>Sam runs races weekly. <strong>However</strong>, he finishes races weakly.<br>山姆每周都参加比赛。<strong>然而</strong>，他在比赛中表现不佳。</td>
+</tr>
+</tbody></table>
+<h2 id="名词"><a href="#名词" class="headerlink" title="名词"></a>名词</h2><p>名词代表人物、地点或事物。<strong>朱迪</strong>、<strong>南极洲</strong>和<strong>锤子</strong>都是名词，无形的概念（如<strong>健壮性</strong>、<strong>完美性</strong>）也是如此。在以下示例段落中，我们将名词格式化为粗体：</p>
+<blockquote>
+<p>In the <strong>framework</strong>, an <strong>object</strong> must copy any underlying <strong>values</strong> that the <strong>object</strong> wants to change. The <strong>protos</strong> in the <strong>codebase</strong> are huge, so copying the <strong>protos</strong> is unacceptably expensive.</p>
+</blockquote>
+<p>在编程中，你可以将类和变量视为程序中的名词。</p>
+<h2 id="代词"><a href="#代词" class="headerlink" title="代词"></a>代词</h2><p>代词是一个间接层，指向或替代其他名词或句子。例如，考虑以下两个句子：</p>
+<blockquote>
+<p>Janet writes great code. <strong>She</strong> is a senior staff engineer.</p>
+</blockquote>
+<p>在前面的示例中，第一句将 Janet 确立为名词。第二句用代词 She 代替了名词 Janet。<br>在以下示例中，代词 This 替换了整个句子：</p>
+<blockquote>
+<p>Most applications aren’t sufficiently tested. <strong>This</strong> is poor engineering.</p>
+</blockquote>
+<h2 id="动词"><a href="#动词" class="headerlink" title="动词"></a>动词</h2><p>动词是一个动作词或短语。当你想表示两个名词（行动者和目标）之间的关系时，动词就发挥作用了。动词标识行为者对目标的行为。</p>
+<p>每个句子必须包含至少一个动词。例如，下面每个句子都包含了一个的动词：</p>
+<ul>
+<li>Sakai <strong>prefers</strong> pasta.</li>
+<li>Rick <strong>likes</strong> the ocean.</li>
+<li>Smurfs <strong>are</strong> blue.</li>
+<li>Jess <strong>suffers</strong> from allergies.</li>
+</ul>
+<p>有些句子包含多个动词，如下：</p>
+<ul>
+<li>Nala <strong>suffers</strong> from allergies and <strong>sneezes</strong> constantly.</li>
+<li>The program <strong>runs</strong> slowly but <strong>fails</strong> quickly.</li>
+</ul>
+<p>根据时态和词形的变化，一个动词可以包含一个或多个单词。例如：</p>
+<ul>
+<li>Tina <strong>was eating</strong> breakfast a few hours ago.</li>
+<li>Tina <strong>is eating</strong> lunch right now.</li>
+<li>Tina <strong>will eat</strong> dinner tonight at 7:00.</li>
+</ul>
+<h2 id="形容词和副词"><a href="#形容词和副词" class="headerlink" title="形容词和副词"></a>形容词和副词</h2><p>形容词修饰名词。例如在下面的段落中，注意形容词是如何修饰后面的名词的：</p>
+<ul>
+<li>Tom likes <strong>red</strong> balloons. He prepares <strong>delicious</strong> food. He fixed <strong>eight</strong> bugs at work.</li>
+</ul>
+<p>大多数副词修饰动词。例如，注意下面句子中的的副词（<strong>efficiently</strong>)是如何修饰动态（<strong>fixes</strong>）的:</p>
+<ul>
+<li>Jane <strong>efficiently</strong> fixes bugs.</li>
+</ul>
+<p>副词不一定紧挨着动词。例如，在下面的句子中，副词（<strong>efficiently</strong>）和动态（<strong>fixes</strong>）相隔两个单词：</p>
+<ul>
+<li>Jane <strong>fixes</strong> bugs <strong>efficiently</strong>.</li>
+</ul>
+<p>副词也可以修饰形容词和副词。</p>
+<h2 id="介词"><a href="#介词" class="headerlink" title="介词"></a>介词</h2><p>介词指定两个事物之间的关系。一些介词通常回答这个问题，“一个事物相对于另一个事物在哪里？“，例如：</p>
+<ul>
+<li>The submenu lies <strong>under</strong> the menu.</li>
+<li>The definition appears <strong>next to</strong> the term.</li>
+<li>The print function falls <strong>within</strong> the main routine.</li>
+</ul>
+<p>一些介词回答这个问题，”一个事件相对于另一个事件是什么时候？“，例如：</p>
+<ul>
+<li>The program evaluates the addition operation before evaluating the subtraction operation.</li>
+<li>The cron daemon executes the script every Tuesday at noon.</li>
+</ul>
+<p>另一些介词（如<strong>by</strong>和<strong>of</strong>）回答其它类型的关系，如下面的句子中使用<strong>by</strong>表示一本书与作者的关系：</p>
+<ul>
+<li>The C Programming Language <strong>by</strong> Kernighan and Richie remains popular.</li>
+</ul>
+<h2 id="连词和过渡词"><a href="#连词和过渡词" class="headerlink" title="连词和过渡词"></a>连词和过渡词</h2><p>连词连接句子中的短语或名词；过渡词连接句子本身。</p>
+<p>最重要的连词如下：</p>
+<ul>
+<li>and</li>
+<li>but</li>
+<li>or</li>
+</ul>
+<p>例如，在下面的句子中，<strong>and</strong>连接”code”和”documentation”，<strong>but</strong>连接句子的前半部分和后半部分。</p>
+<blockquote>
+<p>Natasha writes great internal code <strong>and</strong> documentation <strong>but</strong> seldom works on open-source projects.</p>
+</blockquote>
+<p>在技术写作中最重要的过渡词如下：</p>
+<ul>
+<li>however</li>
+<li>therefore</li>
+<li>for example</li>
+</ul>
+<p>例如，在下面的段落中，注意过渡词是如何连接并使句子上下连贯的：</p>
+<blockquote>
+<p>Juan is a wonderful coder. <strong>However</strong>, he rarely writes sufficient tests. <strong>For example</strong>, Juan coded a 5,000 line FFT package that contained only a single 10-line unit test.</p>
+</blockquote>
+<h1 id="单词"><a href="#单词" class="headerlink" title="单词"></a>单词</h1><p>我们对文档进行了大量的研究，结果发现世界上最好的句子主要由单词组成。</p>
+<h2 id="定义新术语和不熟悉的术语"><a href="#定义新术语和不熟悉的术语" class="headerlink" title="定义新术语和不熟悉的术语"></a>定义新术语和不熟悉的术语</h2><p>在写作或编辑时，学会识别那些目标受众不熟悉的术语。当你发现此类术语后，采取如下两种策略之一：</p>
+<ul>
+<li>如果这个术语已经存在，链接到现有的解释。（不要重复造轮子）</li>
+<li>如果你在文档中引入了这个术语，请定义该术语。如果你在文档中引入了许多术语，将这些定义收集到词汇表中。</li>
+</ul>
+<h2 id="始终使用术语"><a href="#始终使用术语" class="headerlink" title="始终使用术语"></a>始终使用术语</h2><p>如果你在方法的中途改变变量的名称，你的代码将无法编译。类似地，如果你在文档中间重命名了术语，你的想法也不法编译（在你的脑中）。<br>修养：在整个文档中始终使用同一个明确的单词或术语。一旦你命名了一个组件为<strong>thingy</strong>，不要把它重命名为<strong>thingamabob</strong>，例如，下面的段落错误地将Protocol Buffers重命名为protobufs:</p>
+<blockquote>
+<p><strong>Protocol Buffers</strong> provide their own definition language. Blah, blah, blah. And that’s why <strong>protobufs</strong> have won so many county fairs.</p>
+</blockquote>
+<h2 id="正确使用首字母缩写"><a href="#正确使用首字母缩写" class="headerlink" title="正确使用首字母缩写"></a>正确使用首字母缩写</h2><h2 id="使用首字母缩写还是完整术语？"><a href="#使用首字母缩写还是完整术语？" class="headerlink" title="使用首字母缩写还是完整术语？"></a>使用首字母缩写还是完整术语？</h2><h2 id="认识有歧义的代词"><a href="#认识有歧义的代词" class="headerlink" title="认识有歧义的代词"></a>认识有歧义的代词</h2><h3 id="It-and-they"><a href="#It-and-they" class="headerlink" title="It and they"></a>It and they</h3><h3 id="This-and-that"><a href="#This-and-that" class="headerlink" title="This and that"></a>This and that</h3><h1 id="主动语态"><a href="#主动语态" class="headerlink" title="主动语态"></a>主动语态</h1><h1 id="清晰句子"><a href="#清晰句子" class="headerlink" title="清晰句子"></a>清晰句子</h1><h1 id="简洁句子"><a href="#简洁句子" class="headerlink" title="简洁句子"></a>简洁句子</h1><h1 id="列表和表格"><a href="#列表和表格" class="headerlink" title="列表和表格"></a>列表和表格</h1><h1 id="段落"><a href="#段落" class="headerlink" title="段落"></a>段落</h1><h1 id="受众"><a href="#受众" class="headerlink" title="受众"></a>受众</h1><h1 id="文档"><a href="#文档" class="headerlink" title="文档"></a>文档</h1><h1 id="标点符号"><a href="#标点符号" class="headerlink" title="标点符号"></a>标点符号</h1><h1 id="Markdown"><a href="#Markdown" class="headerlink" title="Markdown"></a>Markdown</h1><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/%E5%86%99%E4%BD%9C/" rel="tag"><i class="fa fa-tag"></i> 写作</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/05/15/thinking-about-unittest/" rel="prev" title="单元测试的实践与思考">
+      <i class="fa fa-chevron-left"></i> 单元测试的实践与思考
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/05/31/technical-writting-2/" rel="next" title="【翻译】 Google技术写作（二）">
+      【翻译】 Google技术写作（二） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E5%8F%97%E4%BC%97"><span class="nav-number">1.1.</span> <span class="nav-text">目标受众</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%A6%E4%B9%A0%E7%9B%AE%E6%A0%87"><span class="nav-number">1.2.</span> <span class="nav-text">学习目标</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%AD%E6%B3%95%E5%9F%BA%E7%A1%80"><span class="nav-number">2.</span> <span class="nav-text">语法基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8D%E8%AF%8D"><span class="nav-number">2.1.</span> <span class="nav-text">名词</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E8%AF%8D"><span class="nav-number">2.2.</span> <span class="nav-text">代词</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E8%AF%8D"><span class="nav-number">2.3.</span> <span class="nav-text">动词</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%A2%E5%AE%B9%E8%AF%8D%E5%92%8C%E5%89%AF%E8%AF%8D"><span class="nav-number">2.4.</span> <span class="nav-text">形容词和副词</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8B%E8%AF%8D"><span class="nav-number">2.5.</span> <span class="nav-text">介词</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9E%E8%AF%8D%E5%92%8C%E8%BF%87%E6%B8%A1%E8%AF%8D"><span class="nav-number">2.6.</span> <span class="nav-text">连词和过渡词</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%95%E8%AF%8D"><span class="nav-number">3.</span> <span class="nav-text">单词</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E6%96%B0%E6%9C%AF%E8%AF%AD%E5%92%8C%E4%B8%8D%E7%86%9F%E6%82%89%E7%9A%84%E6%9C%AF%E8%AF%AD"><span class="nav-number">3.1.</span> <span class="nav-text">定义新术语和不熟悉的术语</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A7%8B%E7%BB%88%E4%BD%BF%E7%94%A8%E6%9C%AF%E8%AF%AD"><span class="nav-number">3.2.</span> <span class="nav-text">始终使用术语</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8%E9%A6%96%E5%AD%97%E6%AF%8D%E7%BC%A9%E5%86%99"><span class="nav-number">3.3.</span> <span class="nav-text">正确使用首字母缩写</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E9%A6%96%E5%AD%97%E6%AF%8D%E7%BC%A9%E5%86%99%E8%BF%98%E6%98%AF%E5%AE%8C%E6%95%B4%E6%9C%AF%E8%AF%AD%EF%BC%9F"><span class="nav-number">3.4.</span> <span class="nav-text">使用首字母缩写还是完整术语？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A4%E8%AF%86%E6%9C%89%E6%AD%A7%E4%B9%89%E7%9A%84%E4%BB%A3%E8%AF%8D"><span class="nav-number">3.5.</span> <span class="nav-text">认识有歧义的代词</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#It-and-they"><span class="nav-number">3.5.1.</span> <span class="nav-text">It and they</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#This-and-that"><span class="nav-number">3.5.2.</span> <span class="nav-text">This and that</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BB%E5%8A%A8%E8%AF%AD%E6%80%81"><span class="nav-number">4.</span> <span class="nav-text">主动语态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B8%85%E6%99%B0%E5%8F%A5%E5%AD%90"><span class="nav-number">5.</span> <span class="nav-text">清晰句子</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E6%B4%81%E5%8F%A5%E5%AD%90"><span class="nav-number">6.</span> <span class="nav-text">简洁句子</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%E5%92%8C%E8%A1%A8%E6%A0%BC"><span class="nav-number">7.</span> <span class="nav-text">列表和表格</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AE%B5%E8%90%BD"><span class="nav-number">8.</span> <span class="nav-text">段落</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%97%E4%BC%97"><span class="nav-number">9.</span> <span class="nav-text">受众</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E6%A1%A3"><span class="nav-number">10.</span> <span class="nav-text">文档</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%87%E7%82%B9%E7%AC%A6%E5%8F%B7"><span class="nav-number">11.</span> <span class="nav-text">标点符号</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Markdown"><span class="nav-number">12.</span> <span class="nav-text">Markdown</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">13.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="leeyzero"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">leeyzero</p>
+  <div class="site-description" itemprop="description">众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/leeyzero" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;leeyzero" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:leeyzero@163.com" title="E-Mail → mailto:leeyzero@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.drdobbs.com/" title="https:&#x2F;&#x2F;www.drdobbs.com&#x2F;" rel="noopener" target="_blank">Dr.Dobb's</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://blog.cleancoder.com/" title="http:&#x2F;&#x2F;blog.cleancoder.com&#x2F;" rel="noopener" target="_blank">The Clean Code Blog</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.codinghorror.com/" title="https:&#x2F;&#x2F;blog.codinghorror.com&#x2F;" rel="noopener" target="_blank">Coding Horror</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://lamport.azurewebsites.net/pubs/pubs.html" title="http:&#x2F;&#x2F;lamport.azurewebsites.net&#x2F;pubs&#x2F;pubs.html" rel="noopener" target="_blank">Leslie Lamport</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://martinfowler.com/" title="https:&#x2F;&#x2F;martinfowler.com&#x2F;" rel="noopener" target="_blank">Martin Fowler</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.joelonsoftware.com/" title="https:&#x2F;&#x2F;www.joelonsoftware.com&#x2F;" rel="noopener" target="_blank">Joel on Software</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.paulgraham.com/articles.html" title="http:&#x2F;&#x2F;www.paulgraham.com&#x2F;articles.html" rel="noopener" target="_blank">Paul Graham Essays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://steve-yegge.blogspot.com/" title="http:&#x2F;&#x2F;steve-yegge.blogspot.com&#x2F;" rel="noopener" target="_blank">Steve Yegge</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://coolshell.cn/" title="https:&#x2F;&#x2F;coolshell.cn&#x2F;" rel="noopener" target="_blank">coolshell</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.liaoxuefeng.com/" title="https:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰的官方网站</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ruanyifeng.com/blog/" title="http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;blog&#x2F;" rel="noopener" target="_blank">阮一峰的网络日志</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">leeyzero</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

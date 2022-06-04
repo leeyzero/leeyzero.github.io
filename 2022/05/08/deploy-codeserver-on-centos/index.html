@@ -9,6 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
   <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
 
 <link rel="stylesheet" href="/css/main.css">
 
@@ -17,13 +18,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"leeyzero.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="Code Server是一个基于VSCode实现的开源的云端IDE，只要能联网，就可以通过浏览器进行访问，无需安装，十分方便。本文主要介绍如何在CentOS 8中安装Code Server。 依赖环境 2GB RAM 需要root权限，对于非root账号，需要sudo权限 需要安装nginx  安装code-server下载安装包目前最新版本是v4.4.0，CentOS下载code-server-">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CentOS搭建CodeServer环境">
-<meta property="og:url" content="http://example.com/2022/05/08/deploy-codeserver-on-centos/index.html">
+<meta property="og:url" content="https://leeyzero.github.io/2022/05/08/deploy-codeserver-on-centos/index.html">
 <meta property="og:site_name" content="LeeYzero的博客">
 <meta property="og:description" content="Code Server是一个基于VSCode实现的开源的云端IDE，只要能联网，就可以通过浏览器进行访问，无需安装，十分方便。本文主要介绍如何在CentOS 8中安装Code Server。 依赖环境 2GB RAM 需要root权限，对于非root账号，需要sudo权限 需要安装nginx  安装code-server下载安装包目前最新版本是v4.4.0，CentOS下载code-server-">
 <meta property="og:locale">
@@ -34,7 +35,7 @@
 <meta property="article:tag" content="VSCode">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/2022/05/08/deploy-codeserver-on-centos/">
+<link rel="canonical" href="https://leeyzero.github.io/2022/05/08/deploy-codeserver-on-centos/">
 
 
 <script id="page-configurations">
@@ -168,7 +169,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/05/08/deploy-codeserver-on-centos/">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/05/08/deploy-codeserver-on-centos/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -374,7 +375,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-count">37</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -385,7 +386,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-count">43</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

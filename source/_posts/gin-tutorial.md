@@ -24,6 +24,8 @@ $ go get -u github.com/gin-gonic/gin
 import "github.com/gin-gonic/gin"
 ```
 
+<!--more-->
+
 ## 快速入门
 
 1、新建一个项目

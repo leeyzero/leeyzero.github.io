@@ -22,6 +22,8 @@ tags:
 
 vim-go插件需要vim使用8.0以上的版本，而YouCompleteMe需要python2.7.1+或3.5.1+。如果你系统的vim和python版本满足条件，可以忽略下面两个步骤。
 
+<!--more-->
+
 ### 安装vim8.0+
 推荐使用源码方式安装，先从github上下载[vim](https://github.com/vim/vim.git)源代码：
 ```

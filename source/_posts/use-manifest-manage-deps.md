@@ -16,6 +16,8 @@ tags:
 
 简单说明一下，微软在未提出Side-by-Side Assembly之前，应用程序启动时按照[一定的规则](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682586(v=vs.85).aspx)加载DLL。通常情况下，应用程序会采用动态链接方式共享一些操作系统提供的基础库文件，当Windows更新共享库且共享库不能向后兼容时(*DLL自身并不能向后兼容，这种情况通常发生在DLL的内存布局发生了改变*）,那些依赖于老版本共享库的应用程序就不能正常工作了。为了解决这个问题，微软重写了DLL动态加载子系统，提出了并行程序集的解决方案，即允许多个版本的库共同存在，应用程序通过manifest描述自身所依赖的文件，SxS Manager再通过manifest按照一定的规则找到应用程序的依赖文件，使应用程序正确工作。
 
+<!--more-->
+
 ## 程序集查找顺序
 和DLL加载顺序类似，SxS Manager在查找应用程序的依赖程序集时也按照一定的规则进行查找。一般情况下，其查找规则如下，如果应用程序需要多语言支持，请参考[这里](https://msdn.microsoft.com/en-us/library/windows/desktop/aa374224(v=vs.85).aspx)。
 

@@ -12,6 +12,8 @@ tags:
 
 [lrzsz](https://www.ohse.de/uwe/software/lrzsz.html)是unix下的开源软件包，支持[XMODEM, YMODEM](ftp://ftp.std.com/obi/Standards/FileTransfer/YMODEM8.DOC.1.Z) [ZMODEM](http://www.easysw.com/~mike/serial/zmodem.html)文件传输协议。本文将会展示如何将lrzsz集成到iTerm2终端中，通过`sz`和`rz`命令和远程服务器传输文件。 其中，`s`表示`send`，`r`表示`recieve`，z表示使用的协议为ZMODEM。
 
+<!--more-->
+
 ## 安装步骤
 ### 安装lrzsz
 - 最简单的方式是通过brew安装：`brew install lrzsz`

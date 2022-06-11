@@ -21,6 +21,8 @@ tags:
 
 那这个名称是怎么来的呢？由于Windows有句柄窗口是一套工业标准，窗口消息和API都是公开的，所有人都知道怎么操作窗口。微软在做MSN的时候为了保护用户隐私，搞了一个DirectUIHWND，后边DirectUI这个名字就被沿用下来，后边说的DirectUI一般都是指**无句柄窗口**。
 
+<!--more-->
+
 ## DirectUI需要解决的问题
 DirectUI实际是在Windows的原生窗口基础上，更细粒度地进行窗口控制，它需要建立一套自己DirectUI标准，主要需要解决以下问题：
 

@@ -27,6 +27,7 @@ tags:
 - [The Go Programming Language Specification](https://golang.org/ref/spec)
 - [Effective Go](https://golang.org/doc/effective_go)
 
+<!--more-->
 
 ## 基本原则
 

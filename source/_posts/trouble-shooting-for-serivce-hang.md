@@ -23,7 +23,6 @@ tags:
 
 任意找了一台有问题的机器，发现了一个比较有意思的现象：**服务X出现了大量CLOSE_WAIT状态的连接。从TCP的状态转换可知，CLOSE_WAIT是被动关闭一方在收到FIN并返回ACK后进入的状态**。TCP状态机如下：
 
-
 ![img](/images/trouble-shooting-for-service-hang/tcpfsm.png)
 
 也就是说X服务在收到客户端请求后，客户端关闭连接，还服务端进程并没有关闭连接，分析了web server的框架代码，正常情况下，一个请求处理完后会关闭这个连接，**出现这种情况可能是业务逻辑出现阻塞，导致服务端请求的连接一直不能关闭**。
@@ -35,7 +34,6 @@ tags:
 $ lsof | grep `ps -ef | grep x-service | grep -v 'grep' | awk '{print $2}'` | grep sock | wc -l
 10231
 ```
-
 
 发现X服务打开的连接数非常多，达到10231个，看下实例的句柄数上限：
 
@@ -54,14 +52,13 @@ $ strace -p `ps -ef | grep x-service | grep -v 'grep' | awk '{print $2}'`
 
 ![](/images/trouble-shooting-for-service-hang/strace.png)
 
-
 发现大量accept调用报错，从日志信息可以看出，的确是系统的文件句柄数（FD）耗尽了，导致连接被reset掉，这也能说明为什么客户端侧看到了大量`connection reset by peer`错误了。
-
-
 
 X服务打开了大量socket文件句柄，且绝大多数连接状态都是CLOSE_WAIT，如果业务逻辑有阻塞的确可能会出现把句柄数数打满。
 
 分析了一下业务逻辑，业务逻辑本身不复杂，只有一次IO网络请求，是从数据库查询数据，从日志中发现了一些端倪：
+
+<!--more-->
 
 ```
 ....
@@ -91,8 +88,6 @@ type DBStats struct {
 
 这种需要强调一下，golang实现的mysql连接驱动实现了连接池，可以设置连接池的大小等信息，Idle连接大小等。从这个日志信息中可以看出，业务逻辑在创建设置了连接池大小限制（MaxOpenConnections=60），处理请求时Idle的连接数为0，InUse的连接数已经达到连接池上限。这个请求耗时近1s，还有25个连接在等待处理。
 
-
-
 初步分析了一下，即便是流量过大，导致mysql连接池中的连接被用完，连接使用完后，也应该得到正常处理。且目前的流量已经下来了，但问题依然存在。仔细分析了一下golang对mysql连接池的实现，找到了连接池用完时的处理逻辑，代码在database/sql/sql.go，DB.conn函数中，如下：
 
 ```golang
@@ -113,7 +108,6 @@ type DBStats struct {
 当连接池中已打开的连接数超过设置的连接池上限时，会有一个阻塞操作，等待其它连接用完后放入连接池。这下问题就比较清晰了：
 
 **mysql打开一个连接时也是要占用fd资源的，当TCP服务器打开了大量的FD而没有释放，mysql连接池也在不断处理新的请求，当FD用完的时候，TCP服务器和mysql连接池都在等待对方释放FD资源来处理新的请求，导致双方均在等待对方释放FD，导致死锁。**
-
 
 问题修复就比较简单了，mysql连接池不设置上限，连接数瓶颈交给数据库代理层去解决。
 

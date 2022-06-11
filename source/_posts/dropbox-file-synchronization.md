@@ -20,6 +20,8 @@ tags:
 
 ![image](/images/dropbox-file-synchronization/dropboxfileformat1.png)
 
+<!--more-->
+
 ## 服务器文件日志
 服务器文件日志（The Server File Journal，SFJ）是一个大的文件元信息数据库，注意元信息中不包含文件内容，文件内容通过blocklist引用。服务器文件日志是一个不断追加的记录行，每一行代表文件的一个版本。每一行主要包含以下关键字段：
 

@@ -15,6 +15,8 @@ tags:
 
 ![Windows消息体系结构图](/images/windows-message-architecture/1.png)
 
+<!--more-->
+
 ## 窗口和窗口类(*Window and Window Class*)
 
 >*The Windows UI application (e) has one main thread (g), one or more > windows (a) and one or more child threads (k) [worker threads or UI threads].*

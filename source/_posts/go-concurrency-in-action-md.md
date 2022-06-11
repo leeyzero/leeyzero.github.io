@@ -21,6 +21,8 @@ tags:
 
 更多请参考：[Herb Sutter](https://en.wikipedia.org/wiki/Herb_Sutter) 2005年在Dr. Dobb's 发表的文章：[The Free Lunch Is Over](http://www.gotw.ca/publications/concurrency-ddj.htm)。
 
+<!--more-->
+
 ## 为什么并发编程是困难的？
 - 竞争条件（Race Conditions）
 - 原子性（Atomicity）

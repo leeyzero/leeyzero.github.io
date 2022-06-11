@@ -17,6 +17,8 @@ git clone https://github.com/vim/vim.git
 ```
 源代码clone下来后，`src/INSTALL`文档中有非常详细的安装说明文档，根据自己的系统环境按步骤安装即可。
 
+<!--more-->
+
 ## 基础知识
 ### 配置文件
 vim是通过vimrc配置文件进行配置的，全局配置一般在`/etc/vim/vimrc`或者`/etc/vimrc`，对所有用户生效。用户个人的配置在`~/.vimrc`。对我们来讲，通常在`~/.vimrc`进行配置就行了。

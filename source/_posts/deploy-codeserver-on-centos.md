@@ -15,6 +15,8 @@ tags:
 - 需要root权限，对于非root账号，需要sudo权限
 - 需要安装nginx
 
+<!--more-->
+
 # 安装code-server
 
 ## 下载安装包

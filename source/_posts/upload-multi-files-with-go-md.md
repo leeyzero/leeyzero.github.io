@@ -29,6 +29,8 @@ func main() {
 2、遍历multiform data中的文件
 3、将文件保存至指定位置
 
+<!--more-->
+
 其中第1步，Go语言的http.Request包已经提供了ParseMultipartform API，我们只需要实现2、3步即可。如下：
 ```
 func uploadHandler(w http.ResponseWriter, r *http.Request) {

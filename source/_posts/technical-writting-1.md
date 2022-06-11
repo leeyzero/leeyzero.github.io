@@ -14,7 +14,7 @@ tags:
 
 <!--more-->
 
-**翻译仅供学习使用，如有侵权，立即删除。由于译者水平有限，本文不免存在遗漏或错误之处。如有疑问，请查阅原文**。
+**翻译仅供学习使用。由于译者水平有限，本文不免存在遗漏或错误之处。如有疑问，请查阅原文**。
 
 以下是译文。
 
@@ -50,10 +50,10 @@ tags:
 
 成为一个杰出的工程师或技术写作者需要多年的专注练习。本课程将会提升你的技术写作技能，但不能立即把你变为一个杰出的技术写作者。
 
-# 语法基础
-本节介绍刚刚好的语法基础知识，以便能更好的理解后面的课程。如果你已经具备这些语法知识，可以直接跳到[单词](#单词)章节继续阅读。
+# 语法基础（可选）
+本单元介绍刚刚好的语法基础知识，以便能更好的理解后面的课程。如果你已经具备这些语法知识，可以直接跳到[单词](#单词)继续阅读。
 
-为了简单起见，本节采取了一些捷径，实际的语法主题比本节建议的复杂得多。
+为了简单起见，本单元采取了一些捷径，实际的语法主题比本单元建议的复杂得多。
 
 语法学家在词性的数量和和类型上并不完全一致。下表重点介绍与本课程相关的词性。
 
@@ -227,7 +227,7 @@ tags:
 
 # 主动语态
 
-技术写作中的绝大多数句子应该是主动语态。本节教你如何执行以下操作：
+技术写作中的绝大多数句子应该是主动语态。本单元教你如何执行以下操作：
 
 - 区分被动语态和主动语态。
 - 将被动语态转换为主动语态，因为主动语态通常更清晰。
@@ -328,7 +328,7 @@ tags:
 - 主动语态通常比被动语态更短。
 
 # 清晰的句子
-喜剧作家追求最有趣的结果，恐怖作家追求最恐怖的结果，技术作家追求最清晰的结果。在技​​术写作中，清晰度优先于所有其他规则。本节提供几种使句子清晰的方法。
+喜剧作家追求最有趣的结果，恐怖作家追求最恐怖的结果，技术作家追求最清晰的结果。在技​​术写作中，清晰度优先于所有其他规则。本单元提供几种使句子清晰的方法。
 
 ## 选择强动词
 许多技术写作者认为动词是语句中最重要的部分。选择恰当的动词，语句的其余部分都将顺理成章。不幸的是，一些写作者只重复使用了少量温和的动词，这就像每天为你的客人提供不新鲜的饼干和变软的生菜一样。选择正确的动词会花费更多时间，但会产生更令人满意的效果。
@@ -339,6 +339,7 @@ tags:
 - happen
 
 例如，考虑在以下句子中通过加强弱动词如何点燃一个更吸引人的句子：
+
 | 弱动词 | 强动词 |
 | ----- | ----- |
 | The exception **occurs** when dividing by zero. | Dividing by zero **raises** the exception. |
@@ -405,21 +406,603 @@ tags:
 寻找最短的文档实现需要时间，但最终是值得的。短句比长句能更有效地交流，短句通常比长句更容易理解。
 
 ## 一个句子只聚焦到一个想法上
+将每一句话聚集到一个想法、思想或概念上。就像程序中的语句执行单一的任务一样，句子也应该执行单个想法。例如，下面很长的句子中包含了多个想法：
+
+> The late 1950s was a key era for programming languages because IBM introduced Fortran in 1957 and John McCarthy introduced Lisp the following year, which gave programmers both an iterative way of solving problems and a recursive way.
+
+将长句子分解成一系列单一的句子会产生以下效果：
+
+> The late 1950s was a key era for programming languages. IBM introduced Fortran in 1957. John McCarthy invented Lisp the following year. Consequently, by the late 1950s, programmers could solve problems iteratively or recursively.
+
 ## 将长句子转换为列表
-## 消除或减少多余的单词
+
+许多冗长的技术语句中，都有一个渴望摆脱困境的清单。例如，考虑下面句子：
+> To alter the usual flow of a loop, you may use either a **break** statement (which hops you out of the current loop) or a **continue** statement (which skips past the remainder of the current iteration of the current loop).
+
+当你看到在长句子中存在连词 **or** 时，考虑将该句子重构为一个无序列表。当你看到长句中嵌入了项目或任务列表时，请考虑将该句子重构为无序或有序列表。例如，前面的例子中包含了连词 **or**，因此让我们将长句子转换为以下无序列表：
+
+> To alter the usual flow of a loop, call one of the following statements:
+> - **break**, which hops you out of the current loop.
+> - **continue**, which skips past the remainder of the current iteration of the current loop.
+
+
+## 消除或减少不必要的单词
+
+许多句子都包含填充词，即文本垃圾食品，它占用空间，对读者毫无营养。例如，看看是否能在以下句子中找到不必要的单词：
+
+> An input value greater than 100 causes the triggering of logging.
+
+用更短的动词 **triggers** 替换 **causes the triggering of** 将产生更简短的语句：
+
+> An input value greater than 100 triggers logging.
+
+通过练习，你会发现冗余的单词，并享受删除它们的快乐。例如，考虑以下句子：
+
+> This design document provides a detailed description of Project Frambus.
+
+短语 **provides a detailed description of** 可以缩减为 **describes** （或者动词 **details**），这样句子将变成：
+
+> This design document describes Project Frambus.
+
+下列表格列出了一些常见冗长的句子替换：
+
+| 冗长 | 简洁 |
+| --- | --- |
+| at this point in time | now |
+| determine the location of | find |
+| is able to | can |
+
 ## 减少从句（可选）
+
+一个 **从句** 是一个句子中的独立逻辑片断，其中包含一个主语和动作。每个句子包含以下内容：
+- 一个主句
+- 零个或多个从句
+
+从句会修改语句的思想。从句的名称意味着，从句没有主句重要。例如，考虑下面句子：
+
+> Python is an interpreted programming language, which was invented in 1991.
+> - main clause: Python is an interpreted programming language
+> - subordinate clause: which was invented in 1991
+
+你通常可以通过引入从句的单词来识别从句，下面列表（绝不完整）展示了引入从句的常见单词：
+- which
+- that
+- because
+- whose
+- until
+- unless
+- since
+
+有些从句以逗号开头，有些则不是。例如，以下句子中突出显示的从句以单词 **because** 开头但不包含逗号：
+
+I prefer to code in C++ **because I like strong data typing**.
+
+编辑时，仔细检查从句。在脑中记住 *一句话 = 一个想法* 的公式。句子中的从句是扩展单个概念还是分支成一个单独的概念？如果是后者，请考虑将有问题的从句分成单独的句子。
+
 ## 区分 that 和 which
+**That** 和 **which** 都是用来引入了从句的。他们之间有什么区别呢？好吧，在某些国家，这两个词几乎可以互换。不过，警觉的美国读者会愤怒地宣布，你又把这两个词弄混了。
+
+在美国，使用 **which** 从句意味着从句是不必要的部分，并使用 **that** 则表示句子不能没有从句。例如，以下句子中的关键信息是 *Python is an interpreted language*；如果没有 *Guido van Rossum invented*，这句话可以继续存在：
+
+> Python is an interpreted language, **which** Guido van Rossum invented.
+
+相反，下面语句要求一定要有 *don't involve linear algebra*：
+
+> Fortran is perfect for mathematical calculations **that** don't involve linear algebra.
+
+
+> If you read a sentence aloud and hear a pause just before the subordinate clause, then use which. If you don't hear a pause, use that. Go back and read the preceding two example sentences. Do you hear the pause in the first sentence?
+> 如果你大声朗读一个句子并在从句之前听到停顿，请使用 **which**。如果你没有听到停顿，请使用 **that**。返回并阅读前面的两个例句。你听到第一句话的停顿了吗？
+
+> Place a comma before which; do not place a comma before that.
+> 在 **which** 之前放置一个逗号；在 **that** 之前不要使用逗号。
 
 # 列表和表格
 
+好的列表可以将混乱转变为有序。技术文档的读者通常喜欢列表。因此，在写作时，尽可能将散文转为列表。
+
+## 选择正确的列表类型
+
+以下列表类型主导技术写作：
+- 无序列表（bullets lists）
+- 有序列表（numbered lists)
+- 嵌入式列表（embedded lists)
+
+未排序的项目使用无序列表；排序的项目使用有序列表。换句话说：
+- 如果你改变无序列表中项的顺序，列表的含义不会改变。
+- 如果你改变有序列表中项的顺序，列表的含义会改变。
+
+例如，下面我们使用了无序列表，因为改变项的顺序并不改变列表的含义：
+> Bash provides the following string manipulation mechanisms:
+> - deleting a substring from the start of a string
+> reading an entire file into one string variable
+
+相反，下面必须使用有序列表，因为改变列表项的顺序会改变列表的含义：
+> Take the following steps to reconfigure the server:
+> - Stop the server.
+> - Edit the configuration file.
+> - Restart the server.
+
+嵌入式列表（有些称为 **run-in** 列表）包含在一个句子中。例如，下面句子包含一个四个项的嵌入式列表.
+
+> The llamacatcher API enables callers to create and query llamas, analyze alpacas, delete vicugnas, and track dromedaries.
+
+通常来讲，嵌入式列表是一种展示技术信息较差的方法。尽量将嵌入式列表转化为有序列表或无序列表。例如，你应该将上面包含嵌入式列表的句子转换为下面语句：
+
+> The llamacatcher API enables callers to do the following:
+> - Create and query llamas.
+> - Analyze alpacas.
+> - Delete vicugnas.
+> - Track dromedaries.
+
+## 保持列表项平行
+有效列表与无效列表的区别是什么呢？有效列表是平行的；无效列表则相反。平行列表中的项看起来属于同一类。也就是说，平行列表中的所有项都能匹配以下参数：
+- 语法（grammer）
+- 逻辑类别（logical category）
+- 大小写（capitalization）
+- 标点符号（punctuation）
+
+相反，非平行列表中，至少有一项违背上述参数。
+
+例如，下面列表是一个平行列表，因为所有的项都是名词（语法），可食用（逻辑类别），小写（大小写），没有句号或分号（标点符号）。
+- carrots
+- potatoes
+- cabbages
+
+相反，下面列表的所有四个参数是不是平行的：
+- carrots
+- potatoes
+- The summer light obscures all memories of winter.
+
+下面列表是一个平行列表，因为所有项都是完整的句子，并且带有完整的句子大小写和标识符号：
+- Carrots contain lots of Vitamin A.
+- Potatoes taste delicious.
+- Cabbages provide oodles of Vitamin K.
+
+列表的第一项建立起了一种模式，读者希望在后续的列表项中看到同样的模式。
+
+## 有序列表项使用祈使动词开头
+考虑在所有的有序列表项都使用祈使动词开头。一个**祈使动词**是一个命令，例如 **打开** 或 **开始**。例如，注意下列平行列表中，所有的项都是以祈使动词开头的：
+
+1. Download the Frambus app from Google Play or iTunes.
+2. Configure the Frambus app's settings.
+3. Start the Frambus app. 
+
+下面有序列表是非平行列表，因为前两个项是以祈使动词开头的句子，但第三项却不是：
+
+1. Instantiate the Froobus class.
+2. Invoke the Froobus.Salmonella() method.
+3. The process stalls.
+
+## 正确使用标点符号
+如果列表项是一个句子，请使用首字母大写和标识符号。否则，不要使用首字句大写和标识符号。例如，下面列表项是一个句子，所以我们将 **Most** 中的 **M** 大写，并在句子末尾添加句号：
+
+- Most carambolas have five ridges.
+
+但是，下面列表项不是一个句子，所以将 **the** 中的 **t** 小写并且忽略句号：
+
+- the color of lemons
+
+## 创建有用表格
+分析型思维倾向于喜欢表格。给定一个包含多个段落和一个表格的页面，工程师的眼睛会被吸引到表格上。
+
+考虑下面创建表格的指南：
+- 用有意义的标题标记每一列。不要让读者猜测每一列的内容。
+- 避免在表格单元格中放入过多文本。如果一个表格单元格包含两个以上的句子，问问自己该信息是否属于其他格式。
+- 尽管不同的列可以保存不同类型的数据，但要在各个列中尽量做到并行性。例如，特定表格列中的单元格不应该是数字数据和著名马戏团表演者的混合体。
+
+> 注意：有些表格不能很好的展示所有格式的信息。例如，一个表格在你的笔记本上展示的很好，但在你的手机上看起来却很糟糕。
+
+## 介绍每个列表和表格
+我们建议在介绍每个列表和表格时用一个句子来告诉读者列表或表格代表什么。换句话说，给出列表或表格说明一下上下文。用冒号而不是句号结束介绍性句子。
+
+尽管不是必须的，我们仍然推荐在介绍语句中使用 **following** 这个单词。例如，参考下面的介绍语句：
+
+> The following list identifies key performance parameters:
+> 
+> Take the following steps to install the Frambus package:
+>
+> The following table summarizes our product's features against our key competitors' features:
+
 # 段落
+本单元介绍构建连贯段落的一些指导原则。在开始之前，先来一段鼓舞人心的话：
+
+> The work of writing is simply this: untangling the dependencies among the parts of a topic, and presenting those parts in a logical stream that enables the reader to understand you.
+> 
+> 写作的流程很简单：理清主题各部分的依赖关系，并以逻辑流的形式呈现各个部分，使读者能够理解你。
+
+## 写一个精彩的开头句
+
+开头句是任何段落中最重要的句子。没有时间的读者只会关注段落的第一个句子，有时会忽略后续的句子。因此，将精力集中在一个句子上。
+
+好的开头句奠定了段落的中心思想。例如，下面段落就是一个好的开头句：
+
+> A loop runs the same block of code multiple times. For example, suppose you wrote a block of code that detected whether an input line ended with a period. To evaluate a million input lines, create a loop that runs a million times.
+
+上面句子中，开头句将段落的主题确定为循环的介绍。相反，下面段落的开头句将读者引向错误的方向：
+
+> A block of code is any set of contiguous code within the same function. For example, suppose you wrote a block of code that detected whether an input line ended with a period. To evaluate a million input lines, create a loop that runs a million times.
+
+## 一个段落聚焦一个主题
+
+一个段落应该呈现一个独立的逻辑单元。将每个段落限定到当前主题上。不要描述将来的主题会发生什么或过去的主题会发生什么。当我们要修改时，一定要毫不犹豫地删掉（或移动到其它段落）和当前主题不相关的句子。
+
+例如，假设下面段落的开头句没有聚焦到正确的主题。你能否找出这些句子，并将其从下面段落中删除？
+
+> The Pythagorean Theorem states that the sum of the squares of both legs of a right triangle is equal to the square of the hypotenuse. The perimeter of a triangle is equal to the sum of the three sides. You can use the Pythagorean Theorem to measure diagonal distances. For example, if you know the length and width of a ping-pong table, you can use the Pythagorean Theorem to determine the diagonal distance. To calculate the perimeter of the ping-pong table, sum the length and the width, and then multiply that sum by 2.
+
+我们删除第二句和第五句话后（译者注：被删除的句子是描述三角形周长的），得出一个集中描述勾股定理的段落：
+
+> The Pythagorean Theorem states that the sum of the squares of both legs of a right triangle is equal to the square of the hypotenuse. ~The perimeter of a triangle is equal to the sum of the three sides~. You can use the Pythagorean Theorem to measure diagonal distances. For example, if you know the length and width of a ping-pong table, you can use the Pythagorean Theorem to determine the diagonal distance. ~To calculate the perimeter of the ping-pong table, sum the length and the width, and then multiply that sum by 2~.
+
+## 段落不要太长或太短
+长段落在视角上另人生畏。很长的段落形成了一个可怕的文字墙，读者会忽略掉。读者通常喜欢包含三至五个句子的段落。但是应该避免包含超过七个句子的段落。当进行修改时，考虑将一个很长的段落拆分成两个独立的段落。
+
+相反的，段落也不要太短。如果你的文档包含很多一句话的段落，则说明你的文档组织有问题。应该设法将这些一句话的段落组合成连贯的段落或者组织成列表。
+
+## 回答what，why 以及 how
+好的段落回答以下问题：
+- **What** - 告诉你的读者这是什么？
+- **Why** - 告诉你的读者为什么知道这很重要？
+- **How** - 读者应该如何使用这个知识？或者，如何让读者知道你的观点是正确的。
+
+例如，下面的段落回答了 What, Why 和 How:
+
+> <font color=red>\<Start of What\></font>The garp() function returns the delta between a dataset's mean and median. <font color=red>\<End of What\></font> <font color=red>\<Start of Why\></font> Many people believe unquestioningly that a mean always holds the truth. However, a mean is easily influenced by a few very large or very small data points.<font color=red>\<End of Why\></font> <font color=red>\<Start of How\></font>Call garp() to help determine whether a few very large or very small data points are influencing the mean too much. A relatively small garp() value suggests that the mean is more meaningful than when the garp() value is relatively high. <font color=red>\<End of How\></font>
 
 # 受众
+本文的作者认为你可能喜欢数学。因此本单元以一个公式开头：
+
+> good documentation = knowledge and skills your audience needs to do a task − your audience's current knowledge and skills
+> 
+> 好的文档 = 你的受众完成任务所需要的知识和技能 - 你的受众当前具备的知识和技能。
+
+换句话说，确保你的文档能提供你的受众需要但还不具备的信息。因此，本单元说明如何执行以下操作：
+
+- 定义受众。
+- 确定受众需要学习什么。
+- 让文档适合你的受众。
+
+就如这个[视频](https://youtu.be/eFtXIrmsMwI)所示，定位错误的受众可能会引起厌烦。
+
+## 定义受众
+认真的文档工作花费大量的时间和精力来定义受众。这些工作包括用户调查，用户体验研究和聚焦社区和文档测试。你也许没有充足的时间，所以本节采用了一种简单的方法。
+
+首先确定你受众群体的角色。示例角色如下：
+- 软件工程师
+- 技术人员，非工程师角色（例如技术经理）
+- 科学家
+- 科技领域的专业人员（例如医生）
+- 工科本科生
+- 工科研究生
+- 非技术岗位人员
+
+我们很欣慰的是，许多非技术人员具有出色的技术和数学技能。但是，角色仍然是定义受众时必不可少的一步。相同角色的受众通常对一些基础技术和知识有共识。例如：
+- 大部分软件工程师都知识著名的排序算法，[big O notation](https://en.wikipedia.org/wiki/Big_O_notation)和至少一门编程语言。因此，你可以假定软件工程师都知识 O(n) 的含义，但是你不能假定非技术人员知道 O(n)。
+- 对同一个项目研究，一份针面向医生的研究报告和面向非专业受众报纸文章看起来是非常不一样的。
+- 大学教授在解释一种新型机器学习方法时，面向研究生和一年级本科生所讲授的方法是完全不一样的。
+
+如果每个人都是相同的角色并拥有相同的知识，那么写作就会变得很容易。不幸的是，不同角色拥有的知识差异是非常大的。Amal 是一位Python专家，Sharon 对C++非常有经验, Micah 擅长 Java. Kara 喜欢 Linux，但David 只熟悉iOS。
+
+角色本身不足以定义受众。也就是说，你必须考虑受众对知识的 **接近程度**。Frombus 项目的软件工程师对相关的 Dingus 项目有所了解，但对无关的 Carambola 项目一无所知。普通的心脏专家比普通的软件工程师对耳朵问题的了解要多，但比听觉专家要少得多。
+
+时间也会造成差距。几乎所有的软件工程师都学过微积分。然而，大多数软件工程师在他们的工作中都不会用到微积分，因此他们对微积分知识逐渐淡忘。相反，经验丰富的工程师比同一项目中新来的工程师更了解当前的项目。
+
+### 受众样本分析
+下面是虚拟 Zylmon 项目的受众样本分析：
+
+Zylmon 项目的目标受众包括以下角色：
+- 软件工程师
+- 技术产品经理
+
+目标受众在以下方面具有相近的知识：
+- 我的目标受众已经了解Zyljeune API，它们与Zylmon API 有些相似。
+- 我的目标受众了解C++，但通常不会在新的Winged Victory 开发环境中构建 C++ 程序。
+- 我的目标受众在大学里学习过线性代数，但团队中的很多成员需要复习矩阵乘法。
+
+## 确定受众需要学习什么
+
+将你的目标受众完成目标需要学习的所有内容写到一个清单中。在某些情况下，列表中应该包含目标受众需要执行的任务。例如：
+
+> 在阅读文档后，受众将知道如何做以下任务：
+
+> - 使用 Zylmon API 按价格列出酒店。
+> - 使用 Zylmon API 按地理位置列出酒店。
+> - 使用 Zylmon API 按用户评分列出酒店。
+
+注意，你的受众有时必须按一定顺序完成任务。例如，在学习如何编写特定类型的程序时，你的受众可能需要学习如何在新的开发环境编译和构建程序。
+
+如果你正在写一个设计规范，那么你的列表应该关注你的受众应该学习的信息，而不是特定的任务。例如：
+
+> 阅读设计规范后，读者将会学到下面内容：
+
+> - Zylmon 优于 Zyljeune 的三个原因。
+> - Zylmon 花费 5.25 工程年来开发的五个原因。
+
+## 让文档适合你的受众
+写出满足你受众需求的文档需要有无私的同理心（unselfish empathy）。你必须合理的解释去满足受众而不是自己的好奇心。为了使文档适合你的受众，你如何迈出这一步呢？不幸的是，我们无法提供简单的答案。但是，我们可以提供一些需要重点关注的参数。
+
+### 词汇和概念
+让你的词汇与受众匹配。请参考 [单词](单词) 以获取帮助。
+
+注意亲近的影响。你团队中的人员可能理解你团队的缩写，但是，其它团队中的人员也理解相同的缩写吗？随着目标受众的扩大，假定你需要进行更多解释。
+
+同样，你软件团队中的成员可能理解团队项目的细节实现和数据结构，但是几乎其它所有人（包括团队中的新成员）都不了解。除非你是专门为团队中其它有经验的成员撰写的，否则你通常需要解释得比你预期的要多。
+
+### 知识的诅咒
+专家经常遭受 **知识的诅咒**，这意味着他们对某个主题的理解会破坏他们对新人的解释。作为专家，很容易忘记新手不知道，但你已经知道的知识。专家在引用细微的交互和深层系统时不会停下来解释，这可能让新手无法理解。
+
+从新手的角度来看，知识的诅咒就像模块尚未编译而导致的“文件找不到”的链接错误。
+
+### 简单的话
+英语已经成为全球技术交流的主要语言。但是，大部分技术读者更喜欢英语以外的其它语言。因此，倾向于简单的单词而不是复杂的单词，避免过时或过于复杂的单词。[多音节](https://www.google.com/search?q=sesquipedalian)和生僻词会使一些读者感到反感。
+
+### 文化客观和习语 
+保持你作品的文化客观。不需要读者了解 NASCAR, 板球或相扑的复杂性来了解软件的工作原理。例如，下面的句子——充满了像苹果派一样的美国棒球隐喻——可能会让巴黎读者感到困扰：
+
+> If Frambus 5.0 was a solid single, Frambus 6.0 is a stand-up double.
+
+**习语** 是一个短语，其整体含义不同于该短语中各个单词的字面含义。例如，下面短语就是习语：
+
+- a piece of cake<sup id="a1">[↩1](#f1)</sup>
+- Bob's your uncle<sup id="a2">[↩2](#f2)</sup>
+
+蛋糕？鲍勃？大多数美国读者都认识第一个习语；大多数英国读者认识第二个习语。如果你专门为英语读者而写，那么 *Bob's your uncle* 就可以了。但是如果你要为国际读者写作，那么这个任务完成后替换那个习语。
+
+习语在我们的演讲中根深蒂固，以至于习语的特殊非字面含义对我们来说不可见了。也就是说，习语是知识诅咒的另一种形式。
+
+请注意，受众中有些人使用翻译软件来阅读你的文档。比起简单朴素的英语，翻译软件往往在文化参考和习语方面很无力。
 
 # 文档
+你可以写出句子，也可以写出段落。你能将所有的这些段落组织成一份连贯的文档吗？
 
-# 标点符号
+## 陈述文档范围
+好的文档首先要定义它的范围。例如：
+
+> 本文描述了 Frambus 项目的总体设计。
+
+更好的文档还定义了它未覆盖的范围，即目标受众可以希望文档涵盖但文档实际没有覆盖的主题。例如：
+
+> 本文未涉及 Froobus 项目相关的技术设计。
+
+范围和非范围的陈述不仅使读者受益，而且使作者（你）受益。在编写时，如果文档的内容偏离陈述的范围（或非陈述的范围），则必须重新调整文档或修改文档的范围声明。当重新审视你的初稿时，请删除任何不满足范围陈述的部分。
+
+## 陈述你的受众
+好的文档明确指定它的受众。例如：
+
+> 本文面向的读者是：
+> - 软件工程师
+> - 项目经理
+
+除了受众角色之外，好的受众声明还可以指定任何预备知识或经验。例如：
+
+> 本文假设你了解矩阵乘法和反向传播的基础知识。
+
+在某些情况下，受众声明还应该指定先决条件的阅读或课程。例如：
+
+> 在阅读本文之前，你必须先阅读 "Project Froobus: A New Hope"。
+
+## 在开头总结关键观点
+
+工程师和科学家很忙，他们不一定会阅读全部76页的设计文档。想象一下，你的同行可能只阅读文档的第一段。因此，确保你的文档在开头回答读者的基本问题。
+
+专业的写作者将大量精力集中在第一页，以增加读者阅读下一页的机率。但是，任何长文档的第一页都是最难写的部分。因此，准备好多次修改页面。
+
+### 比较和对比
+
+在你的职业生涯中，无论你多么有创造性，你都将撰写具有真正革命性想法的宝贵文档。你的大部分工作将是渐进式的，建立在再有技术和概念的基础上。因此，请将你的想法和你受众已经理解的概念进行比较和对比。例如：
+
+> This new app is similar to the Frambus app, except with much better graphics.
+
+或者：
+
+> The Froobus API handles the same use cases as the Frambus API, except that the Froobus API is much easier to use.
+
+## 为受众写作
+
+本文反复强调定义你受众的重要性。在本节中，我们将重点放在定义受众作为组织文档的一种方式。
+
+### 定义受众的需求
+
+回答下面问题有助于你确定文件应该包含的内容：
+
+- 谁是你的目标受众?
+- 你目标受众的目的是什么？为什么要阅读这份文档？
+- 你的读者在阅读你的文档之前已经知道什么？
+- 你的读者在阅读你的文档后应该知道或能够做什么？
+
+例如，假设你发明了一种类似于快速排序的新型排序算法。以下列表包含对上述问题的潜在答案：
+
+- **谁是你的目标受众？** 目标受众是我组织内的所有软件工程师。
+
+- **你的目标受众的目的是什么？** 我的目标受众想要更有效的方法对数据排序。他们阅读这份文档来判断新的算法是否值得实现。
+
+- **你的读者在阅读你的文档之前已经知道什么？** 我的目标受众知道如何编码，并且在之前学习过排序算法，包括快速排序。但是，目标受众中的大部份人已经好几年没有实现或评估过排序算法了。
+
+- **你的读者在阅读你的文档后应该知道或能够做什么？** 我的目标受众在阅读文档后可以做以下事情：
+    - 知道该算法和快速排序算法的比较和对比结果。
+    - 识别该算法优于快速排序算法的两种数据集。
+    - 读者可以用所需的语言来实现算法。
+    - 识别该算法的两种性能下降的边界情况。
+
+### 组织文档以满足受众的需求
+
+在定义的受众的需求后，组织文档以帮忙读者获取他们所需。例如，基于上一节的回答，文档的大纲可能如下所示：
+
+1. 算法概述
+    - 和快速排序算法的对比，包括 Big O 复杂度
+        - 链接到 Wikipedia 快速排序文章
+    - 算法的最佳数据集
+2. 算法实现
+    - 算法伪代码实现
+    - 算法实现建议，包括常见错误
+3. 更深入的算法分析
+    - 边界情况
+    - 已知的未知情况
+
+# 标点（可选）
+本单元是可选的，提供了对标点符号的快速复习。
+
+## 逗号
+编程语言强制执行有关标点符号的明确规则。相较之下，在英语中，有关逗号的规则有些模糊。作为指导，在读者自然在句子中停顿的地方插入逗号。对于喜欢音乐的人来讲，如果句号是全音符休止符，那么逗号可能是半音符或四分音符休止符。换句话说，逗号停顿的时间要比句号短。例如，如果你大声阅读下面句子，你可能会在单词 *just* 之前短暂停顿：
+
+> C behaves as a mid-level language, just a couple of steps up in abstraction from assembly language.
+
+有些情况下需要逗号。例如，使用逗号分隔嵌入式列表中的项，如下所示：
+
+> Our company uses C++, Python, Java, and JavaScript.
+
+你也许想知道列表的最后的一个逗号，即插入项目N-1和N之间的逗号。这个逗号（称为 **serial comma** 或 **Oxford 逗号**）是有争议的。我们建议提供最后一个逗号，因为技术写作需要选择最少歧义的解决方案。也就是说，我们实际上更喜欢通过将嵌入列表转换为项目符号列表来避免争议。
+
+对于一个表达条件的句子，在条件和结果之间放置逗号。例如，下面两个句子在正确的位置放置了逗号。
+
+> If the program runs slowly, try the --perf flag.
+>
+> If the program runs slowly, then try the --perf flag.
+
+你还可以在一对逗号之间插入快速定义或题外句，如下示例所示：
+
+> Python, an easy-to-use language, has gained significant momentum in recent years.
+
+最后，避免使用逗号将两个独立的想法粘贴在一起。例如，下面句子中的逗号犯了称为**逗号拼接**的标点重罪：
+
+<font color="red">Samantha is a wonderful coder, she writes abundant tests. </font>
+
+使用句号而不是逗号将两个独立的想法隔开。例如：
+
+<font color="green">Samantha is a wonderful coder. She writes abundant tests.</font>
+
+## 分号
+
+句号分隔不同的思想；分号结合高度相关的思想。例如，下面句子中的分号是如何结合第一和第二部分的想法的：
+
+<font color="green">Rerun Frambus after updating your configuration file; don't rerun Frambus after updating existing source code.</font>
+
+在使用分号之前，问问你自己如何你将分号两侧的想法翻转，该句子是否仍然有意义。例如，反转前面的示例仍然是一个有效的句子：
+
+> Don't rerun Frambus after updating existing source code; rerun Frambus after updating your configuration file.
+
+分号前后的思想必须是语法完整的句子。例如，下面的分号是不正确的，因为分号后面的段落是一个[从句](https://developers.google.com/tech-writing/one/short-sentences#reduce_subordinate_clauses_optional)，并不是一个完整的句子。
+
+<font color="red">Rerun Frambus after updating your configuration file; not after updating existing source code.</font>
+
+推荐的写法是：
+<font color="green">Rerun Frambus after updating your configuration file, not after updating existing source code.</font>
+
+你几乎应该始终使用逗号而不是分号去分隔嵌入式列表的项。例如，下面句子中使用分号是错误的：
+
+<font color="red">Style guides are bigger than the moon; more essential than oxygen; and completely inscrutable.</font>
+
+正如前文提到，技术写作优先使用无序列表而不是嵌入式列表。但是，如果你真是喜欢嵌入式列表，使用逗号而不是分号去分隔列表项，如下列所示：
+
+<font color="green">Style guides are bigger than the moon, more essential than oxygen, and completely inscrutable.</font>
+
+很多句子在分号后面立即放置一个过渡词或短语。在这种情况下，在过渡词后放置一个逗号。注意下列两个示例中过渡词后面的逗号：
+
+> Frambus provides no official open source package for string manipulation; however, subsets of string manipulation packages are available from other open source projects.
+
+> Even seemingly trivial code changes can cause bugs; therefore, write abundant unit tests.
+
+## 破折号
+破折号是引入注意的标点符号，具有丰富的符号符号可能性。一个破折号代表一个比逗号更长的停顿——一个更大的中断。如果说逗号是四分音符休止符，那么破折号就是二分音符休止符。例如：
+
+> C++ is a rich language—one requiring extensive experience to master.
+
+写作者有时使用一对破折号来阻止题外话，如下例如示：
+
+> **Protocol Buffers**——often nicknamed **protobufs**——encode structured data in an efficient yet extensible format.
+
+我们可以在上述的示例中使用逗号而不是破折号吗？当然是可以的。为什么我们选择使用破折号而不是分号呢？感觉。艺术。经验。
+
+### 破折号和连字符
+
+考虑下表中的水平标点符号：
+
+| 名称 | 标点符号 | 相对宽度 |
+| --- | --- | --- |
+| em-dash | —— | 最宽（通常，相当于字母m的宽度）|
+| en-dash | — | 中等（通常，相当于字母n的宽度） |
+| hyphen | - | 最窄 | 
+
+一些风格指南推荐 **en-dash** 用于某种用途。然而，[谷歌风格指南（Google Style Guide）](https://developers.google.com/style/dashes#en-dashes)关于破折号直截了当的建议：
+
+> 不要使用。
+
+**连字符（hyphens）** 很棘手。在技术写作中，连字符用于复合术语中的单词连接，例如：
+
+- self-attention
+- N-gram
+
+令人困惑的是，三个词的复合术语通常在第一和第二个单词之间包含连字符，但不在第二和第三个单词之间使用。例如：
+
+- decision-making system
+- floating-point feature
+
+如果对连字符有疑问，请查阅字典，词汇表或样式指南。
+
+## 括号
+使用括号来表示次要观点和题外话。括号告诉读者，所附文本并不重要。由于附属的文本并不重要，所以有些编辑认为应该用括号括起来的文本不应该出现在文档中。作为一种妥协，在技术文档中应该尽量少用括号。
+
+关于句号和括号的规划并不清晰。以下是标准的规则：
+- 如果一对括号包含了整个句子，则句号放在圆括号内。
+- 如果一对括号使用了一个句子的结尾，但不并包含整个句子，则句号放在括号外面。
+
+例如：
+> (Incidentally, Protocol Buffers make great birthday gifts.)
+> 
+> Binary mode relies on the more compact native form (described later in this document).
 
 # Markdown
 
+**Markdown** 是一种轻量级的标记语言，许多技术专业人员使用它来创建和编辑技术文档。使用 Markdown, 你可以在普通文本编辑器（如vi 或 Emacs）中编写文本，插入特殊字符来创建标题，加粗，项目符号等。例如，下面示例展示一个用 Markdown 格式化的简单技术文档：
+
+> \#\# bash and ksh
+> 
+> \*\*bash\*\* closely resembles an older shell named \*\*ksh\*\*.  The key
+> \*practical\* difference between the two shells is as follows:
+> 
+> \*  More people know bash than ksh, so it is easier to get help for bash
+>   problems than ksh problems.
+> 
+
+上述技术文档会被渲染成如下样子：
+
+> ## bash and ksh
+>
+> **bash** closely resembles an older shell named **ksh**.  The key
+> *practical* difference between the two shells is as follows:
+>
+> *  More people know bash than ksh, so it is easier to get help for bash
+   problems than ksh problems.
+
+Markdown 解析器会将 Markdown 文件转换成 HTML。然后，浏览器将最终的 HTML 展示给读者。
+
+我们建议通过以下教程来熟悉 Markdown：
+- [www.markdowntutorial.com](https://www.markdowntutorial.com/)
+- [Mastering Markdown](https://guides.github.com/features/mastering-markdown/)
+
 # 总结
+
+技术写作一包含以下技术写作的基础课程：
+
+- 使用一致的术语。
+- 避免模棱两可的代词。
+- 首选主动语态而不是被动语态。
+- 选择具体的动词而不是模糊的动词。
+- 每个句子聚集到一个思想上。
+- 将一些长句转换成列表。
+- 移除不必要的单词。
+- 如果次序重要，使用有序列表；如果次序不无关，则使用无序列表。
+- 保持列表项的平行性。
+- 有序列表荐使用祈使动词开头。
+- 使用适合的方式介绍表格和列表。
+- 创建漂亮的开头句，以建立一个段落的中心思想。
+- 每个段落聚集到一个主题上。
+- 确定你的受众需要学习的内容。
+- 让文档更贴近你的受众。
+- 在文档开头处理建立文档的主要观点。
+
+
+
+<b id="f1">1</a>. 小菜一碟 [↩](#a1)
+<b id="f2">2</a>. 易如反掌 [↩](#a2)

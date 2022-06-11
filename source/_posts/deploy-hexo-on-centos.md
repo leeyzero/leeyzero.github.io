@@ -14,7 +14,6 @@ tags:
 
 CentOS 8.x
 
-
 ## 安装依赖环境
 
 - [Node.js](https://nodejs.org/en/download/)

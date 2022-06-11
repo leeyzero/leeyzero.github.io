@@ -272,7 +272,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:22:47" itemprop="dateModified" datetime="2022-05-08T23:22:47+08:00">2022-05-08</time>
+                <time title="Modified: 2022-06-11 20:27:16" itemprop="dateModified" datetime="2022-06-11T20:27:16+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -304,64 +304,14 @@
 <li><a target="_blank" rel="noopener" href="https://golang.org/ref/spec">The Go Programming Language Specification</a></li>
 <li><a target="_blank" rel="noopener" href="https://golang.org/doc/effective_go">Effective Go</a></li>
 </ul>
-<h2 id="基本原则"><a href="#基本原则" class="headerlink" title="基本原则"></a>基本原则</h2><p>正如文章 <a target="_blank" rel="noopener" href="https://blog.golang.org/codelab-share">Share Memory By Communicating</a> 所概括的：</p>
-<blockquote>
-<p><em>Do not communicate by sharing memory; instead, share memory by communicating.</em></p>
-</blockquote>
-<p>这跟传统多线程编程有着本质的区别：传统多线程编程是通过共享状态进行通信，为了防止共享状态存在竞争问题，通常是使用一些同步原语，如互斥量、临界区、信号量等对共享状态进行同步；而Go语言中的并发编程是通过使用channel在goroutine之间传递消息，这种能够保证在某一时刻goroutine能够对数据进行独占访问，不存在资源竞争问题。</p>
-<h2 id="Fan-out-Fan-in"><a href="#Fan-out-Fan-in" class="headerlink" title="Fan-out, Fan-in"></a>Fan-out, Fan-in</h2><p><strong>多个处理函数可以从同一个channel中读取数据，直到channel关闭，这称为Fan-out。同一个处理函数通过对多个输入channel进行多路复用，并将多个输入channel定向到一个单一的channel中，当多个输入channel均关闭后，将单一channel也关闭，这被称为Fan-in。</strong></p>
-<img src="/images/go-concurency-pattern/fan-out.png" alt="image" style="zoom:45%;" /> 
-
-<img src="/images/go-concurency-pattern/fan-in.png" alt="image" style="zoom:45%;" />
-
-<p>Fan-out, Fan-in有点像算法中的divide-conquer-combine。Fan-out模式提供一种分治处理的能力，将任务拆分成一组并发的worker进行处理，可以充分利用机器CPU和I/O。Fan-in则将各worker处理的结果进行合并，收拢到统一入口，可以对整体结果做一些加工处理。 </p>
-<h2 id="Pipeline"><a href="#Pipeline" class="headerlink" title="Pipeline"></a>Pipeline</h2><p><strong>在Go语言中，Pipeline是一系列通过channel连接的处理阶段，每个阶段可以理解为由一组goroutine运行的相同函数。</strong>对于每个阶段，goroutine的处理流程大致为：</p>
-<ul>
-<li>通过输入channel从上游（上一阶段）接收数据；</li>
-<li>处理数据并生成新的数据；</li>
-<li>将新生成的数据通过输出channel发送给下游（下一阶段）；</li>
-</ul>
-<p>除了第一个阶段和最后一个阶段外，每个阶段都有一个或多个输入和输出channel。第一个阶段被称为源（source）或生产者（producer），最后一个阶段，被称为槽（sink）或消费者（consumer）。</p>
-<p>对于pipeline的惯用法，有两条指导原则：</p>
-<ul>
-<li>对于每个阶段，当向输出channel发送完数据后应该即时关闭channel。</li>
-<li>对于每个阶段，持续从输入channel中读取数据，直到channel被关闭或被取消（下面会单独介绍取消操作）。</li>
-</ul>
-<h2 id="Timeout"><a href="#Timeout" class="headerlink" title="Timeout"></a>Timeout</h2><p>并发编程通常要处理超时的问题，在实际应用中，通过网络请求获取远端数据就是一个很典型的例子。为了不阻塞当前线程，通过需要在网络线程（也称为I/O线程）去发送网络请求，由于网络通常是不可靠的，通常需要设置一个超时时间，如果在既定的超时时间范围内，请求还是没有完成，就取消网络请求。</p>
-<p>在Go语言中通过Goroutine开启一个并发任务，通过channel在Goroutine之间通信，使用select对控制多个channel。对于timeout，可以直接使用标准库函数time.After，开启一个定时器，当到达指定时间后，定时器会往channel中发送一个消息，如下例：</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Request</span><span class="params">(query <span class="keyword">string</span>)</span> &lt;-<span class="title">chan</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(query <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">      	<span class="comment">// 模拟请求耗时较长</span></span><br><span class="line">        time.Sleep(<span class="number">3</span> * time.Second)</span><br><span class="line">        out &lt;- <span class="string">&quot;world&quot;</span></span><br><span class="line">    &#125;(query)</span><br><span class="line">    <span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    out := Request(<span class="string">&quot;hello&quot;</span>)</span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> result := &lt;-out:</span><br><span class="line">        fmt.Println(<span class="string">&quot;fetch result:&quot;</span>, result)</span><br><span class="line">    <span class="keyword">case</span> &lt;-time.After(<span class="number">1</span> * time.Second):</span><br><span class="line">        fmt.Println(<span class="string">&quot;timeout&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="Cancellation"><a href="#Cancellation" class="headerlink" title="Cancellation"></a>Cancellation</h2><p>除了超时控制之外，并发编程中另一个经常需要处理的问题就是取消操作。和超时控制类似，取消操作是指调用方可以在对运行的goroutine进行取消。考虑一个经典的生产-消息者模型：生产者持续生产消息，消息者持续消费消息，直到应用程序终止。</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">produce</span><span class="params">(done &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> <span class="built_in">close</span>(out)</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            <span class="keyword">select</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> &lt;-time.Tick(<span class="number">100</span> * time.Millisecond):</span><br><span class="line">                out &lt;- rand.Int() % <span class="number">100</span></span><br><span class="line">            <span class="keyword">case</span> &lt;-done:</span><br><span class="line">                fmt.Println(<span class="string">&quot;producer quit&quot;</span>)</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">consume</span><span class="params">(done &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;, ch &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            <span class="keyword">select</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> n := &lt;-ch:</span><br><span class="line">                fmt.Println(n)</span><br><span class="line">            <span class="keyword">case</span> &lt;-done:</span><br><span class="line">                fmt.Println(<span class="string">&quot;consumer quit&quot;</span>)</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    done := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span><br><span class="line">    out := produce(done)</span><br><span class="line">    consume(done, out)</span><br><span class="line">    time.Sleep(<span class="number">1</span> * time.Second)</span><br><span class="line">    <span class="built_in">close</span>(done)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>在以上例子中，我们使用done来通知各gorountime退出循环，使用select来控制多个channel的接收和发送，当main函数要退出时，关闭done，goroutime product和consumer会读取到这个变化，退出循环，这样就正确的退出的goroutine。其实Go标准库中的context包已经为我们提供了类似的功能，我们只需要简单改一下代码即可：</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">produce</span><span class="params">(ctx context.Context)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> <span class="built_in">close</span>(out)</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> &lt;-time.Tick(<span class="number">100</span> * time.Millisecond):</span><br><span class="line">				out &lt;- rand.Int() % <span class="number">100</span></span><br><span class="line">			<span class="keyword">case</span> &lt;-ctx.Done():</span><br><span class="line">				fmt.Println(<span class="string">&quot;producer quit&quot;</span>)</span><br><span class="line">				<span class="keyword">return</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">consume</span><span class="params">(ctx context.Context, ch &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> n := &lt;-ch:</span><br><span class="line">				fmt.Println(n)</span><br><span class="line">			<span class="keyword">case</span> &lt;-ctx.Done():</span><br><span class="line">				fmt.Println(<span class="string">&quot;consumer quit&quot;</span>)</span><br><span class="line">				<span class="keyword">return</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	ctx, cancel := context.WithCancel(context.Background())</span><br><span class="line">	<span class="keyword">defer</span> cancel()</span><br><span class="line">	out := produce(ctx)</span><br><span class="line">	consume(ctx, out)</span><br><span class="line">	time.Sleep(<span class="number">1</span> * time.Second)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p><a target="_blank" rel="noopener" href="https://blog.golang.org/pipelines">Go Concurrency Patterns: Pipelines and cancellation</a> 中给出了一个计算文件md5的实用程序，使用了pipline，fan-out, fan-in，cancellation等常用并发编程模式，是学习Go并发编程特别好的例子。整个代码才100余行就能实例md5sum的功能，而且效率还很高。在这个小程序中，使用pipeline将整个计算过程分成三个阶段：</p>
-<ul>
-<li>遍历目录</li>
-<li>计算文件md5</li>
-<li>收集计算结果</li>
-</ul>
-<p>我对原程序做了一点点修改，引入了context包用于cancellation，当遍历文件时任何一部出现错误时，可以进行优雅退出；同时对bounded concurency部分代码做了优化，使其更简洁和更具可读性，具体代码参考<a target="_blank" rel="noopener" href="https://github.com/leeyzero/go-tools/blob/main/md5sum.go">md5sum</a>。</p>
-<p>在这个例子中，还可以加入timeout超时控制，以指定程序的执行时长，如果在指定的超时时间内未完成所有文件的md5计算，则程序提示执行超时，进行退出。增加这个功能其实比较简单，可以直接使用context.WithTimeout实现，感兴趣的读者可以自己动手进行实现。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Go语言原生支持并发操作，go、channel都成为了一等公民，同时使用select可以对多路channel发送和接收进行控制，极大降低了并发编程的难度。首先一个基本原则是goroutine之间通过通信共享内存，在此基本上我们介绍和Fan-out, Fan-in，Pipeline，Timeout，Cancellation几个常用的Go并发编程模式，最后给出了一个综合应用的例子以强化以上基本概念。</p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1] <a target="_blank" rel="noopener" href="https://blog.golang.org/codelab-share">Share Memory By Communicating</a></p>
-<p>[2] <a target="_blank" rel="noopener" href="https://blog.golang.org/pipelines">Go Concurrency Patterns: Pipelines and cancellation</a></p>
-<p>[3] <a target="_blank" rel="noopener" href="https://blog.golang.org/concurrency-timeouts">Go Concurrency Patterns: Timing out, moving on</a></p>
-<p>[4] <a target="_blank" rel="noopener" href="https://blog.golang.org/context">Go Concurrency Patterns: Context</a></p>
-<p>[5] <a target="_blank" rel="noopener" href="https://encore.dev/blog/advanced-go-concurrency">Advanced Go Concurrency</a></p>
-<p>[6] <a target="_blank" rel="noopener" href="https://barrgroup.com/Embedded-Systems/How-To/RTOS-Mutex-Semaphore">Mutexes and Semaphores Demystified</a></p>
-<p>[7] <a target="_blank" rel="noopener" href="https://github.com/golang/go/wiki/Go-Community-Slides#rethinking-classical-concurrency-patterns">Rethinking Classical Concurrency Patterns</a></p>
-<p>[8] <a target="_blank" rel="noopener" href="https://talks.golang.org/2012/concurrency.slide#1">Go Concurrency Patterns</a></p>
-<p>[9] <a target="_blank" rel="noopener" href="https://talks.golang.org/2013/advconc.slide#1">Advanced Go Concurrency Patterns</a></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/07/02/go-concurrency-pattern/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -411,7 +361,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:24:00" itemprop="dateModified" datetime="2022-05-08T23:24:00+08:00">2022-05-08</time>
+                <time title="Modified: 2022-06-11 20:26:38" itemprop="dateModified" datetime="2022-06-11T20:26:38+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -437,28 +387,14 @@
           <p>最近又看了一遍 <a target="_blank" rel="noopener" href="http://web.mit.edu/saltzer/www/publications/endtoend/endtoend.pdf">End-To-End Argument In System Design</a>，有一些新的思考，但都集中在一些点上，不够系统，在此先记录下来，后续有新的想法再做补充和整理。</p>
 <h2 id="核心观点"><a href="#核心观点" class="headerlink" title="核心观点"></a>核心观点</h2><p>这篇论文在由MIT计算机科学实验室发表于1984年，是一篇非常经典的关于系统设计的论文。论文论证了分布式系统设计的一个事实：<strong>端到端的可靠通信只能由通信的两端（End-Point）来保证，而中间的媒介（如消息中间件、网关、路由器以及TCP协议栈等）只能提高通信效率，但无法保证通信两端的可靠性。</strong></p>
 <p><strong>在一个系统设计中，系统设计师的主要工作是对功能进行合理抽象，明确定义功能边界。</strong>将功能职责进行合理划分的设计原则是系统设计师最重要的工具之一，端到端设计原则便是这样的工具，它在分布式系统设计中，对功能职责的划分起了一定的指导作用。</p>
-<h2 id="举例说明"><a href="#举例说明" class="headerlink" title="举例说明"></a>举例说明</h2><p>论文中给出了一个两个主机间的文件传输为例来说明为什么端到端的可靠通信只能由通信的两端来保证。考虑要实现一个应用程序，用于将主机A上的文件传输到另一个远程主机B上。整个过程可以抽象以下5个步骤：</p>
-<p>1、在主机A上的应用程序按固定大小的块从主机A的磁盘中读取文件。</p>
-<p>2、在主机A上的应用程序将数据通过数据通信系统进行传输，数据通信系统使用某种数据传输协议，将数据拆分成数据包进行传输。</p>
-<p>3、数据通信网络将数据从主机A传输至主机B。</p>
-<p>4、在主机B上的应用程序从数据通信系统中按相册协议读取出数据。</p>
-<p>5、在主机B上的应用程序将接收到的数据写入主机B的磁盘上。</p>
-<p>在这个模型中，任何一步出错都会造成传输失败，主要有以下问题：</p>
-<p>1、假定文件被正确存储在A主机上，读取的时候，由于磁盘损坏等原因可能造成读取的数据不正确。</p>
-<p>2、在主机A或主机B上的应用程序，由于程序缺陷（比如拷贝数据错误等）造成数据错误。</p>
-<p>3、处理器或内存在拷贝、缓存时可能出现暂时的错误。</p>
-<p>4、通信过程可能出现位错误、丢包或重传等问题。</p>
-<p>5、在传输过程中主机可能出现崩溃。</p>
-<p>对于这个例子，如果我们先抛开两端（也就是主机A和主机B上的应用程序），在两端之间的中间媒介，如磁盘、内存、数据通信系统等即使通过冗余、错误检查、超时重试、故障恢复等手段保证其可靠性，仍然不能保证上述第2点出问题，也就是端本身造成的数据错误，最终还是需要端做相同的事情来保证可靠性。</p>
-<p>如果对上面的例子还是没理解，我再举一个现实生活中的例子，比如A跟B打电话，A告诉B他中彩票了。我们把A跟B当端点，在这个过程中，如果因为A或B的手机信号问题，造成B没有听清楚，那么这相当于是中间媒介故障造成这次通话异常；现在假设A和B的手机以及周围信号都没有问题（通过各种手段保证中间媒介的可靠性），A说的话能正常传达了B的手机（注意是B的手机），那是不是B就一定听到了呢？也不一定，有可能B此时正在想别的事情，或被其它人打扰而在大脑中没有接收到B传达的信息，这种情况就相当于上述两端的应用程序缺陷。此时B可以对A说，不好意思，没听清楚，你再说一遍，A重新说了一遍后B得知了A中彩票的消息，这种情况相当于上述说的端来保障通信可靠性。</p>
-<p>通过以述例子，我们知道端到端的通信只有两端才能保证可靠性，中间媒介层去做可靠性保证显得多余了，那是不是说中间媒体层就不需要做可靠性保证了呢？这就引出论文的另一个观点：<strong>中间媒介只能提高通信效率，而不能保证通信两端的可靠性</strong>。那如何理解这句话呢？</p>
-<p>就拿上述文件传输的例子，如果在一个网络非常差的环境下传输一个大文件，如果只靠端来保证可靠性的话，失败率必定非常高（通常来说，应用程数据分片拆分比网络传输的数据包大很多）。但如果在数据通信系统中（如TCP协议栈）支持数据超时重传、数据校验，那就会极大提升端系统的传输成功率。</p>
-<h2 id="正确识别端"><a href="#正确识别端" class="headerlink" title="正确识别端"></a>正确识别端</h2><p>那么怎么界定端呢？这个就需要根据实际需求来取舍了。比如对一个语音传输系统，如果端是人的话，是应该优先保证实时性，再考虑正确性，在传输过程中是可以容忍少许包损坏或噪音的；但如果端是一个录音程序，则需要优先考虑正确性，再考虑实效性，可以容忍延迟，但不能容忍包损坏或错误。</p>
-<h2 id="一些思考"><a href="#一些思考" class="headerlink" title="一些思考"></a>一些思考</h2><p>1、这篇论文对TCP/IP分层协议设计影响深远，分层增强了模块化，界定每个层次的功能职责，也就是降低了整体的复杂度。<strong>纵观整个软件发展的历史，其实就是在降低软件的复杂度，分层、模块化、设计模式、DDD、封装思想无一不是在解决软件复杂性这个问题。</strong>用Unix设计哲学来说就是KISS（Keep It Simple and Stupid）。</p>
-<p>2、<strong>设计的本质就是做trade-off</strong>，端到端设计原则只是提供一种指导思想，就想正确识别端中列举的例子，需要根据具体需求，更多的是根据现有资源，人力、物力、市场、基础设施等去做平衡来博取最大化ROI。</p>
-<p>3、<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/55311553">知乎</a> 上提到一种克服端到端的方法（其实本质上没有逃脱端到端原则），通过反转中间件和APP的角色（无处不在的依赖倒置原则），让中间件变成End-Point，当APP通过注入（inject）的方式成为中间件框架中的一部分逻辑。</p>
-<h2 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h2><p>[1]. <a target="_blank" rel="noopener" href="http://web.mit.edu/saltzer/www/publications/endtoend/endtoend.pdf">End-To-End Argument In System Design</a><br>[2]. <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/55311553">End to End Argument(可能是最重要的系统设计论文)</a></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/06/08/end-to-end-principle/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -508,7 +444,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:30:36" itemprop="dateModified" datetime="2022-05-08T23:30:36+08:00">2022-05-08</time>
+                <time title="Modified: 2022-06-11 20:26:30" itemprop="dateModified" datetime="2022-06-11T20:26:30+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -535,38 +471,14 @@
 <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><h3 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h3><p>在本地电脑上，一个文件可以用文件路径来标识。但对于dropbox需要支持共享目录，定义了名字空间（namespace）的概念，用于对传统文件系统的抽象。每一个共享目录有一个惟一的名字空间，每个用户有一个根名字空间，每个共享目录可以挂载（mount）到不同的用户根名字空间下。即对于dropbox的文件可以通过名字空间和相对路径&lt;namespace，relative path&gt;惟一标识。</p>
 <h3 id="文件格式"><a href="#文件格式" class="headerlink" title="文件格式"></a>文件格式</h3><p>受<a target="_blank" rel="noopener" href="https://rsync.samba.org/tech_report/tech_report.html">rsync算法</a>的启发，dropbox把每个文件被分割成4MB的块（最后一个块小于等于4MB）。每个块通过计算出的SHA-256进行标识，对于每个文件内容，可以通过一个块列表blocklist引用。比如，文件video.avi大小了14MB，可以分割成4个块h1, h2, h3, h4，我们说文件video.avi的块列表blocklist是[h1, h2, h3, h4]，如下图：</p>
 <p><img src="/images/dropbox-file-synchronization/dropboxfileformat1.png" alt="image"></p>
-<h2 id="服务器文件日志"><a href="#服务器文件日志" class="headerlink" title="服务器文件日志"></a>服务器文件日志</h2><p>服务器文件日志（The Server File Journal，SFJ）是一个大的文件元信息数据库，注意元信息中不包含文件内容，文件内容通过blocklist引用。服务器文件日志是一个不断追加的记录行，每一行代表文件的一个版本。每一行主要包含以下关键字段：</p>
-<ul>
-<li>名字空间ID（Namespace ID，NSID）</li>
-<li>名字空间下的相对路径（Namespace Relative Path）</li>
-<li>块列表（Blocklist）</li>
-<li>日志ID（Journal ID，JID），在名字空间下单调递增</li>
-</ul>
-<p>Dropbox主要有两种服务类型：</p>
-<p><strong>块数据服务</strong>（block-server）：维护一个key-value存储，key可以理解为每个块的hash值，数据是加密的。<br><strong>元数据服务</strong>（meta-server）：维护用户、名字空间、和SFJ数据库。</p>
-<h2 id="文件同步"><a href="#文件同步" class="headerlink" title="文件同步"></a>文件同步</h2><p>dropbox的文件同步需要客户端和服务器共同完成。如果记本地文件集合为S1，上次已同步的文件集合为S2，服务器文件集合为S3。通过对比S1、S2，可以找出本地文件变更；通过对比S2、S3，可以找出服务器端文件变更。找到文件变更后，客户端需要与服务器进行上传、下载操作，以完成文件同步。</p>
-<p>这里不讨论如何找出文件变更的实现方式，后面会针对这个主题单独写一篇。这里主要讨论dropbox客户端和服务器上传下载的交互流程。</p>
-<h3 id="上传"><a href="#上传" class="headerlink" title="上传"></a>上传</h3><p>文件变更后，如果重新上传整个文件，无疑会极大增加网络数据传输以及同步效率。上文提到dropbox是将数据按4MB进行分块，且元数据和数据分离，客户端跟服务器交互时主要分成了三个步骤：</p>
-<p>第一步客户端是跟meta-server交互，尝试将文件提交commit至指定的名字空间的路径下&lt;nsid，path&gt;。服务器需要检查：</p>
-<ul>
-<li>用户是否有权限访问这个名字空间</li>
-<li>文件的块列表是否存在</li>
-</ul>
-<p>成功后，服务器返回需要上传的块列表，交互流程如下：</p>
-<p><img src="/images/dropbox-file-synchronization/protocol11.png" alt="image"></p>
-<p>第二步是客户端跟data-server交互，上传第一步中服务器返回的需要上传的块列表数据，可以进行批量上传。流程如下：</p>
-<p><img src="/images/dropbox-file-synchronization/protocol21.png" alt="image"></p>
-<p>第三步其实跟第一步一样，再次将文件提交至指定名字空间的路径下，但这次必定会成功，因为所有文件块已经存在了。如果对于一个已经上传过的文件，由于之前这个文件已经上传过，所以第一步就会成功，这便是我们所说的“秒传”。</p>
-<p><img src="/images/dropbox-file-synchronization/protocol31.png" alt="image"></p>
-<p>经过上面三个步骤（秒传只需要一步），用户的文件就已经存储到了dropbox中。</p>
-<h3 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h3><p>下载是要将服务器侧的文件变更同步至本地，主要包括两个步骤，第一步是将服务器侧的文件meta变更同步至本地，第二步是将文件的数据下载至本地，在本地重新构造出变更后的文件。</p>
-<p>客户端首先跟meta-server交互，通过指定名字空间和该名字空间下的cursor，发起一个list调用以增量获取指定名字空间下的文件变更。每次获取到文件变更后，服务器同时还会返回一个新的cursor，客户端会缓存这个cursor以便下次调用时使用，具体流程如下：</p>
-<p><img src="/images/dropbox-file-synchronization/protocol41.png" alt="image"></p>
-<p>拿到变更后的文件元信息后，需要通过块列表blocklist重新构造文件数据。客户端首先检查这些块是否在本地已缓存，如果未找到，客户端会向block-server发起一个retrieve调用，下载具体块的数据，retrieve操作支持批量。当所有块都下载到本地后，客户端重新构造文件，并将其将添加到本地文件系统中。流程如下：</p>
-<p><img src="/images/dropbox-file-synchronization/protocol52.png" alt="image"></p>
-<h2 id="一些思考"><a href="#一些思考" class="headerlink" title="一些思考"></a>一些思考</h2><p>云盘属于个人云存储赛道，其核心竞争力在于存储成本、带宽成本、数据安全性以及用户基数（数据迁移成本高）。目前国内云盘C端市场竞争激烈，很难在沿用现有模式下有所突破，可以针对细分人群或场景下做差异化以寻找生存空间。</p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1]. <a target="_blank" rel="noopener" href="https://dropbox.tech/infrastructure/streaming-file-synchronization">Streaming File Synchroniztion</a></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/05/23/dropbox-file-synchronization/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -616,7 +528,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:35:36" itemprop="dateModified" datetime="2022-05-08T23:35:36+08:00">2022-05-08</time>
+                <time title="Modified: 2022-06-11 20:32:29" itemprop="dateModified" datetime="2022-06-11T20:32:29+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -643,41 +555,14 @@
 <h2 id="人才标准"><a href="#人才标准" class="headerlink" title="人才标准"></a>人才标准</h2><p>每个公司或团队都有一个正式的或非正式的人才要求，即你想要雇用什么样的人？这是招聘的总体准则，这个准则因公司或团队而异，但可简单的概括为：<strong>聪明且会做事情的人</strong>。</p>
 <p>聪明和会做事情的人并不能划等号。有的人的确很聪明，但并没有将其聪明才智用到正确的地方，容易分散团队的精力；只会做事情的人往往缺乏自己的思考，容易人云亦云，很难有培养空间。</p>
 <p>在面试的时候是可以区分出这两种类别的人的。聪明的人在沟通过程中比较顺畅，逻辑思维清晰，语言组织有条理，反映比较敏捷，对开放性的问题有自己独到的见解；会做事情的人通常需要从其过往学习、工作经验中进行考察，会做事情的人通常有始有终，对待工作认真尽责，有较强的团队合作能力。</p>
-<h2 id="面试前"><a href="#面试前" class="headerlink" title="面试前"></a>面试前</h2><p>面试前我会花几分钟快速浏览候选人的简历，主要包括候选人的学历，工作/项目经历，最后才关注候选人具备的技能。</p>
-<p>不可否认，学历是一个重要的筛选指标。它虽然并不能代表候选人的水平，但在一定程度上降低了招聘成本，从招聘的数据来看，好学校的候选人成功率的确比较高。项目经历是衡量候选人的重要指标，它是候选人过去能力的证明，通常有好的项目经历是有加分的。最后才关注候选人的技能，技能可以在工作中不断学习到，而且技能可能会随着技术的演进而被淘汰，相较于技能，我们更关注候选人解决问题的能力。</p>
-<p>通常，在面试前，我们准备一些问题，主要包括：</p>
-<ol>
-<li>候选人自我介绍</li>
-<li>一至两道笔试题</li>
-<li>对候选人最近工作中（过）的项目提问</li>
-<li>一些针对基础知识的开放性问题</li>
-<li>候选人提问 </li>
-</ol>
-<h2 id="面试中"><a href="#面试中" class="headerlink" title="面试中"></a>面试中</h2><p>在面试前，我通常会花30秒左右跟候选人寒暄一下，同时提前跟候选人说明一下我们的面视流程。对于现场面试，我通常会问候选人是怎么过来的，在路上花了多长时间，是否口渴；对于视频面试，我通常会问候选人网络是否稳定，面试软件是否用的顺手。面试开始前的闲聊主要是为了让候选人放松下来，而不至于一开始就进入紧张的面试环境。</p>
-<p>在征得候选人同意后，就开始进入正式面试环节。我会按照之前准备好的问题（也可能在面试过程中有所变化）进行提问。</p>
-<h3 id="自我介绍"><a href="#自我介绍" class="headerlink" title="自我介绍"></a>自我介绍</h3><p>我通常会让候选人先做一个简单的自我介绍，时间不超过3分钟。这个环节是为了让候选人推销自己，也让面试官从整体上了解候选人。这个环节按候选人的时间线正常简述就好，如果能突出一些履历亮点就更好了。但我发现，好多候选人分不清重点，在自我介绍环节就开始介绍项目中的细节，结果超时，不得不打断候选者。</p>
-<h3 id="笔试环节"><a href="#笔试环节" class="headerlink" title="笔试环节"></a>笔试环节</h3><p>由于主要面试的技术岗位，笔试环节是必不可少的。笔记环节主要考察候选人的代码功底、算法和数据结构基础知识。题目基本上是对基础算法、数据结构的一些应用，题目难度通常是简单或中等，时间通常在25分钟以内。为了提高面试效率，我们将笔试环节放到了前面，如果笔试不通过，除非候选人后面的表现非常好，不然很难通过面试。</p>
-<p>虽然现在有类似于像<a target="_blank" rel="noopener" href="https://leetcode.com/">leetcode.com</a>的面试网站。但笔试环节仍然能够考察候选人的一些水平，主要关注候选人下面内容的表现：</p>
-<p><strong>代码功底</strong></p>
-<p>代码是否正确实现功能？代码实现是否简洁？边界条件处理是否到位？函数、变量命名是否友好？代码功底是我们考察候选人最重要的一项指标，它反映了候选人的逻辑思维是否严谨，对细节的处理能力，对代码的品味以及工程素养。</p>
-<p><strong>解题速度</strong></p>
-<p>通常出的笔试题比较常规，不会出一些带智力性的笔试题，因为这并不能考察出候选人的水平。如果候选人在5分钟左右都没有思路，我们给一点提示，如果有必要，我会征求候选人同意换一个题目。解题速度通常反映候选人思维的敏捷性以及熟练程度，如果候选人在有思路的情况下也很难用代码实现，我们认为候选人在代码功底上有所欠缺。</p>
-<p><strong>理解/学习能力</strong></p>
-<p>如果候选人很快就做完了，我们会稍微变换一下题目，或加一些限制条件，进一步挖掘候选人的潜能。如果都能做出来，会是加分项。</p>
-<h3 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h3><p>这个环节主要考察候选人对基础知识的掌握程度，偏重于对系统、网络、数据库原理性的基础知识，时间大概10分钟左右。对于一些框架或中间件，如果候选人只是停留在会用的程度，一般不会进一步考察，个人认为这些东西只要认真看官方文档都可以掌握，没有什么区分度。</p>
-<p>如果对于刚毕业的学生，侧重于考察其对知识点掌握的深度；如果对于社招有经验的候选人，侧重于需要利用这些基础知识去解决带场景的开放性问题，主要考察候选人解决问题的能力。</p>
-<h3 id="项目经历"><a href="#项目经历" class="headerlink" title="项目经历"></a>项目经历</h3><p>通常会让候选人自己挑选一个他认为值得讲的项目进行深入了解。我会先让候选人简单描述一下整个项目的背景，他在项目中承担的角色以及个人贡献。这个过程通常可以考察候选人以下几点内容：</p>
-<p><strong>沟通能力</strong><br>沟通能力是一项非常重要的软素质，考察候选人是否有良好的沟通能力的一个简单标准就是看候选人能否将这个项目讲明白。每个项目都是背景和一些专有名词，候选人能否用通俗的语言向一个没有丝毫背景的人讲明白本身就是沟通能力的一种体现。</p>
-<p><strong>逻辑思维能力</strong><br>好的候选人在介绍时，通常逻辑清晰，层次分明，详略得当。不好的候选人通常抓不住重点，讲了很久也不知道他在说什么。</p>
-<p><strong>团队合作/领导力</strong><br>项目通常由一个或多个团队共同完成。好的候选人会主动体现自己在项目/团队中的价值和领导力。这实际上是一种能力的证明。</p>
-<p><strong>项目复杂度</strong><br>项目复杂度也是一个比较重要的参考指标，项目复杂度能直接反映出项目和团队的规模，从侧面则能反映出产品的用户量，系统的复杂性等。</p>
-<h3 id="候选人提问"><a href="#候选人提问" class="headerlink" title="候选人提问"></a>候选人提问</h3><p>这个环节对面试官来讲一般不会影响最后的决定。但不管候选人是否通过，如果候选人问起，我都会向其介绍我们的产品和团队情况，并表明我们愿意吸引更多的人才。</p>
-<h3 id="需要回避的问题"><a href="#需要回避的问题" class="headerlink" title="需要回避的问题"></a>需要回避的问题</h3><p>忌讳在面试中向候选人问一些关于个人隐私的问题，如婚姻、种族、宗教、性取向等问题。</p>
-<h2 id="面试后"><a href="#面试后" class="headerlink" title="面试后"></a>面试后</h2><p>在面试结束后，有个评分环节。通常在面试过程中已经有了答案，如果对候选人暂时不能做出判断，我通常的做法是不通过。</p>
-<p>对于团队来讲，我们期望招我们要想的人，如果自己都不确认，那进入团队后也会存在不确认性；对候选人来讲，如果他的确是优秀的，那么他一定能找到好的工作，不用为其惋惜。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>首先确定人才标准，面试前浏览候选人简历并提前准备好问题。面试过程主要包括候选人自我介绍、笔试环节、基础知识考察、项目经历考察、以及候选人提问。问题要具有开放性，主要考察候选人解决问题的能力而非事实性知识点，同时要回避一些个人隐私问题。最后，如果对候选人不确定是否要通过，答案是不通过。</p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1]. <a target="_blank" rel="noopener" href="https://www.joelonsoftware.com/2006/10/25/the-guerrilla-guide-to-interviewing-version-30/">The Guerrilla Guide to Interviewing (version 3.0)</a></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/05/05/talking-about-how-to-intervewing/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -727,7 +612,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:28:42" itemprop="dateModified" datetime="2022-05-08T23:28:42+08:00">2022-05-08</time>
+                <time title="Modified: 2022-06-11 20:30:36" itemprop="dateModified" datetime="2022-06-11T20:30:36+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -760,7 +645,6 @@
 <p>查看了一下X服务打开的socket句柄数:</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> lsof | grep `ps -ef | grep x-service | grep -v <span class="string">&#x27;grep&#x27;</span> | awk <span class="string">&#x27;&#123;print $2&#125;&#x27;</span>` | grep sock | wc -l</span></span><br><span class="line">10231</span><br></pre></td></tr></table></figure>
 
-
 <p>发现X服务打开的连接数非常多，达到10231个，看下实例的句柄数上限：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">unlimit</span> -n</span></span><br><span class="line">10240</span><br></pre></td></tr></table></figure>
 
@@ -772,30 +656,14 @@
 <p>发现大量accept调用报错，从日志信息可以看出，的确是系统的文件句柄数（FD）耗尽了，导致连接被reset掉，这也能说明为什么客户端侧看到了大量<code>connection reset by peer</code>错误了。</p>
 <p>X服务打开了大量socket文件句柄，且绝大多数连接状态都是CLOSE_WAIT，如果业务逻辑有阻塞的确可能会出现把句柄数数打满。</p>
 <p>分析了一下业务逻辑，业务逻辑本身不复杂，只有一次IO网络请求，是从数据库查询数据，从日志中发现了一些端倪：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">....</span><br><span class="line">cost:941.583774ms dbstats:&#123;60 60 60 0 25 1.13992ms 6 0&#125;</span><br></pre></td></tr></table></figure>
-
-<p>其中dbstats是mysql 数据库连接当前的一些统计信息，其结构DBStats定义在database/sql/sql.go中，如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; DBStats contains database statistics.</span><br><span class="line">type DBStats struct &#123;</span><br><span class="line">    MaxOpenConnections int &#x2F;&#x2F; Maximum number of open connections to the database.</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; Pool Status</span><br><span class="line">    OpenConnections int &#x2F;&#x2F; The number of established connections both in use and idle.</span><br><span class="line">    InUse           int &#x2F;&#x2F; The number of connections currently in use.</span><br><span class="line">    Idle            int &#x2F;&#x2F; The number of idle connections.</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; Counters</span><br><span class="line">    WaitCount         int64         &#x2F;&#x2F; The total number of connections waited for.</span><br><span class="line">    WaitDuration      time.Duration &#x2F;&#x2F; The total time blocked waiting for a new connection.</span><br><span class="line">    MaxIdleClosed     int64         &#x2F;&#x2F; The total number of connections closed due to SetMaxIdleConns.</span><br><span class="line">    MaxIdleTimeClosed int64         &#x2F;&#x2F; The total number of connections closed due to SetConnMaxIdleTime.</span><br><span class="line">    MaxLifetimeClosed int64         &#x2F;&#x2F; The total number of connections closed due to SetConnMaxLifetime.</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这种需要强调一下，golang实现的mysql连接驱动实现了连接池，可以设置连接池的大小等信息，Idle连接大小等。从这个日志信息中可以看出，业务逻辑在创建设置了连接池大小限制（MaxOpenConnections=60），处理请求时Idle的连接数为0，InUse的连接数已经达到连接池上限。这个请求耗时近1s，还有25个连接在等待处理。</p>
-<p>初步分析了一下，即便是流量过大，导致mysql连接池中的连接被用完，连接使用完后，也应该得到正常处理。且目前的流量已经下来了，但问题依然存在。仔细分析了一下golang对mysql连接池的实现，找到了连接池用完时的处理逻辑，代码在database/sql/sql.go，DB.conn函数中，如下：</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"> <span class="comment">// Out of free connections or we were asked not to use one. If we&#x27;re not</span></span><br><span class="line"> <span class="comment">// allowed to open any more connections, make a request and wait.</span></span><br><span class="line"> <span class="keyword">if</span> db.maxOpen &gt; <span class="number">0</span> &amp;&amp; db.numOpen &gt;= db.maxOpen &#123;</span><br><span class="line">     <span class="comment">// Make the connRequest channel. It&#x27;s buffered so that the</span></span><br><span class="line">     <span class="comment">// connectionOpener doesn&#x27;t block while waiting for the req to be read.</span></span><br><span class="line">     req := <span class="built_in">make</span>(<span class="keyword">chan</span> connRequest, <span class="number">1</span>)</span><br><span class="line">     reqKey := db.nextRequestKeyLocked()</span><br><span class="line">     db.connRequests[reqKey] = req</span><br><span class="line">     db.waitCount++</span><br><span class="line">     db.mu.Unlock()</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<p>当连接池中已打开的连接数超过设置的连接池上限时，会有一个阻塞操作，等待其它连接用完后放入连接池。这下问题就比较清晰了：</p>
-<p><strong>mysql打开一个连接时也是要占用fd资源的，当TCP服务器打开了大量的FD而没有释放，mysql连接池也在不断处理新的请求，当FD用完的时候，TCP服务器和mysql连接池都在等待对方释放FD资源来处理新的请求，导致双方均在等待对方释放FD，导致死锁。</strong></p>
-<p>问题修复就比较简单了，mysql连接池不设置上限，连接数瓶颈交给数据库代理层去解决。</p>
-<h2 id="复现"><a href="#复现" class="headerlink" title="复现"></a>复现</h2><p>为了在线下复现这种场景，我写一个简单服务端和客户端程序。mysql连接池的最大连接数设置的比较小（10个），在处理请求时打开一个mysql连接，同时sleep比较长的时间（600秒），这样就模拟了一个请求处理耗时比较长，导致TCP连接和数据库连接都得不到释放的情况。简单客户端程序开多线程高并发请该服务。</p>
-<p>一开始出现大量io time，当服务器上的FD打满后，开始出现connection reset by peer。由于客户端本地句柄数也有限制，多次运行客户端程序后开始稳定出现connection reset by peer的情况，服务端开始稳定出现open too many files; retrying in 1s错误。</p>
-<p><strong>注：以下代码只为复现问题，忽略一些错误处理，切勿用到生产环境</strong></p>
-<h3 id="模拟服务端"><a href="#模拟服务端" class="headerlink" title="模拟服务端"></a>模拟服务端</h3><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;database/sql&quot;</span></span><br><span class="line">    <span class="string">&quot;encoding/json&quot;</span></span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">    <span class="string">&quot;log&quot;</span></span><br><span class="line">    <span class="string">&quot;net/http&quot;</span></span><br><span class="line">    <span class="string">&quot;time&quot;</span></span><br><span class="line">    _ <span class="string">&quot;github.com/go-sql-driver/mysql&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> db *sql.DB</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">dbInit</span><span class="params">()</span></span> &#123;</span><br><span class="line">  	db, _ = sql.Open(<span class="string">&quot;mysql&quot;</span>, <span class="string">&quot;&#123;user&#125;:&#123;pass&#125;@tcp(&#123;host&#125;:&#123;port&#125;)/&#123;database&#125;?charset=utf8&quot;</span>)</span><br><span class="line">    db.SetMaxOpenConns(<span class="number">10</span>)</span><br><span class="line">    db.SetMaxIdleConns(<span class="number">2</span>)</span><br><span class="line">    db.Ping()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">dbStatsHandler</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">    s := db.Stats()</span><br><span class="line">    fmt.Fprintf(w, <span class="string">&quot;%+v&quot;</span>, s)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">dbQueryHandler</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">    start := time.Now()</span><br><span class="line">  	rows, err := db.Query(<span class="string">&quot;select &#123;fields&#125; from &#123;table&#125;&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      	log.Printf(<span class="string">&quot;db.Query fail.err:%v&quot;</span>, err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> rows.Close()</span><br><span class="line">    time.Sleep(<span class="number">600</span> * time.Second) <span class="comment">// 模拟请求长时间处理不完</span></span><br><span class="line">    fmt.Fprintf(w, <span class="string">&quot;cost:%s&quot;</span>, time.Since(start).String())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    dbInit()</span><br><span class="line">    http.HandleFunc(<span class="string">&quot;/test/db/query&quot;</span>, dbQueryHandler)</span><br><span class="line">    http.HandleFunc(<span class="string">&quot;/test/db/stats&quot;</span>, dbStatsHandler)</span><br><span class="line">    log.Fatal(http.ListenAndServe(<span class="string">&quot;:8000&quot;</span>, <span class="literal">nil</span>))</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-<h3 id="模拟客户端"><a href="#模拟客户端" class="headerlink" title="模拟客户端"></a>模拟客户端</h3><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;net&quot;</span></span><br><span class="line">    <span class="string">&quot;net/http&quot;</span></span><br><span class="line">    <span class="string">&quot;time&quot;</span></span><br><span class="line">    <span class="string">&quot;log&quot;</span></span><br><span class="line">    <span class="string">&quot;sync&quot;</span></span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    ConnectTimeoutMs = <span class="number">500</span></span><br><span class="line">    ReadWriteTimeoutMs = <span class="number">1000</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">dbQuery</span><span class="params">()</span></span> &#123;</span><br><span class="line">    tr := &amp;http.Transport&#123;</span><br><span class="line">        Dial: <span class="function"><span class="keyword">func</span><span class="params">(netw, addr <span class="keyword">string</span>)</span> <span class="params">(net.Conn, error)</span></span> &#123;</span><br><span class="line">            conn, err := net.DialTimeout(netw, addr, ConnectTimeoutMs*time.Millisecond)</span><br><span class="line">            <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">            &#125;</span><br><span class="line">            conn.SetDeadline(time.Now().Add(ReadWriteTimeoutMs * time.Millisecond))</span><br><span class="line">            <span class="keyword">return</span> conn, <span class="literal">nil</span></span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;</span><br><span class="line">    cli := &amp;http.Client&#123;Transport: tr&#125;</span><br><span class="line">    res, err := cli.Get(<span class="string">&quot;http://localhost:8000/test/db/query&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Printf(<span class="string">&quot;http GET fail.err:%v&quot;</span>, err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> res.Body.Close()</span><br><span class="line">    log.Println(<span class="string">&quot;http GET succ.&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">100</span>; i++ &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123; <span class="comment">// 开协程高并发请求</span></span><br><span class="line">            <span class="keyword">defer</span> wg.Done()</span><br><span class="line">            <span class="keyword">for</span> j := <span class="number">0</span>; j &lt; <span class="number">10000</span>; j++ &#123;</span><br><span class="line">                dbQuery()</span><br><span class="line">                time.Sleep(<span class="number">10</span> * time.Millisecond)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;()</span><br><span class="line">    &#125;</span><br><span class="line">    wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>database/sql实现了mysql连接池，如果设置了最大连接数。需要注意当前正在使用的连接数大于最大连接数时，新的连接请求只有等待连接池中的连接被释放后才能得到处理。database/sql提供了连接池当前的使用情况的一些计数信息，这些信息非常有参考价值，建议依赖mysql高并发的业务打印到日志，以便用于排查问题和调优。</p>
-<p>生产环境中的网络问题十分复杂，但如果你知道网络的一些基本原理，至少在主线上不会走偏。FD也是一种系统资源，同样会造成资源竞争问题。</p>
-<p>线上故障排查充分体现了基础知识的重要性。每年都有很多新技术出来，但计算机基础技术却很少有重大变革。很多新技术都是在现有技术基础上搭建起来的，身处在技术的海洋中，要把握住主线，不要舍本逐末，捡了芝麻丢了西瓜。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/04/24/trouble-shooting-for-serivce-hang/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -845,7 +713,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-22 11:04:18" itemprop="dateModified" datetime="2021-04-22T11:04:18+08:00">2021-04-22</time>
+                <time title="Modified: 2022-06-11 20:29:00" itemprop="dateModified" datetime="2022-06-11T20:29:00+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -873,70 +741,14 @@
 <h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><h3 id="宏观分析"><a href="#宏观分析" class="headerlink" title="宏观分析"></a>宏观分析</h3><p>对比故障发生的时候点，检查对应时间结点是否内部服务有上线，通常情况下，90%以上的故障都是由上线引起的。但排查后，业务侧并未上过线，排除是业务上线引入的故障。</p>
 <p>对比不同机房，服务部署在三个机房，记为机房A，机房B和机房C，发现耗时主要发生在机房A，机房B和机房C并不存在这个问题，怀疑是机房的网络链路问题。</p>
 <p>联系负责机房的同学一起排查，未发现网络链路问题。将某个接口所有的流量从机房A切到机房B，发该接口的耗时恢复到之前的水平，看起来的确像是出现机房A网络存在问题。但OP同学再三确认，未发现异常。</p>
-<h3 id="业务分析"><a href="#业务分析" class="headerlink" title="业务分析"></a>业务分析</h3><p>既然宏观层面看不出问题，那就从业务侧找具体case来分析。初步排查，所有接口耗时均有上涨，去除极端case，找一个平均接口耗时的接口进行分析，就称为接口a吧。先分析下这个接口的top 30耗时情况：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sed -nr <span class="string">&#x27;s/.*([0-9]&#123;2&#125;:[0-9]&#123;2&#125;:[0-9]&#123;2&#125;) logid=([0-9]+).*status=2 cost_time=([0-9]+) uri=&#123;api a&#125; .*/\1 \2 \3/p&#x27;</span> api_server.log | sort -k3 -nr | head -n 30</span></span><br><span class="line">1  09:12:07 4286155037 6751</span><br><span class="line">2  09:49:49 217512222 5873</span><br><span class="line">3  09:49:49 217544086 5816</span><br><span class="line">4  09:22:27 53384959 5135</span><br><span class="line">5  09:21:48 49524458 5120</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<p>上面命令是从日志中过滤出接口a的请求时间、logid、接口耗时（单位ms），发现耗时甚至还有不少5s以上的，随机找了一个耗时在3s左右的logid进行分析：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> grep 182288849 api_server.log&#123;,.wf&#125;</span></span><br></pre></td></tr></table></figure>
-
-<p>上面命令通过logid串联对应的一次请求的所有日志。结合代码和日志分析，发现从接收到请求到开始请求下游服务的过程中就耗时了3s，这中间只有一个网络请求，跟本机一个http服务（以下简称为ServiceA）交互，也就是说是走的环回网络。</p>
-<p><strong>通常情况下，请求环回网络耗时应该在1ms以内（也要看具体业务场景）</strong>，但该请求耗时却超过3s。</p>
-<p>目前来看，这3s要么是业务侧发的慢，要么是ServiceA吐数据慢，或者是网络传输慢。之前排查网络环境，并未发现异常，所以这个耗时要么是ServiceA引起的，要么是业务侧引起的。</p>
-<h3 id="定点分析"><a href="#定点分析" class="headerlink" title="定点分析"></a>定点分析</h3><p>由于同一个logid是可以串联出ServiceA的，ServiceA是用nginx起的一个http server，串联出日志后发现ServiceA处理请求很快，$request_time为0，nginx官方对$request_time的定义是：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$request_time</span><br><span class="line">request processing time in seconds with a milliseconds resolution; time elapsed between the first bytes were read from the client and the log write after the last bytes were sent to the client</span><br></pre></td></tr></table></figure>
-
-<p>以上定义是说，$request_time是nginx在读取到客户端的第一个字节到发送数据给客户端之间的时间，看起来ServiceA处理请求很快呀。但耗时也可能发生在ServiceA建立好连接后到读取数据之间。看来只能抓包看了。</p>
-<p>抓包工具非tcpdump不可了（注意，tcpdump需要管理员权限）。但如何抓取出出现长耗时的包呢，主要有两个难点：</p>
-<ul>
-<li>耗时的请求不是稳定复现。</li>
-<li>如何从pcap包中过滤出耗时较长，且跟serviceA交互的完整请求TCP包？</li>
-</ul>
-<p><strong>思路：tcpdump工具的-A命令可以打印出数据包的ASCII值，由于请求交互时都带了logid，可以通过logid把完整的TCP包过滤出来。</strong>具体流程如下：</p>
-<p>1、先用tcpdump抓环回网卡lo在8240端口上的所有数据包并dump到文件中（serviceA监听8240端口）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ tcpdump -i lo -n tcp port 8240 -A -w data.pcap</span><br></pre></td></tr></table></figure>
-
-<p>2、每分钟统计一次机器上长耗时情况，当发现出现长耗时（大于2s）的接口请求时，停止抓包。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ grep &#39;serviceA reqest_cost&#39; api_server.log | grep &#39;14 21:36&#39; | sed -nr &#39;s&#x2F;.*logId&#x3D;\[([0-9]+)\].*serviceA_cost&#x3D;([0-9]+\.[0-9]+).*&#x2F;\1 \2&#x2F;p&#39; | sort  -k2 -nr | head -n 10</span><br></pre></td></tr></table></figure>
-<p>3、通过长耗时请求的logid串联出对应的serviceA的日志</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ grep &#123;logid&#125; &#x2F;path&#x2F;to&#x2F;serviceA&#x2F;logs&#x2F;access.log</span><br></pre></td></tr></table></figure>
-<p>通过日志串联，可以拿到客户端的ip和port</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">remote_addr&#x3D;127.0.0.37 remote_port&#x3D;19001</span><br></pre></td></tr></table></figure>
-<p>4、通过logid在pcap中找到对应的TCP包</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ fgrep -a -n &#39;310955179&#39; -B 10</span><br></pre></td></tr></table></figure>
-<p>同样，通过日志串联在pcap中拿到serviceA的ip和端口</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Host: 127.0.0.37:8240</span><br></pre></td></tr></table></figure>
-
-<p>5、通过源主机ip，port和目标主机的ip，port过滤网络包</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ tcpdump -i lo -n &#39;(src host 127.0.0.37 and src port 19001 and dst host 127.0.0.37 and dst port 8240) or (dst host 127.0.0.37 and dst port 19001 and src host 127.0.0.37 and src port 8240)&#39; -r data.pcap -vv</span><br><span class="line">reading from file data1.pcap, link-type EN10MB (Ethernet)</span><br><span class="line">21:36:05.843275 IP (tos 0x0, ttl 64, id 16029, offset 0, flags [DF], proto TCP (6), length 60)</span><br><span class="line">    127.0.0.37.19001 &gt; 127.0.0.37.8240: Flags [S], cksum 0x7e96 (correct), seq 2331035588, win 32792, options [mss 16396,sackOK,TS val 1513486681 ecr 0,nop,wscale 8], length 0</span><br><span class="line">21:36:05.843312 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 60)</span><br><span class="line">    127.0.0.37.8240 &gt; 127.0.0.37.19001: Flags [S.], cksum 0x04ed (correct), seq 476776886, ack 2331035589, win 32768, options [mss 16396,sackOK,TS val 1513486681 ecr 1513486681,nop,wscale 8], length 0</span><br><span class="line">21:36:05.843339 IP (tos 0x0, ttl 64, id 16030, offset 0, flags [DF], proto TCP (6), length 52)</span><br><span class="line">    127.0.0.37.19001 &gt; 127.0.0.37.8240: Flags [.], cksum 0xed91 (correct), seq 1, ack 1, win 129, options [nop,nop,TS val 1513486681 ecr 1513486681], length 0</span><br><span class="line">21:36:05.843422 IP (tos 0x0, ttl 64, id 16031, offset 0, flags [DF], proto TCP (6), length 337)</span><br><span class="line">    127.0.0.37.19001 &gt; 127.0.0.37.8240: Flags [P.], cksum 0xff8d (incorrect -&gt; 0xc320), seq 1:286, ack 1, win 129, options [nop,nop,TS val 1513486681 ecr 1513486681], length 285</span><br><span class="line">21:36:05.843442 IP (tos 0x0, ttl 64, id 61678, offset 0, flags [DF], proto TCP (6), length 52)</span><br><span class="line">    127.0.0.37.8240 &gt; 127.0.0.37.19001: Flags [.], cksum 0xec70 (correct), seq 1, ack 286, win 133, options [nop,nop,TS val 1513486681 ecr 1513486681], length 0</span><br><span class="line">21:36:08.905498 IP (tos 0x0, ttl 64, id 61679, offset 0, flags [DF], proto TCP (6), length 471)</span><br><span class="line">    127.0.0.37.8240 &gt; 127.0.0.37.19001: Flags [P.], cksum 0x0014 (incorrect -&gt; 0xd2df), seq 1:420, ack 286, win 133, options [nop,nop,TS val 1513489743 ecr 1513486681], length 419</span><br><span class="line">21:36:08.905522 IP (tos 0x0, ttl 64, id 16032, offset 0, flags [DF], proto TCP (6), length 52)</span><br><span class="line">    127.0.0.37.19001 &gt; 127.0.0.37.8240: Flags [.], cksum 0xd2e1 (correct), seq 286, ack 420, win 133, options [nop,nop,TS val 1513489743 ecr 1513489743], length 0</span><br><span class="line">21:36:08.905647 IP (tos 0x0, ttl 64, id 16033, offset 0, flags [DF], proto TCP (6), length 52)</span><br><span class="line">    127.0.0.37.19001 &gt; 127.0.0.37.8240: Flags [F.], cksum 0xd2e0 (correct), seq 286, ack 420, win 133, options [nop,nop,TS val 1513489743 ecr 1513489743], length 0</span><br><span class="line">21:36:08.905672 IP (tos 0x0, ttl 64, id 61680, offset 0, flags [DF], proto TCP (6), length 52)</span><br><span class="line">    127.0.0.37.8240 &gt; 127.0.0.37.19001: Flags [.], cksum 0xd2df (correct), seq 420, ack 287, win 133, options [nop,nop,TS val 1513489744 ecr 1513489743], length 0</span><br></pre></td></tr></table></figure>
-
-<p>从TCP数据包来看：</p>
-<ul>
-<li>21:36:05.843275，开始建立连接</li>
-<li>21:36:05.843339，已完成三次握手</li>
-<li>21:36:05.843422，客户端发起请求</li>
-<li><strong>21:36:05.843442，服务端确认</strong></li>
-<li><strong>21:36:08.905498，服务端吐数据</strong></li>
-<li>21:36:08.905522，客户端确认</li>
-<li>….</li>
-<li>21:36:08.905672，连接断开</li>
-</ul>
-<p>从TCP数据包来看，服务端在收到请求后，立即确认（内核行为），但吐数据却是在3s后，进一步确认serviceA服务的问题。</p>
-<h3 id="进程分析"><a href="#进程分析" class="headerlink" title="进程分析"></a>进程分析</h3><p>虽然已经确认是serviceA的问题导致，但我还是进一步分析，是什么造成nginx在吐数据的时候出现阻塞。nginx是单线程执行，通过阻塞操作出现一些系统调用上上，如写磁盘IO、网络IO、锁等。strace是分析进程系统调用的利器。</p>
-<p>1、ps查看serviceA进程</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ps -ef | grep nginx</span><br></pre></td></tr></table></figure>
-
-<p>2、strace查看系统调用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 这个地方可以使用-e trace&#x3D;write过滤系统调用，这个地方不过滤是想看看是不是其它系统调用引起的</span><br><span class="line">$ strace -p30578 -tt -i -T </span><br></pre></td></tr></table></figure>
-<p>日志比较多，但开启几分钟后出现了的确出现了3s左右的阻塞。具体日志就不贴出来了，从日志中可以看出：有大文件写入操作，文件大小22M。fd=4 close后有两次释放内存操作，耗时也比较小，但从11:10:12的munamp到11:10:14 write日志中间花了2s+。</p>
-<p>经负责serviceA的同学分析后，发现主要耗时是在json序列化写磁盘以及lua map的deep copy操作。</p>
-<p>最后回答一下为什么只有机房A出现耗时上涨：因为serviceA在部署在了机房A，另外两个机房还未部署。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li>问题的产生总有它的原因，当没有思路时，停下来仔细梳理每一个细节，大胆猜想，小心求证。</li>
-<li>由于现在普遍采用微服务架构，服务间依赖关系比较多。但排查问题的流程却并不完善，出现问题时，应该让整条数据链路上的值班同学参与到故障排查中，而不是问题症状方去全链路排查, 这样率非常低。</li>
-<li>系统、网络等基础知识非常重要，有助于你尽快发现问题、收敛问题。</li>
-<li>熟练使用常用工具，提升排查问题效率。</li>
-</ul>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/04/18/trouble-shooting-for-request-cost-incr/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -986,7 +798,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:34:11" itemprop="dateModified" datetime="2022-05-08T23:34:11+08:00">2022-05-08</time>
+                <time title="Modified: 2022-06-11 20:35:15" itemprop="dateModified" datetime="2022-06-11T20:35:15+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1016,81 +828,14 @@
 <li>团队工程师文化传承</li>
 <li>团队成员间知识/经验分享</li>
 </ul>
-<h2 id="3-代码评审人角度"><a href="#3-代码评审人角度" class="headerlink" title="3. 代码评审人角度"></a>3. 代码评审人角度</h2><h3 id="3-1-基本原则"><a href="#3-1-基本原则" class="headerlink" title="3.1. 基本原则"></a>3.1. 基本原则</h3><blockquote>
-<p>变更列表（CL，Change List）应该让整体代码库更加整洁。</p>
-</blockquote>
-<p>整洁可以从两个层面来理解：对代码来身来讲，每次变更应该需要更好的可读性；对系统来讲，每次变更应该让系统工作地更好；换句话说，我们应该拒绝那些让代码库变得更糟的变更列表。</p>
-<h3 id="3-2-浏览变更列表"><a href="#3-2-浏览变更列表" class="headerlink" title="3.2. 浏览变更列表"></a>3.2. 浏览变更列表</h3><ul>
-<li><strong>浏览整体变更</strong></li>
-</ul>
-<p>查看变更信息，理解当前变更主要是干什么？当前变更是否合理？</p>
-<ul>
-<li><strong>检查变更列表的主要部分</strong></li>
-</ul>
-<p>检查变更列表文件，通常来说，这些变更列表都是按一定的逻辑结构组织的，浏览变更列表文件可能对变更有一个整体的认识。检查当前变更列表是否太大，能否拆分成多个变更列表？这些变更文件是否跟当前变更主题有关？</p>
-<ul>
-<li><strong>按合理顺序查看</strong></li>
-</ul>
-<p>按合理的逻辑顺序查看变更，比如按接口维度。</p>
-<h3 id="3-3-Code-Review具体需要做什么"><a href="#3-3-Code-Review具体需要做什么" class="headerlink" title="3.3. Code Review具体需要做什么"></a>3.3. Code Review具体需要做什么</h3><ul>
-<li><strong>设计（Design）</strong></li>
-</ul>
-<p>代码实现和对应的设计是否合理？</p>
-<ul>
-<li><strong>功能性（Functionality）</strong></li>
-</ul>
-<p>代码实现的功能是否是代码提供者预期的？这些功能是否符合用户预期？</p>
-<ul>
-<li><strong>复杂度（Complexity）</strong></li>
-</ul>
-<p>代码实现是否可以更简单？其它人在使用或维护代码时是否能理解？</p>
-<ul>
-<li><strong>测试（Tests）</strong></li>
-</ul>
-<p>当前变更是否能通过单元测试（Unit Test）、集成测试（Integration Test）、端到端测试（End-to-End Test）？测试是否覆盖到当前变更？</p>
-<ul>
-<li><strong>命名（Naming）</strong></li>
-</ul>
-<p>变量名、函数名、类名、包名是否合理？命名是否容易理解？</p>
-<ul>
-<li><strong>注释（Comments）</strong></li>
-</ul>
-<p>注释是否清晰或容易理解？</p>
-<ul>
-<li><strong>风格（Style）</strong></li>
-</ul>
-<p>代码风格是否符合规范？尽量持有包容的心态，遵循团队已有代码规范。</p>
-<ul>
-<li><strong>文档（Documention）</strong></li>
-</ul>
-<p>如果当前变更涉及到客户使用，如果接口变更，编译脚本变更等，代码提交人是否同步更新了相关文档？</p>
-<ul>
-<li><strong>上下文（Context）</strong></li>
-</ul>
-<p>通常代码diff工具只展示代码变更的行，但这可能会忽略到一些重要信息。</p>
-<h3 id="3-4-Code-Review的速度"><a href="#3-4-Code-Review的速度" class="headerlink" title="3.4. Code Review的速度"></a>3.4. Code Review的速度</h3><blockquote>
-<p>尽快开始做Code Review，原则上不要跨天</p>
-</blockquote>
-<p>Code Review是需要Commiter和Reviewer高度配合的。通常可能存在以下问题：</p>
-<ul>
-<li>评审人当前正在进行其它工作，不能立即开始做Code Review</li>
-<li>代码提交者提交的变更列表过大，Reviewer需要花费比较大的精力</li>
-<li>紧急情况</li>
-</ul>
-<h3 id="3-5-写评论"><a href="#3-5-写评论" class="headerlink" title="3.5. 写评论"></a>3.5. 写评论</h3><ul>
-<li>礼貌用语</li>
-<li>用简洁的语言指出问题并解释原因</li>
-<li>最好提供指导方案：Reviewer只是提供建议，最终是由Committer修复</li>
-</ul>
-<h2 id="4-代码提交人角度"><a href="#4-代码提交人角度" class="headerlink" title="4. 代码提交人角度"></a>4. 代码提交人角度</h2><h3 id="4-1-变更说明"><a href="#4-1-变更说明" class="headerlink" title="4.1. 变更说明"></a>4.1. 变更说明</h3><p>一句话清晰描述变更意图，尽量用中文。</p>
-<h3 id="4-2-变更列表"><a href="#4-2-变更列表" class="headerlink" title="4.2. 变更列表"></a>4.2. 变更列表</h3><p>变更列表应该尽量”小”。这里的小没有严格定义，可以按逻辑单元进行组织，一次变更列表代码行数最好不要超过200行。</p>
-<h3 id="4-3-处理评论"><a href="#4-3-处理评论" class="headerlink" title="4.3. 处理评论"></a>4.3. 处理评论</h3><ul>
-<li>礼貌用语，解释原因</li>
-<li>修复评审代码，提交patch</li>
-<li>解决冲突</li>
-</ul>
-<h2 id="5-参考资料"><a href="#5-参考资料" class="headerlink" title="5. 参考资料"></a>5. 参考资料</h2><p>[1]. <a target="_blank" rel="noopener" href="https://google.github.io/eng-practices/review/">Code Review Developer Guide Introduction</a><br>[2]. <a target="_blank" rel="noopener" href="https://thenewstack.io/linkedin-code-review/">LinkedIn’s Tips for Highly Effective Code Review</a><br>[3]. <a target="_blank" rel="noopener" href="https://blog.palantir.com/code-review-best-practices-19e02780015f">Code Review Best Practices</a></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/04/02/how-to-do-a-code-review/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1140,7 +885,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:30:24" itemprop="dateModified" datetime="2022-05-08T23:30:24+08:00">2022-05-08</time>
+                <time title="Modified: 2022-06-11 20:26:07" itemprop="dateModified" datetime="2022-06-11T20:26:07+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1240,7 +985,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:28:58" itemprop="dateModified" datetime="2022-05-08T23:28:58+08:00">2022-05-08</time>
+                <time title="Modified: 2022-06-11 20:35:40" itemprop="dateModified" datetime="2022-06-11T20:35:40+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1270,21 +1015,14 @@
 <li>消息系统收到大量重复ACK；</li>
 <li>业务worker消费到大量重复的消息；</li>
 </ul>
-<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>从表象来看，出现了大量重复消息，周末是禁止上线了，上下游也均没有上线通告，排除上线引起。同时也咨询了运营、市场的同学，并没有做相关的运营活动，从gateway的流量来看，也没有大的波动。初步判断是在某种条件下触发了系统的BUG或是存在雪崩的可能。</p>
-<p>分析线上日志和模块代码，排除是业务层面发送重复消息的可能性，把范围缩小到了消息系统本身。消息系统在消息超时会将消息重放入队列中，但从逻辑来看，最多也就重放6次（可配置）。但线上个别消息重放次数达到几十万甚至上百万，仔细分析了日志和代码，发现问题出在以下代码：</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tm := time.Unix(timestamp, <span class="number">0</span>)</span><br></pre></td></tr></table></figure>
-
-<p>以上代码去掉了业务逻辑，但这段代码的确是造成这个问题的根本原因。这行代码的目的是使用指定的时间戳生成一个时间格式串的Redis key，消息系统的多个实例会通过本地时间来共享该Key。这个函数的说明如下：</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Unix</span><span class="params">(sec <span class="keyword">int64</span>, nsec <span class="keyword">int64</span>)</span> <span class="title">Time</span></span></span><br><span class="line"></span><br><span class="line">Unix returns the local Time corresponding to the given Unix time, sec seconds and nsec nanoseconds since January <span class="number">1</span>, <span class="number">1970</span> UTC.</span><br></pre></td></tr></table></figure>
-
-<p>注意，<strong>函数返回的是本地时间，就是说其返回值受本地时区影响。</strong>比如两个实例的时区分别是东八区和西八区，其格式化后的时间字符串是不一样的。这会有什么影响呢？这要看具体业务场景，在我们的系统中，对于两个时区不一致的实例，在一个实例上生成的Redis Key在另一个实例上找不到，触发一个死循环，导致消息被无限重放。</p>
-<h2 id="如何解决"><a href="#如何解决" class="headerlink" title="如何解决"></a>如何解决</h2><p>开发人员估计都没有考虑到这个问题，但这的确是在分布式系统中非常容易犯的一个错误。首先分布式系统中时钟同步就是一个很难得问题。对于上面的case，系统能工作的前提是各实例的本地时间不会出现跳变，时间精度至少要精确到秒，但这者几乎很难保证。</p>
-<p>本地时间可以理解为实例本身的状态，由于我们使用的是 Unix 时间戳，其实系统本身并不需要依赖机器的本地时区。在代码层面可以通过设置一个固定的时区，用指定的时间戳生成一致的 Unix 时间即可。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li>每个程序员都应该了解时间、时区等基本概念；</li>
-<li>在分布式系统中，如果要使用 Unix 时间戳来访问分布式系统中的共享资源，不要依赖于本地时间；</li>
-</ul>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/02/01/timezones-touble-analysis/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 

@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://leeyzero.github.io/images/encoding/3.png">
 <meta property="og:image" content="https://leeyzero.github.io/images/encoding/4.png">
 <meta property="article:published_time" content="2020-10-10T15:04:28.000Z">
-<meta property="article:modified_time" content="2022-05-08T15:33:02.665Z">
+<meta property="article:modified_time" content="2022-06-11T12:26:48.183Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="Unicode">
 <meta property="article:tag" content="UTF-8">
@@ -205,7 +205,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:33:02" itemprop="dateModified" datetime="2022-05-08T23:33:02+08:00">2022-05-08</time>
+                <time title="Modified: 2022-06-11 20:26:48" itemprop="dateModified" datetime="2022-06-11T20:26:48+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -230,6 +230,8 @@
       
         <p>很多初级甚至有丰富开发经验的开发者都可能会遇到<strong>乱码</strong>的问题，对深入理解字符编码的人来说，问题很容易解决。但如果你对字符编码一知半解，这些问题可能会让你抓狂。对一名开发者来讲，不管你使用什么语言，在什么平台上开发，字符编码都是需要掌握的基本技能之一。 </p>
 <p>我们都知道，计算机只能处理0和1，为了让计算机能够处理我们的信息，就需要对信息进行编码。信息编码是一个很大的主题，本文只涉及计算机字符的编码，包括ASCII、Unicode、UTF-8、UTF-16、UCS-2。</p>
+<a id="more"></a>
+
 <h2 id="ASCII"><a href="#ASCII" class="headerlink" title="ASCII"></a>ASCII</h2><p>对于<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/ASCII">ASCII</a>大家都比较熟悉，由于当时硬件和计算资源都很匮乏，ASCII只使用了前7位，可以表示128个字符，如<code>0</code>是<code>48</code>（二进制<code>0011 0000</code>），<code>a</code>是<code>97</code>（二进制<code>0110 0001</code>）。</p>
 <p>对于英语来说，128个符号已经够用了，但对其它语言来说，128个符号是不够的，当计算机传入欧洲后，有些欧洲国家利用闲置的最高位编入新的符号，这样就可以最多表示256个符号。IBM当时针对不同语言，在(128-255)区间内OEM了不同的编码方式，这也造成了同一个编码可能表示不同的符号。</p>
 <p>对于亚洲国家就更惨了，汉字就多达10万左右，一个字节根本表示不了这么多符号，于是就有了两个字符表示一个符号，这样理论上最多可表示256 x 256 = 65535个字符，这对表示常用的汉字就够用了。</p>

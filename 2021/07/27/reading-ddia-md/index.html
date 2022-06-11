@@ -29,7 +29,7 @@
 <meta property="og:description" content="最近断断续续花了一个月时间看了一遍数据密集型应用系统设计，也就是大家所说的DDIA（Designing Data-Intensive Applications）。这是一本一看就停不下来的书，强烈安利做业务系统的同学看看。那这本书到底在讲什么呢？ 数据模型是对现实世界的抽象，可以从微观角度理解为“数据结构”，它是一个应用系统中最重要的部分。数据模型在一定程度上会影响到系统设计人员解决问题的方式。关系">
 <meta property="og:locale">
 <meta property="article:published_time" content="2021-07-27T03:28:14.000Z">
-<meta property="article:modified_time" content="2022-05-31T02:26:59.017Z">
+<meta property="article:modified_time" content="2022-06-11T12:32:14.122Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="分布式系统">
 <meta name="twitter:card" content="summary">
@@ -198,7 +198,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-31 10:26:59" itemprop="dateModified" datetime="2022-05-31T10:26:59+08:00">2022-05-31</time>
+                <time title="Modified: 2022-06-11 20:32:14" itemprop="dateModified" datetime="2022-06-11T20:32:14+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -225,6 +225,8 @@
 <p>数据模型是对现实世界的抽象，可以从微观角度理解为“数据结构”，它是一个应用系统中最重要的部分。数据模型在一定程度上会影响到系统设计人员解决问题的方式。关系型数据库在很长一段时间大行其道（虽然NoSQL越来越流行，但关系型数据库仍然有一席之地），通常我们在做系统设计时首先会对现实对象建模，建立对象之间的关系，以便能更好的用关系型数据库来表现。然而从这本书中我们可以看到，关系型数据库并不是惟一的数据模型，在做系统设计的时候，不应该受具体数据模型影响，了解各数据模型的优缺点和应用场景，有助于我们设计更具可靠性、可扩展性以及可维护性的系统。</p>
 <p>一句话概括：<strong>这是一本介绍各种数据库原理及其应用的书</strong>。</p>
 <p>具体来讲，本书从可靠性、可扩展性和可维护性角度展开，介绍各类数据库原理和应用。全书一共分成了三个部分：</p>
+<a id="more"></a>
+
 <p>第一部分介绍了数据系统的基础，首先对数据系统可靠性、可扩展性、可维护性进行定义和解释，然后综述了数据模型和查询语言，最后介绍了数据库的核心原理以及基于数据库的两类系统——事务处理系统与分析处理系统。</p>
 <p>第二部分介绍了分布式数据，包括数据复制、分区、事务等。个人感觉最精彩的部分在于阐述分布式系统的挑战以及一致性问题。看完这部分，你就知道为什么设计一个分布式系统这么难，以及各种分布式数据库系统如何在可靠性、可用性之间寻找平衡。</p>
 <p>第三部分介绍派生数据，包括批处理系统、流处理系统以及数据库系统的发展趋势。这部分说明了为什么消息系统（数据流）也是一种数据库，讨论了派生数据和数据源，批处理和流数据的关系以及在应用系统中的价值和定位。这部分让我现有的知识，比如关系型数据库、消息队列、批处理系统(Map-Reduce)、流处理系统之间产生了化学反应，把整块知识串起来了。</p>

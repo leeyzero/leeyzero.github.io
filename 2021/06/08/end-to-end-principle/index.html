@@ -29,7 +29,7 @@
 <meta property="og:description" content="最近又看了一遍 End-To-End Argument In System Design，有一些新的思考，但都集中在一些点上，不够系统，在此先记录下来，后续有新的想法再做补充和整理。 核心观点这篇论文在由MIT计算机科学实验室发表于1984年，是一篇非常经典的关于系统设计的论文。论文论证了分布式系统设计的一个事实：端到端的可靠通信只能由通信的两端（End-Point）来保证，而中间的媒介（如消息中">
 <meta property="og:locale">
 <meta property="article:published_time" content="2021-06-07T17:01:17.000Z">
-<meta property="article:modified_time" content="2022-05-08T15:24:00.980Z">
+<meta property="article:modified_time" content="2022-06-11T12:26:38.362Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="系统设计">
 <meta name="twitter:card" content="summary">
@@ -198,7 +198,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:24:00" itemprop="dateModified" datetime="2022-05-08T23:24:00+08:00">2022-05-08</time>
+                <time title="Modified: 2022-06-11 20:26:38" itemprop="dateModified" datetime="2022-06-11T20:26:38+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -224,6 +224,8 @@
         <p>最近又看了一遍 <a target="_blank" rel="noopener" href="http://web.mit.edu/saltzer/www/publications/endtoend/endtoend.pdf">End-To-End Argument In System Design</a>，有一些新的思考，但都集中在一些点上，不够系统，在此先记录下来，后续有新的想法再做补充和整理。</p>
 <h2 id="核心观点"><a href="#核心观点" class="headerlink" title="核心观点"></a>核心观点</h2><p>这篇论文在由MIT计算机科学实验室发表于1984年，是一篇非常经典的关于系统设计的论文。论文论证了分布式系统设计的一个事实：<strong>端到端的可靠通信只能由通信的两端（End-Point）来保证，而中间的媒介（如消息中间件、网关、路由器以及TCP协议栈等）只能提高通信效率，但无法保证通信两端的可靠性。</strong></p>
 <p><strong>在一个系统设计中，系统设计师的主要工作是对功能进行合理抽象，明确定义功能边界。</strong>将功能职责进行合理划分的设计原则是系统设计师最重要的工具之一，端到端设计原则便是这样的工具，它在分布式系统设计中，对功能职责的划分起了一定的指导作用。</p>
+<a id="more"></a>
+
 <h2 id="举例说明"><a href="#举例说明" class="headerlink" title="举例说明"></a>举例说明</h2><p>论文中给出了一个两个主机间的文件传输为例来说明为什么端到端的可靠通信只能由通信的两端来保证。考虑要实现一个应用程序，用于将主机A上的文件传输到另一个远程主机B上。整个过程可以抽象以下5个步骤：</p>
 <p>1、在主机A上的应用程序按固定大小的块从主机A的磁盘中读取文件。</p>
 <p>2、在主机A上的应用程序将数据通过数据通信系统进行传输，数据通信系统使用某种数据传输协议，将数据拆分成数据包进行传输。</p>

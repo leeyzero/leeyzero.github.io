@@ -195,7 +195,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-31 10:27:09" itemprop="dateModified" datetime="2022-05-31T10:27:09+08:00">2022-05-31</time>
+                <time title="Modified: 2022-06-11 20:37:16" itemprop="dateModified" datetime="2022-06-11T20:37:16+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -224,81 +224,14 @@
 </blockquote>
 <p>很多新手软件工程师和.NET开发者在编写并运行一个Windows应用时，他们并不清楚其在操作系统中的运作原理。这篇文件将阐述Windows操作系统的消息体系。</p>
 <p><img src="/images/windows-message-architecture/1.png" alt="Windows消息体系结构图"></p>
-<h2 id="窗口和窗口类-Window-and-Window-Class"><a href="#窗口和窗口类-Window-and-Window-Class" class="headerlink" title="窗口和窗口类(Window and Window Class)"></a>窗口和窗口类(<em>Window and Window Class</em>)</h2><blockquote>
-<p><em>The Windows UI application (e) has one main thread (g), one or more &gt; windows (a) and one or more child threads (k) [worker threads or UI threads].</em></p>
-</blockquote>
-<p>Windows应用程序(<strong>e</strong>)包含一个主线程(<strong>g</strong>)、多个窗口(<strong>a</strong>)和一个或多个子线程(<strong>k</strong>)[工作线程或UI线程]。</p>
-<blockquote>
-<p><em>An application must specify a window class and register with Windows (d) before it creates a window (a) and displays. A window class is a structure which contains the attributes of a window such as window styles, Icon, Cursor, Background color, menu resource name and window class name etc. Registering a window class associates a window procedure, class styles, and other class attributes with a class name. Each window class has an associated window procedure (c) shared by all windows (a) of the same class in an application. The window procedure processes messages for all windows of that class.</em></p>
-</blockquote>
-<p>在创建并展示一个窗口(<strong>a</strong>)之前，应用程序必须指定一个窗口类并将其注册到Windows系统中(<strong>d</strong>)。窗口类只是一个数据结构，包含窗口的一些属性，如窗口风格、Icon、Cursor、窗口背景颜色、菜单资源名和窗口类名等。注册的窗口类需要关联一个窗口过程、类风格、其它类属性和一个窗口类名。在应用程序中，和每个窗口类关联和窗口过程(<strong>c</strong>)是所有拥有相同窗口类名的窗口(<strong>a</strong>)共享的。窗口过程处理所有拥有相同窗口类名窗口的窗口消息。</p>
-<h2 id="窗口过程-Window-Procedure"><a href="#窗口过程-Window-Procedure" class="headerlink" title="窗口过程(Window Procedure)"></a>窗口过程(<em>Window Procedure</em>)</h2><blockquote>
-<p><em>A window procedure (c) is a function that receives and processes all messages sent to the window (a). Every window class (b) has a window procedure (c), and every window (a) created with that class uses that same window procedure to respond to messages. The system sends a message to a window procedure by passing the message data as arguments to the procedure. The window procedure then performs an appropriate action for the message; it checks the message identifier and, while processing the message, uses the information specified by the message parameters.</em></p>
-</blockquote>
-<p>窗口过程(<strong>c</strong>)是一个函数，用于接收所有发往该窗口(<strong>a</strong>)的消息。每个窗口类(<strong>b</strong>)都有一个窗口过程(<strong>c</strong>)，每个用该窗口类创建的窗口(<strong>a</strong>)使用相同的窗口过程响应消息。系统给窗口过程发送消息是将消息作为一些函数参数传递给窗口过程，然后窗口过程再对具体的消息做响应；窗口过程会检查消息标识，并通过消息标识使用跟该消息相对应的消息参数。</p>
-<blockquote>
-<p><em>A window procedure does not usually ignore a message. If it does not process a message, it must send the message back to the system for default processing. The window procedure does this by calling the DefWindowProc function (f), which performs a default action and returns a message result. The default window procedure function, DefWindowProc defines certain fundamental behavior shared by all windows. The default window procedure provides the minimal functionality for a window.</em></p>
-</blockquote>
-<p>窗口过程通常不忽略消息。如果应用不处理某个消息，应用必须将该消息发送回系统，交由系统处理。窗口过程通过一个叫<em>DefWindowPrc</em>函数来处理这些发送回系统的消息，该函数会作默认的响应并返回消息处理结果。<em>DefWindowProc</em>定义了一些适用于所有窗口的基本的行为，并提供了一个窗口的最小功能集。</p>
-<h2 id="窗口消息-Windows-Message"><a href="#窗口消息-Windows-Message" class="headerlink" title="窗口消息(Windows Message)"></a>窗口消息(<em>Windows Message</em>)</h2><blockquote>
-<p><em>A Windows message (m) is nothing but a set of parameters such as a window handle, a message identifier and two values called message parameters (WPARAM and LPARAM). The window handle identifies the window for which the message is intended. The message identifier is a constant that identifies the purpose of a message. For example, the message identifier WM_PAINT tells the window procedure that the window’s client area has changed and must be repainted.</em></p>
-</blockquote>
-<p>窗口消息(<strong>m</strong>)只是一个参数集合，包括窗口句柄、消息标识和两个被称为消息参数(<em>WPARAM和LPARAM</em>)的值。窗口句柄标识一个消息即将发往的窗口。消息标识是一个常量，用于认别一个消息的具体含义。例如，对于消息WM_PAINT用于告诉窗口过程窗口的客户区发生了改变需要重新绘制。</p>
-<blockquote>
-<p><em>There are two types of Windows messages such as System defined messages and Application defined messages. The system sends or posts a system-defined message when it communicates with an application. An application can also send or post system-defined messages. For example, the WM_PAINT message identifier is used in system defined message which requests that a window paint its contents.</em></p>
-</blockquote>
-<p>有两种类型的消息，分别是系统定义消息和应用定义消息。当和应用程序通信时，系统通过发送(sends)或投递(posts)一个系统定义消息给应用程序。一个应用程序也可以发送或投递系统消息。例如，WM_PAINT消息是一个系统定义消息，该消息请求一个窗口绘制其窗口内容。</p>
-<blockquote>
-<p><em>An application can create messages to be used by its own windows or to communicate with windows in other processes. If an application creates its own messages, the window procedure that receives them must interpret the messages and provide appropriate processing.</em></p>
-</blockquote>
-<p>应用程序可以创建为自身使用或用于和其它进程通信的消息。如果一个应用程序创建一个自定义的消息，窗口过程接收到后必须解析并适当处理该消息。</p>
-<h2 id="消息队列-Message-Queues"><a href="#消息队列-Message-Queues" class="headerlink" title="消息队列(Message Queues)"></a>消息队列(<em>Message Queues</em>)</h2><blockquote>
-<p><em>The Windows operating system uses two methods to route messages to a window procedure : posting messages to a first-in, first-out queue called a message queue (l), a system-defined memory (q) object that temporarily stores messages, and sending messages directly to a window procedure.</em></p>
-</blockquote>
-<p>Windows操作系统使用两个方法来发送消息给窗口过程：投递消息到一个先进先出的队列，该队列被称为消息队列(<strong>l</strong>)，系统定义了一块内存对象(<strong>q</strong>)会临时存储直接发往某个窗口过程的消息。</p>
-<blockquote>
-<p><em>The Windows operating system maintains only one System wide message queue (l) for the all applications. And, another message queue (j) is created for each graphical user interface (UI) thread. Whenever a user creates an UI thread, the message queue is also created for the UI thread.</em></p>
-</blockquote>
-<p>Windows操作系统维护了一个供所有应用程序服务的系统级别的消息队列(<strong>l</strong>)。而另一个消息队列(<strong>j</strong>)是被UI线程创建的。当用户创建一个UI线程的同时，系统会为该UI线程创建一个消息队列。</p>
-<h2 id="消息流-Message-Flow"><a href="#消息流-Message-Flow" class="headerlink" title="消息流(Message Flow)"></a>消息流(<em>Message Flow</em>)</h2><blockquote>
-<p><em>DOS based applications make C-Runtime function calls to obtain input from the system. For example, it calls gets() C-Runtime function to get input from the keyboard. But, Windows based applications do not make explicit function calls to obtain input. Instead, they wait for the system to pass input to them. This is why Windows-based applications are event-driven.</em></p>
-</blockquote>
-<p>基于DOS的应用程序使用C运行时库函数从系统获取输入。例如，应用程序调用C运行时库函数gets()从键盘获取输入。但是，基于窗口的应用程序并不需要显示的函数调用以获取输入，相反，应用程序是等待系统将输入传递给他们。这就是为什么基于窗口的应用是事件驱动的。</p>
-<blockquote>
-<p><em>Whenever the user moves the mouse, clicks [1] the mouse buttons or types on the keyboard, the device driver (p) for the mouse or keyboard handovers [2] the details to User32.dll (n), which in turn converts the input into Windows messages and places[3] them in the system message queue (l).</em></p>
-</blockquote>
-<p>用户无论是移动鼠标、点击鼠标按钮[<strong>1</strong>]或敲击键盘，鼠标或键盘设备驱动(<strong>p</strong>)会将这些处理交给[<strong>2</strong>]User32.dll(<strong>n</strong>)，而User32.dll又会将这些输入转化[<strong>3</strong>]成Windows消息并将这些消息存到系统消息队列中(<strong>l</strong>)。</p>
-<blockquote>
-<p><em>The Windows operating system removes the messages, one at a time, from the system message queue, examines them to determine the destination window, and then posts [4] them to the message queue of the thread that created the destination window. A thread’s message queue receives all mouse and keyboard messages for the windows created by the thread. The thread removes [5] messages from its queue and directs the system to send [6 &amp; 7] them to the appropriate window procedure for processing. How does a thread remove a message from thread’s message queue and process? Let’s discuss now.</em></p>
-</blockquote>
-<p>操作系统在某一时刻从系统消息队列中移除消息，检查并决定其目标窗口程序，然后将这些消息投递[<strong>4</strong>]给目标窗口程序创建的线程消息队列 。窗口应用程序通过线程创建的线程消息队列接收所有鼠标和键盘消息。该线程从消息队列中移除[<strong>5</strong>]消息，并将其通过系统发送[<strong>6 &amp; 7</strong>]给相应的窗口过程处理。线程如何从线程消息队列中移除一条消息呢？我们马上就会讨论。</p>
-<h2 id="消息循环或消息泵-Message-Loop-or-Message-Pump"><a href="#消息循环或消息泵-Message-Loop-or-Message-Pump" class="headerlink" title="消息循环或消息泵(Message Loop or Message Pump)"></a>消息循环或消息泵(<em>Message Loop or Message Pump</em>)</h2><blockquote>
-<p><em>A Windows application has a WinMain() function which is the entry point for that application, like main()function in ‘C‘ language program. The WinMain()function acts as application’s main thread function. The following three lines of code in the WinMain() function is referred as Message Loop or Message pump.</em></p>
-</blockquote>
-<p>就像C语言程序有一个main函数一样，每一个Windows应用都有一个WinMain的入口函数。WinMain函数扮演着应用程序主线程函数角色。下面这三行在WinMain函数中的代码被称作消息循环或消息泵。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">while (GetMessage(&amp;Msg, NULL, 0, 0)) </span><br><span class="line">&#123; </span><br><span class="line">    TranslateMessage(&amp;Msg); </span><br><span class="line">    DispatchMessage(&amp;Msg); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p><em>The message loop’s GetMessage() call checks the message queue for windows messages. If it finds a valid message, it removes a message from its queue. After removing a message from its queue, an application can use the DispatchMessage() function to direct the system to send the message to a window procedure for processing. If there are no messages in the message queue, the GetMessage() call will be blocked till a valid message comes to the message queue.</em></p>
-</blockquote>
-<p>消息循环中的GetMessage调用会检查消息队列中的windows消息。如果发现一个合法的消息，该函数会从消息队列中移除一条消息。当从消息队列中移除一条消息后，应用程序使用DispatchMessage函数将该消息通过系统发送给一个窗口过程处理。如果消息队列中没有消息，GetMessage调用会被阻塞直到有一个合法的消息进入消息队列中。</p>
-<blockquote>
-<p><em>In between these two calls, the TranslateMessage() method call does nothing, but simply translating virtual key messages into character messages. Your application still works, if you comment this line. Only thing is, your test team will file 50 keyboard related bugs.</em></p>
-</blockquote>
-<p>在GetMessage和DispatchMessage中，TranslateMessage函数调用只是简单地做了虚拟键消息和字符消息的转换。如果你注释该行代码，你的应用程序仍然能够工作，只是你的测试小组会给报50键盘事件相关的bug。</p>
-<h2 id="旅行到此结束-Journey-Ends-Here"><a href="#旅行到此结束-Journey-Ends-Here" class="headerlink" title="旅行到此结束(Journey Ends Here)"></a>旅行到此结束(<em>Journey Ends Here</em>)</h2><blockquote>
-<p><em>The message loop (while loop) breaks when the GetMessage() retrieves a WM_QUIT message from the message queue and subsequently application’s main thread quits. That’s all, the application’s life comes to an end.</em></p>
-</blockquote>
-<p>当GetMessage从消息队列中接收到WM_QUIT消息时，消息循环(while循环)会中止，随后应用程序主线程退出。因此，应用程序的整个生命周期就结束了。</p>
-<h2 id="最后-Finally"><a href="#最后-Finally" class="headerlink" title="最后(Finally)"></a>最后(<em>Finally</em>)</h2><blockquote>
-<p><em>Enjoy .NET application programming by knowing the messaging internals. This article is an another flavor of MSDN article about <a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms632590(v=vs.85).aspx">Messages and Message Queues</a>.</em></p>
-</blockquote>
-<p>了解Windows消息的内幕更容易享受.NET编程的乐趣。本文是MSDN上一篇关于<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms632590(v=vs.85).aspx">消息和消息队列</a>文章的另一种解说。</p>
-<blockquote>
-<p><em>I wrote and published this article in Aditi’s Mindscape magazine in 2008. Even now, it may be useful to many developers who don’t know the internals of Windows messaging architecture.</em></p>
-</blockquote>
-<p>我在2008年写了该文章并将其发表到<em>Aditi’s Mindscape</em>杂志上。至今，该文或许会对那些并不清楚Windows消息体系的开发者有帮助。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/10/10/windows-message-architecture/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -348,7 +281,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:28:22" itemprop="dateModified" datetime="2022-05-08T23:28:22+08:00">2022-05-08</time>
+                <time title="Modified: 2022-06-11 20:30:49" itemprop="dateModified" datetime="2022-06-11T20:30:49+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -375,42 +308,14 @@
 <h2 id="并行程序集"><a href="#并行程序集" class="headerlink" title="并行程序集"></a>并行程序集</h2><p>在介绍应用程序的manifest之前，需要了解一下并行程序集(Side-by-Side Assembly)。什么是并行程序集呢? 并行程序集是微软为了解决<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/DLL_Hell">DLL Hell</a>问题而提出的一种解决方案，它采用manifest文件扫描组件之间的依赖关系。其工作原理如下图所求：</p>
 <p><img src="/images/manifest-manage/1.png"></p>
 <p>简单说明一下，微软在未提出Side-by-Side Assembly之前，应用程序启动时按照<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms682586(v=vs.85).aspx">一定的规则</a>加载DLL。通常情况下，应用程序会采用动态链接方式共享一些操作系统提供的基础库文件，当Windows更新共享库且共享库不能向后兼容时(<em>DLL自身并不能向后兼容，这种情况通常发生在DLL的内存布局发生了改变</em>）,那些依赖于老版本共享库的应用程序就不能正常工作了。为了解决这个问题，微软重写了DLL动态加载子系统，提出了并行程序集的解决方案，即允许多个版本的库共同存在，应用程序通过manifest描述自身所依赖的文件，SxS Manager再通过manifest按照一定的规则找到应用程序的依赖文件，使应用程序正确工作。</p>
-<h2 id="程序集查找顺序"><a href="#程序集查找顺序" class="headerlink" title="程序集查找顺序"></a>程序集查找顺序</h2><p>和DLL加载顺序类似，SxS Manager在查找应用程序的依赖程序集时也按照一定的规则进行查找。一般情况下，其查找规则如下，如果应用程序需要多语言支持，请参考<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa374224(v=vs.85).aspx">这里</a>。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1. Side-by-side searches the WinSxS folder.</span><br><span class="line">2. \\&lt;appdir&gt;\&lt;assemblyname&gt;.DLL</span><br><span class="line">3. \\&lt;appdir&gt;\&lt;assemblyname&gt;.manifest</span><br><span class="line">4. \\&lt;appdir&gt;\&lt;assemblyname&gt;\&lt;assemblyname&gt;.DLL</span><br><span class="line">5. \\&lt;appdir&gt;\&lt;assemblyname&gt;\&lt;assemblyname&gt;.manifest</span><br></pre></td></tr></table></figure>
-
-<p>SxS Manager首先查找<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa375996(v=vs.85).aspx">共享程序集</a>, 共享程序集通常在Windows下的WinSxS目录下。如果未找到则会在应用程序所处目录按照上面顺序查找相应的程序集名。</p>
-<h2 id="应用程序manifest"><a href="#应用程序manifest" class="headerlink" title="应用程序manifest"></a>应用程序manifest</h2><p>上面已经讲并行程序集的工作原理和并行程序集的查找顺序，接下来说一下<strong>如何用manifest描述应用程序的依赖程序集</strong>以及<strong>如何将manifest嵌入到应用程序中</strong>。<br>关于应用程序的manifest详细介绍请参考<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa374191(v=vs.85).aspx">这里</a>, 下面以应用程序SampleApp为例，其manifest为SampleApp.exe.manifest, 如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; standalone&#x3D;&quot;yes&quot;?&gt;</span><br><span class="line">&lt;assembly xmlns&#x3D;&quot;urn:schemas-microsoft-com:asm.v1&quot; manifestVersion&#x3D;&quot;1.0&quot;&gt;</span><br><span class="line">  &lt;assemblyIdentity type&#x3D;&quot;win32&quot; name&#x3D;&quot;SampleApp&quot; version&#x3D;&quot;1.0.0.0&quot; processorArchitecture&#x3D;&quot;x86&quot;&#x2F;&gt;</span><br><span class="line">  &lt;compatibility xmlns&#x3D;&quot;urn:schemas-microsoft-com:compatibility.v1&quot;&gt; </span><br><span class="line">      &lt;application&gt; </span><br><span class="line">          &lt;supportedOS Id&#x3D;&quot;&#123;e2011457-1546-43c5-a5fe-008deee3d3f0&#125;&quot;&#x2F;&gt; </span><br><span class="line">          &lt;supportedOS Id&#x3D;&quot;&#123;35138b9a-5d96-4fbd-8e2d-a2440225f93a&#125;&quot;&#x2F;&gt;</span><br><span class="line">          &lt;supportedOS Id&#x3D;&quot;&#123;4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38&#125;&quot;&#x2F;&gt;</span><br><span class="line">          &lt;supportedOS Id&#x3D;&quot;&#123;1f676c76-80e1-4239-95bb-83d0f6d0da78&#125;&quot;&#x2F;&gt;</span><br><span class="line">          &lt;supportedOS Id&#x3D;&quot;&#123;8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a&#125;&quot;&#x2F;&gt; </span><br><span class="line">      &lt;&#x2F;application&gt; </span><br><span class="line">  &lt;&#x2F;compatibility&gt;</span><br><span class="line">  &lt;trustInfo xmlns&#x3D;&quot;urn:schemas-microsoft-com:asm.v3&quot;&gt;</span><br><span class="line">    &lt;security&gt;</span><br><span class="line">      &lt;requestedPrivileges&gt;</span><br><span class="line">        &lt;requestedExecutionLevel level&#x3D;&#39;asInvoker&#39; uiAccess&#x3D;&#39;false&#39; &#x2F;&gt;</span><br><span class="line">      &lt;&#x2F;requestedPrivileges&gt;</span><br><span class="line">    &lt;&#x2F;security&gt;</span><br><span class="line">  &lt;&#x2F;trustInfo&gt;</span><br><span class="line">  &lt;dependency&gt;</span><br><span class="line">    &lt;dependentAssembly&gt;</span><br><span class="line">      &lt;assemblyIdentity type&#x3D;&quot;win32&quot; name&#x3D;&quot;SampleAssembly&quot; version&#x3D;&quot;1.0.0.0&quot; processorArchitecture&#x3D;&quot;x86&quot;&#x2F;&gt;</span><br><span class="line">    &lt;&#x2F;dependentAssembly&gt;</span><br><span class="line">  &lt;&#x2F;dependency&gt;</span><br><span class="line">&lt;&#x2F;assembly&gt;</span><br></pre></td></tr></table></figure>
-
-<p>这里重点关注dependency结点，该结点描述了应用程序SampleApp依赖于程序集SampleAssembly。更多关于Assembly Manifest的XML描述请参考<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa374219(v=vs.85).aspx">这里</a>。</p>
-<p>有了上面的manifest，应用程序启动时，为了让SxS Manager能够正确查找到依赖文件，还需要将SampleApp.exe.manifest嵌入到应用程序中，有两种方式可以嵌入：<br><strong>方法一</strong>：<br>如果采用Visual Studio构建应用程序，默认情况下，VS会将manifest嵌入到应用程序中。按下面方式设置应用程序的依赖程序集：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Properties &gt; Configuration Properties &gt; Linker &gt; Manifest File &gt; Additional Manifest Dependencies &gt; </span><br><span class="line">&#96;type&#x3D;&#39;win32&#39; name&#x3D;&#39;SampleAssembly&#39; version&#x3D;&#39;1.0.0.0&#39; processorArchitecture&#x3D;&#39;x86&#39;&#96;</span><br></pre></td></tr></table></figure>
-
-<p>也可以采用<code>comment prama</code>方式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#96;#pragma comment(linker, &quot;\&quot;&#x2F;manifestdependency:type&#x3D;&#39;win32&#39; name&#x3D;&#39;SampleAssembly&#39; version&#x3D;&#39;1.0.0.0&#39; processorArchitecture&#x3D;&#39;x86&#39; \&quot;&quot;) &#96;</span><br></pre></td></tr></table></figure>
-
-<p>设置好之后，重新编译、链接，生成SampleApp.exe。如果想知道上面依赖信息是否已经成功嵌入到SampleApp.exe中，也有两种方式查看:<br><strong>1</strong>. 如果使用Visual Studio, 可以直接在Visual Studio中打开应用程序，如下:</p>
-<p><img src="/images/manifest-manage/2.png"></p>
-<p><strong>2</strong>. 也可以使用SDK提供的工具mt.exe, 命令如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mt.exe -inputresource:SampleApp.exe;#1 -out:SampleApp.exe.manifest</span><br></pre></td></tr></table></figure>
-
-<p>注意这个地方的1是manifest的资源序号，默认情况下是1。关于mt.exe的更多命令可以执行<code>mt.exe /?</code>或参考<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa375649(v=vs.85).aspx">这里</a>。</p>
-<p><strong>方法二</strong>：<br>使用mt.exe工具嵌入，如果采用VS构建应用程序，使用这种方式需要先关闭VS默认嵌入manifest的行为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Properties &gt; Configuration Properties &gt; Linker &gt; Manifest File &gt; Generate Manifest &gt; No (&#x2F;MANIFEST:NO)</span><br></pre></td></tr></table></figure>
-
-<p>然后在<code>Properties &gt; Configuration Properties &gt; Build Events &gt; Post Build Event</code>中写入以下命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mt.exe -manifest SampleApp.exe.manifest -outputresource:$(OutDir)$(TargetName)$(TargetExt);#1</span><br></pre></td></tr></table></figure>
-
-<p>上面命令的前提是文件SampleApp.exe.manifest在你的工程目录下。重新编译，链接。想知道manifest是否成功写入SampleApp.exe中，同样可以采用上面说的两种方法进行验证。</p>
-<h2 id="实例应用"><a href="#实例应用" class="headerlink" title="实例应用"></a>实例应用</h2><p>再次回到我们面临问题，仍然以应用程序SampleApp.exe为例，假设SampleApp依赖libA.dll，而libA.dll又依赖于libB.dll。我们希望奖libA.dll和libB.dll放到目录SampleAssembly下，目录结构如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;AppDir</span><br><span class="line">    |---SampleApp.exe</span><br><span class="line">    |        |</span><br><span class="line">    |---SampleAssembly</span><br><span class="line">             |---SampleAssembly.manifest</span><br><span class="line">             |---libA.dll</span><br><span class="line">             |---libB.dll </span><br></pre></td></tr></table></figure>
-
-<p><strong>1</strong>. <em>按照第4小节所述的方法将Sample.exe.manifest嵌入到Sample.exe中</em><br><strong>2</strong>. <em>在SampleApp.exe所处目录下新建一个目录，目录名同依赖程序集名(SampleAssembly)</em><br><strong>3</strong>. <em>在SampleAssembly目录下，新建一个manifest文件，文件名同程序集名（SampleAssembly）,其内容如下：</em></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;utf-8&quot; standalone&#x3D;&quot;yes&quot;?&gt;</span><br><span class="line">&lt;assembly xmlns&#x3D;&quot;urn:schemas-microsoft-com:asm.v1&quot; manifestVersion&#x3D;&quot;1.0&quot;&gt;</span><br><span class="line">	&lt;assemblyIdentity type&#x3D;&quot;win32&quot; name&#x3D;&quot;SampleAssembly&quot; version&#x3D;&quot;1.0.0.0&quot; processorArchitecture&#x3D;&quot;x86&quot;&#x2F;&gt;</span><br><span class="line">	&lt;file name&#x3D;&quot;libA.dll&quot;&#x2F;&gt;</span><br><span class="line">	&lt;file name&#x3D;&quot;libB.dll&quot;&#x2F;&gt;</span><br><span class="line">&lt;&#x2F;assembly&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>4</strong>. <em>将libA.dll, libB.dll放到SampleAssembly目录下</em><br><strong>5</strong>. <em>运行SampleApp.exe，看是否能正常工作了呢</em></p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1].<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ff951640(v=vs.85).aspx">https://msdn.microsoft.com/en-us/library/windows/desktop/ff951640(v=vs.85).aspx</a><br>[2].<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa374224(v=vs.85).aspx">https://msdn.microsoft.com/en-us/library/windows/desktop/aa374224(v=vs.85).aspx</a><br>[3].<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa374219(v=vs.85).aspx">https://msdn.microsoft.com/en-us/library/windows/desktop/aa374219(v=vs.85).aspx</a><br>[4].<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa374191(v=vs.85).aspx">https://msdn.microsoft.com/en-us/library/windows/desktop/aa374191(v=vs.85).aspx</a><br>[5].<a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/cpp/build/manifest-generation-in-visual-studio">https://docs.microsoft.com/zh-cn/cpp/build/manifest-generation-in-visual-studio</a><br>[6].<a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/cpp/build/how-to-embed-a-manifest-inside-a-c-cpp-application">https://docs.microsoft.com/zh-cn/cpp/build/how-to-embed-a-manifest-inside-a-c-cpp-application</a><br>[7].<a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/cpp/build/reference/manifestdependency-specify-manifest-dependencies">https://docs.microsoft.com/zh-cn/cpp/build/reference/manifestdependency-specify-manifest-dependencies</a><br>[8].<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/DLL_Hell">https://en.wikipedia.org/wiki/DLL_Hell</a><br>[9].<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa375649(v=vs.85).aspx">https://msdn.microsoft.com/en-us/library/windows/desktop/aa375649(v=vs.85).aspx</a></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/10/10/use-manifest-manage-deps/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -460,7 +365,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:36:54" itemprop="dateModified" datetime="2022-05-08T23:36:54+08:00">2022-05-08</time>
+                <time title="Modified: 2022-06-11 20:25:02" itemprop="dateModified" datetime="2022-06-11T20:25:02+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -494,36 +399,14 @@
 <p>需要注意的是安装VS2015u3的时候，默认是不会安装<em>Win10.0.14393 SDK</em> 的，所以需要你手动勾选；</p>
 </blockquote>
 <p>CMake可以去<a target="_blank" rel="noopener" href="https://cmake.org/download/">CMake官网下载</a> Windows安装版本。</p>
-<h2 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h2><p>CEF支持多平台 (<em>Windows</em>, <em>MacOS</em>, <em>Linux</em>), 以CMake作为构建工具。的使用cmake命令之前，需要先设置cmake的环境变量：</p>
-<ul>
-<li>找到cmake的安装目录，Win7 64bit默认在<em>C:\Program Files (x86)\CMake</em></li>
-<li>控制面板 &gt; 系统 &gt; 高级系统设置 &gt; 环境变量 &gt; 系统变量 &gt; Path </li>
-<li>添加 cmake 安装目录下的bin目录，如<em>C:\Program Files (x86)\CMake\bin</em></li>
-</ul>
-<p>将下载好的二进制发布包解压到合适的目录，如E:\ </p>
-<ul>
-<li>进入CEF目录，如：<em>E:\cef_binary_3.3202.1674.g2a991c4_windows32</em></li>
-<li>的该目录下打开控制台cmd, 输入<code>cmake .</code> 生成cef.sln工程文件</li>
-<li>用vs2015打开cef.sln进行编译</li>
-</ul>
-<p><img src="/images/cef-windows-bin/1.png" alt="cmake.png"></p>
-<p>在编译ceftests的时候你可能会出现以下错误：</p>
-<p><img src="/images/cef-windows-bin/2.png" alt="compile error"></p>
-<blockquote>
-<p>warning C4819: The file contains a character that cannot be represented in the current code page (936). Save the file in Unicode format to prevent data loss.</p>
-</blockquote>
-<p>正如编译错误中提示的信息，这是由于os_rendering_unittest.cc中由包含有不能被当前代码页识别的字符。只需要更改该文件的编码方式就行了：</p>
-<ul>
-<li>vs 中打开os_rendering_unittest.cc文件</li>
-<li><em>File &gt; Advanced Save Options &gt; Unicode (UTF-8 with signature) - Codepage 65001</em></li>
-<li>保存 &gt; 重新编译 </li>
-</ul>
-<h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><p>进入tests\cefclient\Debug, 命令行执行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cefclient.exe --url&#x3D;https:&#x2F;&#x2F;www.baidu.com</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/cef-windows-bin/3.png" alt="cefclient.exe"></p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1]. <a target="_blank" rel="noopener" href="https://bitbucket.org/chromiumembedded/cef">CEF官网</a><br>[2]. <a target="_blank" rel="noopener" href="https://cmake.org/download/">CMake下载地址</a><br>[3]. <a target="_blank" rel="noopener" href="http://blogs.adobe.com/webplatform/2013/05/01/the-chromium-embedded-framework/">Chromium Embedded Framework </a></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/10/10/cef-windows-bin/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -573,7 +456,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:29:51" itemprop="dateModified" datetime="2022-05-08T23:29:51+08:00">2022-05-08</time>
+                <time title="Modified: 2022-06-11 20:25:18" itemprop="dateModified" datetime="2022-06-11T20:25:18+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -611,109 +494,14 @@
 <li>安装python后需要将python的执行环境加入到环境变量中；</li>
 </ol>
 </blockquote>
-<h2 id="下载CEF源码"><a href="#下载CEF源码" class="headerlink" title="下载CEF源码"></a>下载CEF源码</h2><p>在下载CEF源码之前先了解一下自动构建脚本automate-git.py, 命令行执行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python automate-git.py -h</span><br></pre></td></tr></table></figure>
-
-<p>可以看到源码同步、编译、发布等相关选项，每个选项都有相关说明。默认情况下同步完源代码后会自动构建并发布二进制包，由于同步源代码和构建时间都比较长，所以将同步源码和编译源码分开。先来看看目录结构：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CEF</span><br><span class="line"> | --- 2623</span><br><span class="line">automate</span><br><span class="line"> | --- automate-git.py</span><br><span class="line"> | --- sync_cef_2623.bat</span><br><span class="line"> | --- build_cef_2623.bat</span><br></pre></td></tr></table></figure>
-
-<p>说明：</p>
-<ul>
-<li>目录CEF\2623：用于下载CEF 2623分支的源代码</li>
-<li>目录automate：用于放置自动构造相关脚本</li>
-<li>automate-git.py：自动构建脚本</li>
-<li>sync_cef_2623.bat：同步2623分支源码批处理脚本，具体内容往下看</li>
-<li>build_cef_2623.bat：编译2623分支源码批处理脚本，具体内容往下看</li>
-</ul>
-<p>以上目录结构属于个人偏好，不一定非要这样设置，关键是正确设置automate-git.py的参数。sync_cef_2623.bat用于同步CEF 2623分支源码，其内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">set CEF_USE_GN&#x3D;0</span><br><span class="line">set GYP_DEFINES&#x3D;buildtype&#x3D;Official</span><br><span class="line">set GYP_GENERATORS&#x3D;ninja,msvs-ninja </span><br><span class="line">set GYP_MSVS_VERSION&#x3D;2015</span><br><span class="line">set CEF_ARCHIVE_FORMAT&#x3D;tar.bz2</span><br><span class="line">set DEPOT_TOOLS_WIN_TOOLCHAIN&#x3D;0</span><br><span class="line">python automate-git.py --download-dir&#x3D;..\CEF\2623 --branch&#x3D;2623 --no-build --no-distrib</span><br></pre></td></tr></table></figure>
-
-<p>在sync_cef_2623.bat脚本中写入以上内容，在保证以上环境设置正确的前提下，在命令行运行sync_cef_2623.bat就可以同步源代码了，源代码有十几个G,如果网络不稳定的情况下，会花比较长的时间。</p>
-<p>下面是一些参数说明，更多参数，请运行<code>python automate-git.py -h</code>查看，</p>
-<ul>
-<li><em>–download-dir</em> ：设置下载源码的目录，这个地方用相对路径，下载到和automate同级的CEF\2623目录下</li>
-<li><em>–branch</em> ：同步2623分支源码</li>
-<li><em>–no-build</em> ：不编译</li>
-<li><em>–no-distrib</em> ：不发布</li>
-</ul>
-<blockquote>
-<p>注：</p>
-<ol>
-<li>如果VPN不太稳定，可能会经常中断，造成脚本运行错误，重新运行脚本即可，源码主要有三部分，depot_tools源码cef源码和chromium源码，如果发现相应部分的源码已经同步完成，可以分别使用–no-depot-tools-update, –no-cef-update, –no-chromium-update  来不进行相应部分的代码更新。</li>
-<li>自动构建脚本在下载源码时，并没有进度提示，比如在下载chromium/src目录时时间会非常长，会一直提示<code>still working on src...</code>，请耐心等待。</li>
-</ol>
-</blockquote>
-<h2 id="编译CEF源码"><a href="#编译CEF源码" class="headerlink" title="编译CEF源码"></a>编译CEF源码</h2><p>源代码下载完成后，就可以进行编译了，编译2623版本，可能会遇到一些编译错误，如果你不想亲自试一下这些编译错误，请直接看下节编译错误解决办法。编译源码用脚本build_cef_2623.bat，其内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">set CEF_USE_GN&#x3D;0</span><br><span class="line">set GYP_DEFINES&#x3D;buildtype&#x3D;Official</span><br><span class="line">set GYP_GENERATORS&#x3D;ninja,msvs-ninja </span><br><span class="line">set GYP_MSVS_VERSION&#x3D;2015</span><br><span class="line">set CEF_ARCHIVE_FORMAT&#x3D;tar.bz2</span><br><span class="line">set DEPOT_TOOLS_WIN_TOOLCHAIN&#x3D;0</span><br><span class="line">python automate-git.py --download-dir&#x3D;..\CEF\2623 --branch&#x3D;2623 --no-update --no-depot-tools-update --verbose-build --force-build --no-debug-build --force-distrib</span><br></pre></td></tr></table></figure>
-
-<p>在build_cef_2623.bat脚本中写入以上内容，就可以进行release版本的编译和发布了，以下是一些参数说明：</p>
-<ul>
-<li><em>–no-update</em> ：不更新cef和chromium源码</li>
-<li><em>–no-depot-tools-update</em> : 不更新depot-tools源码</li>
-<li><em>–verbose-build</em> : 开启编译日志，该参数比较重要，编译出错时方便定位问题，相关编译错误见下节</li>
-<li><em>–force-build</em> : 强制编译。在编译失败时，重新运行脚本能重新编译，不加该参数，则会提示out目录已存在</li>
-<li><em>–no-debug-build</em> : 不进行debug版本的编译，之所以加该参数是因为如果debug和release一起编译，时间会比较长，产生的二进制也比较大，如果你的空间足够，时间足够，可以去掉该参数</li>
-<li><em>–force-distrib</em> ：强制发布二进制包，如果已经发布过，再次运行脚本会重新生成二进制发布包</li>
-</ul>
-<p>此外还有其它编译参数供选择，请运行<code>python automate-git.py -h</code>查看.</p>
-<h2 id="解决编译错误"><a href="#解决编译错误" class="headerlink" title="解决编译错误"></a>解决编译错误</h2><p>在编译过程中，你可能会遇到以下编译或链接错误, 以我的CEF源码所在位置<em>e:\repos\cef\2623</em>为例：</p>
-<h3 id="编译错误1"><a href="#编译错误1" class="headerlink" title="编译错误1"></a>编译错误1</h3><blockquote>
-<p>如果你用的系统locale是中国，可能会遇到一些字符集相关的编码错误，需要更改系统区域设置，Win10系统下修改如下，其它系统请自行<a href="www.google.com">google</a>： </p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">控制面板 &gt; 时钟、语言和区域 &gt; 区域 &gt; 管理 &gt; 更新系统区域设置...</span><br></pre></td></tr></table></figure>
-
-<p>修改为: </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">英语(美国)</span><br></pre></td></tr></table></figure>
-
-<h3 id="编译错误2"><a href="#编译错误2" class="headerlink" title="编译错误2"></a>编译错误2</h3><blockquote>
-<p><em>e:\repos\cef\2623\chromium\src\google_apis\gaia\oauth2_token_service.cc(313):<br>error C2220: warning treated as error - no ‘object’ file generated<br>warning C4334: ‘&lt;&lt;’: result of 32-bit shift implicitly converted to 64 bits</em></p>
-</blockquote>
-<p>该编译错误比较明显，具体请参考<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/ke55d167.aspx">MSDN</a>，根据路径打开oauth2_token_service.cc，定位到313行, 将:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int64_t exponential_backoff_in_seconds &#x3D; 1 &lt;&lt; retry_num;</span><br></pre></td></tr></table></figure>
-
-<p>修改为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int64_t exponential_backoff_in_seconds &#x3D; 1i64 &lt;&lt; retry_num;</span><br></pre></td></tr></table></figure>
-
-<h3 id="编译错误3"><a href="#编译错误3" class="headerlink" title="编译错误3"></a>编译错误3</h3><blockquote>
-<p><em>e:\repos\cef\2623\chromium\src\ui\gl\gl_bindings_skia_in_process.cc(920): note: while trying to match the argument list ‘(GrGLInterface::GLPtr<GrGLMapBufferRangeProc>, overloaded-function)’</em></p>
-</blockquote>
-<p>从编译器给出的错误提示，可以看出是函数参数不匹配，打开gl_bindings_skia_in_process.cc, 定位到920行:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">functions-&gt;fMapBufferRange &#x3D; StubGLMapBufferRange;</span><br></pre></td></tr></table></figure>
-
-<p>functions是类型是GrGLInterface::Functions ,根据gl_bindings_skia_in_process.cc头部引用的头文件，打开<em>e:\repos\cef\2623\chromium\src\third_party\skia\include\gpu\gl\GrGLInterface.h</em>，可以看到fMapBufferRange的类型为<em>GrGLMapBufferRangeProc</em>，其声明在<em>e:\repos\cef\2623\chromium\src\third_party\skia\include\gpu\gl\GrGLFunctions.h</em>中，声明如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">typedef GrGLvoid* (GR_GL_FUNCTION_TYPE* GrGLMapBufferRangeProc(GrGLenum target, </span><br><span class="line">                                            GrGLintptr offset, </span><br><span class="line">                                            GrGLsizeiptr length, </span><br><span class="line">                                            GrGLbitfield access);</span><br></pre></td></tr></table></figure>
-
-<p>再看<em>gl_bindings_skia_in_process.cc</em>中<em>StubGLMapBufferRange</em>的定义：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">void* GR_GL_FUNCTION_TYPE StubGLMapBufferRange(GLenum target,</span><br><span class="line">                                               GLintptr offset,</span><br><span class="line">                                               GLsizeiptr length,</span><br><span class="line">                                               GLbitfield access) &#123;</span><br><span class="line">    return glMapBufferRange(target, offset, length, access);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>从上面可以看出，的确是参数类型不匹配，其它StubXXX函数也有同样的问题，清楚了这个问题后，就好修复了，在<em>gl_bindings_skia_in_process.cc</em>，找到所有以GL开头的类型，将其增加前缀Gr就行了，这样一个个改比较麻烦，我们只需要重新typedef一下即可，需要typedef的类型不多，修改如下，在<em>gl_bindings_skia_in_process.cc 19</em>行处插入以下代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">typedef GrGLenum GLenum;</span><br><span class="line">typedef GrGLuint GLuint;</span><br><span class="line">typedef GrGLchar GLchar;</span><br><span class="line">typedef GrGLclampf GLclampf;</span><br><span class="line">typedef GrGLint GLint;</span><br><span class="line">typedef GrGLbitfield GLbitfield;</span><br><span class="line">typedef GrGLsizeiptr GLsizeiptr;</span><br><span class="line">typedef GrGLboolean GLboolean;</span><br><span class="line">typedef GrGLsizei GLsizei;</span><br><span class="line">typedef GrGLfloat GLfloat;</span><br><span class="line">typedef GrGLintptr GLintptr;</span><br></pre></td></tr></table></figure>
-
-<h3 id="编译错误4"><a href="#编译错误4" class="headerlink" title="编译错误4"></a>编译错误4</h3><blockquote>
-<p><em>e:\repos\cef\2623\chromium\src\third_party\swiftshader\include\egl\eglext.h(752): error C2061: syntax error: identifier ‘EGLAttrib’<br>e:\repos\cef\2623\chromium\src\third_party\swiftshader\include\egl\eglext.h(753): error C2061: syntax error: identifier ‘EGLAttrib’<br>e:\repos\cef\2623\chromium\src\third_party\swiftshader\include\egl\eglext.h(1057): error C2061: syntax error: identifier ‘EGLAttrib’<br>e:\repos\cef\2623\chromium\src\third_party\swiftshader\include\egl\eglext.h(1121): error C2061: syntax error: identifier ‘EGLAttrib’</em></p>
-</blockquote>
-<p>编译错误也比较明确，就是找不到<code>EGLAttrib</code>类型，CEF论坛中已经给出了<a target="_blank" rel="noopener" href="http://www.magpcss.org/ceforum/viewtopic.php?f=6&t=14473">答案</a>, 修改方法是打开eglext.h, 在代码typedef intptr_t EGLAttribKHR;(62行)后插入以下代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">typedef EGLAttribKHR EGLAttrib; </span><br></pre></td></tr></table></figure>
-<h3 id="编译错误5"><a href="#编译错误5" class="headerlink" title="编译错误5"></a>编译错误5</h3><blockquote>
-<p><em>ffmpeg.lib(ffmpeg.wavdec.obj) : error LNK2001: unresolved external symbol _ff_w64_guid_data<br>libcef.dll : fatal error LNK1120: 1 unresolved externals</em></p>
-</blockquote>
-<p>这个是一个链接错误，找不到外部符号<em>_ff_w64_guid_data</em>，一开始不知道怎么修复这个错误，那就<a href="www.google.com">google</a>吧，好在已经有网友给出了解决办法，请参考：</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="http://ffmpeg.org/pipermail/ffmpeg-devel/2016-May/194142.html"><em>CONFIG_W64_DEMUXER and dead-code elimination</em></a></li>
-<li><a target="_blank" rel="noopener" href="https://chromium-review.googlesource.com/c/chromium/third_party/ffmpeg/+/343398/4"><em>Add missing w64.c to fix VS 2015 Update 3 link errors</em></a></li>
-</ul>
-<p>修改方法是分别打开<em>e:\repos\cef\2623\chromium\src\third_party\ffmpeg\ffmpeg_generated.gni</em> 和<br><em>e:\repos\cef\2623\chromium\src\third_party\ffmpeg\ffmpeg_generated.gypi</em>, </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在 libavformat&#x2F;wavdec.c 前加上 libavformat&#x2F;w64.c</span><br></pre></td></tr></table></figure>
-
-<h2 id="发布二进制包"><a href="#发布二进制包" class="headerlink" title="发布二进制包"></a>发布二进制包</h2><p>编译完成后，二进制发布包默认生成路径在<em>e:\repos\cef\2623\chromium\src\cef\binary_distrib</em>, 二进制发布包的编译请参考我的另一文章<a href="https://leeyzero.github.io/2020/10/10/cef-windows-bin/">CEF Windows环境二进制发布</a>. </p>
-<p>另外在<em>e:\repos\cef\2623\chromium\src\out\Release</em>中其实已经生成了cefclient.exe(如果编译的是debug版本，则在Debug目录)，在命令行执行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cefclient.exe --url&#x3D;https:&#x2F;&#x2F;www.baidu.com</span><br></pre></td></tr></table></figure>
-
-<p>效果如下：</p>
-<p><img src="/images/cef-windows-source/1.png" alt="cefclient.exe"></p>
-<h2 id="其它问题"><a href="#其它问题" class="headerlink" title="其它问题"></a>其它问题</h2><p>将编译好的二进制拷贝到Windows XP系统下运行，发现Debug版本会崩溃，Release能正常工作。Debug版本加上<code>--single-process</code>参数，能够正常运行，但退出时也会崩溃。该问题可以参考链接：<a target="_blank" rel="noopener" href="https://bitbucket.org/chromiumembedded/cef/issues/1787">Crash on Windows XP</a>，CEF维护者 <em>Marshall Greenblatt</em> 已经给出了解决方法；鉴于<em>CEF 2623 Release</em>版本在XP下工作良好，且不需要在XP下进行调试工作，<em>CEF 2623</em>版本的编译工作可以告一段落。</p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1].<a target="_blank" rel="noopener" href="https://bitbucket.org/chromiumembedded/cef/">https://bitbucket.org/chromiumembedded/cef/</a><br>[2].<a target="_blank" rel="noopener" href="http://blog.csdn.net/yufei_lgq/article/details/53838270">http://blog.csdn.net/yufei_lgq/article/details/53838270</a></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/10/10/cef-windows-source/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -763,7 +551,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:24:07" itemprop="dateModified" datetime="2022-05-08T23:24:07+08:00">2022-05-08</time>
+                <time title="Modified: 2022-06-11 20:26:57" itemprop="dateModified" datetime="2022-06-11T20:26:57+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -795,28 +583,14 @@
 <li>辅助进程将收集到的崩溃信息上传至服务器。</li>
 <li>开发者根据程序版本号(version)和用户标识(用户id)从服务器上拿到用户机器上程序生成的崩溃信息(*.dmp)，再从产品库中提取对应版本的符号表文件，最后利用调试工具(Visual Studio、WinDbg等)分析崩溃原因，将修复后的版本再次按照以上流程发布出去。</li>
 </ol>
-<h2 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h2><p>这里的异常处理不同于C++中的异常处理，是指Windows操作系统提供地一种处理应用程序运行时异常（运行时严重错误）的能力。Windows提供了三个函数供应用程序设置回调，当程序出现运行时异常时，可以让应用进行“最后”处理让程序更优雅地退出。 </p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms680634(v=vs.85).aspx">SetUnhandledExceptionFilter</a>：当出现没有控制的异常时回调</li>
-<li><a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/a9yf33zb.aspx">_set_invalid_parameter_handler</a>：当出现无效参数调用时回调</li>
-<li><a target="_blank" rel="noopener" href="https://technet.microsoft.com/en-us/library/t296ys27(v=vs.120).aspx">_set_purecall_handler</a>：当出现纯虚函数调用时回调</li>
-</ul>
-<p>函数签名为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">LPTOP_LEVEL_EXCEPTION_FILTER WINAPI SetUnhandledExceptionFilter(</span><br><span class="line">    LPTOP_LEVEL_EXCEPTION_FILTER lpTopLevelExceptionFilter</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">_invalid_parameter_handler _set_invalid_parameter_handler(      </span><br><span class="line">    _invalid_parameter_handler pNew  </span><br><span class="line">);  </span><br><span class="line"></span><br><span class="line">_purecall_handler _set_purecall_handler( </span><br><span class="line">    _purecall_handler function</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-
-<p>比如对于最常见的空指针引用，可以设置一个UnhandledExceptionFilter回调函数，当出现空指针引用时，系统会回调设置的UnhandledExceptionFilter函数，在该函数就可以记录下异常信息。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">LONG WINAPI MyUnhandledExceptionFilterCb(PEXCEPTION_POINTERS pExceptionInfo)</span><br><span class="line">&#123;</span><br><span class="line">    printf(&quot;Unhandled exception occurred!\n&quot;);</span><br><span class="line">    return EXCEPTION_EXECUTE_HANDLER;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">    ::SetUnhandledExceptionFilter(MyUnhandledExceptionFilterCb);</span><br><span class="line"></span><br><span class="line">    *(int*)0 &#x3D; 100;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="崩溃收集"><a href="#崩溃收集" class="headerlink" title="崩溃收集"></a>崩溃收集</h2><p>对于那些不可恢复的异常，我们可以在设置的回调函数中记录下相应的异常信息。从Windows XP操作系统开始，微软发布了DbgHelp.dll并提供了API用于创建minidump文件，该文件记录了程序崩溃瞬间进程状态的一个快照，函数签名如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">BOOL MiniDumpWriteDump( </span><br><span class="line">    HANDLE hProcess, </span><br><span class="line">    DWORD ProcessId, </span><br><span class="line">    HANDLE hFile, </span><br><span class="line">    MINIDUMP_TYPE DumpType, </span><br><span class="line">    PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam, </span><br><span class="line">    PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam, </span><br><span class="line">    PMINIDUMP_CALLBACK_INFORMATION CallbackParam</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-
-<p>函数的具体用法可以参考<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms680360(v=vs.85).aspx">MSDN</a>, 想了解更多用法可以参考<a target="_blank" rel="noopener" href="http://www.debuginfo.com/articles/effminidumps.html#introduction">DebugInfo.com</a>。按照MSDN的说法：</p>
-<blockquote>
-<p>MiniDumpWriteDump应该尽可能在一个单独的进程中调用，而不是在被dump的目标进程中，特别是在目标进程已经不稳定的情况下。</p>
-</blockquote>
-<p>所以我们把写dump的操作放到一个单独的进程中处理。如图（崩溃收集与处理流程）的step3中，应用程序发生不可恢复的异常时，为了防止应用程序再次产生崩溃，先将进程中除处理异常的线程外的所有线程都挂起。然后启动一个独立进程BugReport，并将异常信息传给BugReport。再由BugReport调用MiniDumpWriteDump生成崩溃信息，再上传至服务器。<br>这里涉及的两个进程之间的通信，进程间通信的方式有很多，在这里采用共享内存是一个不错的选择。至于共享内存中要共享的数据结构嘛，就看业务场景了。</p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1]. <a target="_blank" rel="noopener" href="http://www.debuginfo.com/articles/effminidumps.html#introduction">http://www.debuginfo.com/articles/effminidumps.html#introduction</a><br>[2]. <a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms680360(v=vs.85).aspx">https://msdn.microsoft.com/en-us/library/windows/desktop/ms680360(v=vs.85).aspx</a><br>[3]. <a target="_blank" rel="noopener" href="https://www.amazon.cn/Windows%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B-%E6%9D%B0%E5%A4%AB%E7%91%9E/dp/B001GS7918/ref=sr_1_1?ie=UTF8&qid=1498464940&sr=8-1&keywords=windows%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B">Windows核心编程（第5版）</a></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/10/10/exception-and-crash/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -866,7 +640,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:41:30" itemprop="dateModified" datetime="2022-05-08T23:41:30+08:00">2022-05-08</time>
+                <time title="Modified: 2022-06-11 20:31:16" itemprop="dateModified" datetime="2022-06-11T20:31:16+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -893,24 +667,14 @@
 <h2 id="准备环境"><a href="#准备环境" class="headerlink" title="准备环境"></a>准备环境</h2><p>首先需要安装vim，目前大部分类unix系统默认都已经安装好了。如果没有安装，通常可以用系统的包管理功能进行安装，如centos下使用yum安装。但使用包管理工具安装默认的包源的vim版本可能比较低，推荐使用源码方式安装：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;vim&#x2F;vim.git</span><br></pre></td></tr></table></figure>
 <p>源代码clone下来后，<code>src/INSTALL</code>文档中有非常详细的安装说明文档，根据自己的系统环境按步骤安装即可。</p>
-<h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>vim是通过vimrc配置文件进行配置的，全局配置一般在<code>/etc/vim/vimrc</code>或者<code>/etc/vimrc</code>，对所有用户生效。用户个人的配置在<code>~/.vimrc</code>。对我们来讲，通常在<code>~/.vimrc</code>进行配置就行了。</p>
-<p>除了在配置中进行配置外，在vim编辑过程中，可以在命令模式下，直接输入配置命令，即对当前编辑的文件生效，如显示行号：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:set number</span><br></pre></td></tr></table></figure>
-
-<h3 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h3><p>vimrc文件支持注释，<code>&quot;</code>后面的内容为注释，如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&quot; 显示行号</span><br><span class="line">set number</span><br><span class="line">syntax on &quot; 打开语法高亮</span><br></pre></td></tr></table></figure>
-
-<h3 id="帮助文档"><a href="#帮助文档" class="headerlink" title="帮助文档"></a>帮助文档</h3><p>vim有非常详细的帮助文档，在编辑过程中，你可以通过<code>F1</code>或<code>:help</code>快捷键呼出帮忙文档，也可以对某个配置项查看其配置说明，如</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:help showmatch</span><br></pre></td></tr></table></figure>
-
-<h3 id="配置惯用法"><a href="#配置惯用法" class="headerlink" title="配置惯用法"></a>配置惯用法</h3><p>配置项一般都有”打开”和”关闭”两个设置。”关闭”就是在”打开”前面加上前缀”no”。如显示等号为<code>set number</code>，关闭就为<code>set nonumber</code>，大部分配置都有简写，如显示等号可以简写为<code>set nu</code>，关闭就为<code>set nonu</code>。</p>
-<h2 id="常用配置"><a href="#常用配置" class="headerlink" title="常用配置"></a>常用配置</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line">&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">&quot; 基本配置</span><br><span class="line">&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">&quot; 不兼容vi命令</span><br><span class="line">set nocompatible</span><br><span class="line"></span><br><span class="line">&quot; 打开语法高亮</span><br><span class="line">syntax on</span><br><span class="line"></span><br><span class="line">&quot; 开启文件类型检查，并且载入与该类型对应的缩进规则。</span><br><span class="line">filetype indent on</span><br><span class="line"></span><br><span class="line">&quot; 在底部状态栏显示当前模式，如插入、命令模式</span><br><span class="line">set showmode</span><br><span class="line"></span><br><span class="line">&quot; 在命令模式下显示当前命令，如输入2y时，会在状态栏显示命令，再次输入y时，执行命令，状态栏命令消失</span><br><span class="line">set showcmd</span><br><span class="line"></span><br><span class="line">&quot; 是否显示状态栏。0表示不显示，1表示只在多窗口时显示，2表示显示。</span><br><span class="line">set laststatus&#x3D;2</span><br><span class="line"></span><br><span class="line">&quot; 在状态栏显示光标的当前位置</span><br><span class="line">set  ruler</span><br><span class="line"></span><br><span class="line">&quot; 支持鼠标</span><br><span class="line">set mouse&#x3D;a</span><br><span class="line"></span><br><span class="line">&quot; 当前文本使用uf8编码</span><br><span class="line">set encoding&#x3D;utf-8  </span><br><span class="line"></span><br><span class="line">&quot; 保留命令的历史记录数</span><br><span class="line">set history&#x3D;1000</span><br><span class="line"></span><br><span class="line">&quot; 显示行号</span><br><span class="line">set number</span><br><span class="line"></span><br><span class="line">&quot; 光标所在的当前行高亮</span><br><span class="line">set cursorline</span><br><span class="line"></span><br><span class="line">&quot; 设置行宽，即一行显示多少个字符</span><br><span class="line">set textwidth&#x3D;100</span><br><span class="line"></span><br><span class="line">&quot; 自动折行，即太长的行分成几行显示，关闭自动折行为set nowrap</span><br><span class="line">set wrap</span><br><span class="line"></span><br><span class="line">&quot; 只有遇到指定的符号（比如空格、连词号和其他标点符号），才发生折行。也就是说，不会在单词内部折行</span><br><span class="line">set linebreak</span><br><span class="line"></span><br><span class="line">&quot; 垂直滚动时，光标距离顶部&#x2F;底部的位置（单位：行）</span><br><span class="line">set scrolloff&#x3D;5</span><br><span class="line"></span><br><span class="line">&quot; 水平滚动时，光标距离行首或行尾的位置（单位：字符）。该配置在不折行时比较有用。</span><br><span class="line">set sidescrolloff&#x3D;10</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">&quot; 缩进相关配置</span><br><span class="line">&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">&quot; 按下tab时显示的空格数</span><br><span class="line">set tabstop&#x3D;4</span><br><span class="line"></span><br><span class="line">&quot; tab转化为多少个空格</span><br><span class="line">set softtabstop&#x3D;4</span><br><span class="line"></span><br><span class="line">&quot; 执行移位操作&#96;&gt;&gt;或&lt;&lt;&#96;时，显示的空格数</span><br><span class="line">set shiftwidth&#x3D;4</span><br><span class="line"></span><br><span class="line">&quot; 由于 tab 键在不同的编辑器缩进不一致，该设置自动将 Tab 转为空格</span><br><span class="line">set expandtab</span><br><span class="line"></span><br><span class="line">&quot; 自动缩略，当按下回车时，自动与上一行的缩进保持一致</span><br><span class="line">set autoindent</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">&quot; 搜索相关配置</span><br><span class="line">&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">&quot; 光标遇到&#123;[()]&#125;时，会高亮显示另一半匹配的符号</span><br><span class="line">set showmatch</span><br><span class="line"></span><br><span class="line">&quot; 高亮显示搜索的词</span><br><span class="line">set hlsearch</span><br><span class="line"></span><br><span class="line">&quot; 增量搜索匹配结果，即每输入一个字母都会进行匹配</span><br><span class="line">set incsearch</span><br><span class="line"></span><br><span class="line">&quot; 搜索时忽略大小写</span><br><span class="line">set ignorecase</span><br><span class="line"></span><br><span class="line">&quot; 如果同时打开了ignorecase，那么对于只有一个大写字母的搜索词，将大小写敏感；其他情况都是大小写不敏感</span><br><span class="line">set smartcase</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">&quot; 编辑相关配置</span><br><span class="line">&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">&quot; 不创建交换文件。交换文件主要用于系统崩溃时恢复文件，文件名的开头是.、结尾是.swp</span><br><span class="line">set noswapfile</span><br><span class="line"></span><br><span class="line">&quot; 自动切换工作目录。这主要用在一个 Vim 会话之中打开多个文件的情况，默认的工作目录是打开的第一个文件的目录。该配置可以将工作目录自动切换到，正在编辑的文件的目录。</span><br><span class="line">set autochdir</span><br><span class="line"></span><br><span class="line">&quot; 出错时，不要发出响声</span><br><span class="line">set noerrorbells</span><br><span class="line"></span><br><span class="line">&quot; 出错时，发出视觉提示，通常是屏幕闪烁</span><br><span class="line">set visualbell</span><br><span class="line"></span><br><span class="line">&quot; 打开文件监视。如果在编辑过程中文件发生外部改变，就会发出提示。</span><br><span class="line">set autoread</span><br><span class="line"></span><br><span class="line">&quot; 命令模式下，底部操作指令按下 Tab 键自动补全</span><br><span class="line">set wildmenu</span><br></pre></td></tr></table></figure>
-
-<p>以上配置可以通过github克隆到本地：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;leeyzero&#x2F;vimrc.git </span><br></pre></td></tr></table></figure>
-
-<h2 id="更多参考"><a href="#更多参考" class="headerlink" title="更多参考"></a>更多参考</h2><p>[1].<a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2018/09/vimrc.html">http://www.ruanyifeng.com/blog/2018/09/vimrc.html</a><br>[2].<a target="_blank" rel="noopener" href="https://dougblack.io/words/a-good-vimrc.html">https://dougblack.io/words/a-good-vimrc.html</a><br>[3].<a target="_blank" rel="noopener" href="http://vimdoc.sourceforge.net/htmldoc/options.html">http://vimdoc.sourceforge.net/htmldoc/options.html</a><br>[4].<a target="_blank" rel="noopener" href="https://github.com/amix/vimrc/blob/master/vimrcs/basic.vim">https://github.com/amix/vimrc/blob/master/vimrcs/basic.vim</a></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/10/09/vim-config-without-plugin/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 

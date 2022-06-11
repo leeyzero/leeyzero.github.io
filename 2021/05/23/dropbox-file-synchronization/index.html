@@ -35,7 +35,7 @@
 <meta property="og:image" content="https://leeyzero.github.io/images/dropbox-file-synchronization/protocol41.png">
 <meta property="og:image" content="https://leeyzero.github.io/images/dropbox-file-synchronization/protocol52.png">
 <meta property="article:published_time" content="2021-05-23T14:44:23.000Z">
-<meta property="article:modified_time" content="2022-05-08T15:30:36.878Z">
+<meta property="article:modified_time" content="2022-06-11T12:26:30.904Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="文件同步">
 <meta property="article:tag" content="Dropbox">
@@ -206,7 +206,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:30:36" itemprop="dateModified" datetime="2022-05-08T23:30:36+08:00">2022-05-08</time>
+                <time title="Modified: 2022-06-11 20:26:30" itemprop="dateModified" datetime="2022-06-11T20:26:30+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -233,6 +233,8 @@
 <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><h3 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h3><p>在本地电脑上，一个文件可以用文件路径来标识。但对于dropbox需要支持共享目录，定义了名字空间（namespace）的概念，用于对传统文件系统的抽象。每一个共享目录有一个惟一的名字空间，每个用户有一个根名字空间，每个共享目录可以挂载（mount）到不同的用户根名字空间下。即对于dropbox的文件可以通过名字空间和相对路径&lt;namespace，relative path&gt;惟一标识。</p>
 <h3 id="文件格式"><a href="#文件格式" class="headerlink" title="文件格式"></a>文件格式</h3><p>受<a target="_blank" rel="noopener" href="https://rsync.samba.org/tech_report/tech_report.html">rsync算法</a>的启发，dropbox把每个文件被分割成4MB的块（最后一个块小于等于4MB）。每个块通过计算出的SHA-256进行标识，对于每个文件内容，可以通过一个块列表blocklist引用。比如，文件video.avi大小了14MB，可以分割成4个块h1, h2, h3, h4，我们说文件video.avi的块列表blocklist是[h1, h2, h3, h4]，如下图：</p>
 <p><img src="/images/dropbox-file-synchronization/dropboxfileformat1.png" alt="image"></p>
+<a id="more"></a>
+
 <h2 id="服务器文件日志"><a href="#服务器文件日志" class="headerlink" title="服务器文件日志"></a>服务器文件日志</h2><p>服务器文件日志（The Server File Journal，SFJ）是一个大的文件元信息数据库，注意元信息中不包含文件内容，文件内容通过blocklist引用。服务器文件日志是一个不断追加的记录行，每一行代表文件的一个版本。每一行主要包含以下关键字段：</p>
 <ul>
 <li>名字空间ID（Namespace ID，NSID）</li>

@@ -29,7 +29,7 @@
 <meta property="og:description" content="最近排查一个线上接口耗时上涨的问题，其中用到排查思路和相关工具有一定借鉴作用，在此做个记录,同时供网友参考。由于涉及到一些敏感信息，所以本文会对一些名称进行模糊化。 现象监控发现对外接口的整体耗时上涨了近100ms，涨了近50%，甚至有少部分接口出现超时现象，已经影响到部分业务的用户体验。 分析宏观分析对比故障发生的时候点，检查对应时间结点是否内部服务有上线，通常情况下，90%以上的故障都是由上线">
 <meta property="og:locale">
 <meta property="article:published_time" content="2021-04-18T15:02:00.000Z">
-<meta property="article:modified_time" content="2021-04-22T03:04:18.970Z">
+<meta property="article:modified_time" content="2022-06-11T12:29:00.121Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="故障排查">
 <meta property="article:tag" content="接口耗时">
@@ -199,7 +199,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-22 11:04:18" itemprop="dateModified" datetime="2021-04-22T11:04:18+08:00">2021-04-22</time>
+                <time title="Modified: 2022-06-11 20:29:00" itemprop="dateModified" datetime="2022-06-11T20:29:00+08:00">2022-06-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -227,6 +227,8 @@
 <h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><h3 id="宏观分析"><a href="#宏观分析" class="headerlink" title="宏观分析"></a>宏观分析</h3><p>对比故障发生的时候点，检查对应时间结点是否内部服务有上线，通常情况下，90%以上的故障都是由上线引起的。但排查后，业务侧并未上过线，排除是业务上线引入的故障。</p>
 <p>对比不同机房，服务部署在三个机房，记为机房A，机房B和机房C，发现耗时主要发生在机房A，机房B和机房C并不存在这个问题，怀疑是机房的网络链路问题。</p>
 <p>联系负责机房的同学一起排查，未发现网络链路问题。将某个接口所有的流量从机房A切到机房B，发该接口的耗时恢复到之前的水平，看起来的确像是出现机房A网络存在问题。但OP同学再三确认，未发现异常。</p>
+<a id="more"></a>
+
 <h3 id="业务分析"><a href="#业务分析" class="headerlink" title="业务分析"></a>业务分析</h3><p>既然宏观层面看不出问题，那就从业务侧找具体case来分析。初步排查，所有接口耗时均有上涨，去除极端case，找一个平均接口耗时的接口进行分析，就称为接口a吧。先分析下这个接口的top 30耗时情况：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sed -nr <span class="string">&#x27;s/.*([0-9]&#123;2&#125;:[0-9]&#123;2&#125;:[0-9]&#123;2&#125;) logid=([0-9]+).*status=2 cost_time=([0-9]+) uri=&#123;api a&#125; .*/\1 \2 \3/p&#x27;</span> api_server.log | sort -k3 -nr | head -n 30</span></span><br><span class="line">1  09:12:07 4286155037 6751</span><br><span class="line">2  09:49:49 217512222 5873</span><br><span class="line">3  09:49:49 217544086 5816</span><br><span class="line">4  09:22:27 53384959 5135</span><br><span class="line">5  09:21:48 49524458 5120</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 

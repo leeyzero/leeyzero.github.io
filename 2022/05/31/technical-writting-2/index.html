@@ -43,7 +43,7 @@
 <meta property="og:image" content="https://leeyzero.github.io/images/technical-writting/recursion1.svg">
 <meta property="og:image" content="https://leeyzero.github.io/images/technical-writting/recursion2.svg">
 <meta property="article:published_time" content="2022-05-31T01:53:16.000Z">
-<meta property="article:modified_time" content="2022-06-19T08:54:46.977Z">
+<meta property="article:modified_time" content="2022-06-19T10:22:18.057Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="写作">
 <meta name="twitter:card" content="summary">
@@ -213,7 +213,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-06-19 16:54:46" itemprop="dateModified" datetime="2022-06-19T16:54:46+08:00">2022-06-19</time>
+                <time title="Modified: 2022-06-19 18:22:18" itemprop="dateModified" datetime="2022-06-19T18:22:18+08:00">2022-06-19</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -501,7 +501,89 @@
 <li><a target="_blank" rel="noopener" href="https://www.lucidchart.com/pages/">LucidChart</a></li>
 </ul>
 <p>从这些工具导出图表供文档使用时，通常最好将文件导出为 <a target="_blank" rel="noopener" href="https://wikipedia.org/wiki/Scalable_Vector_Graphics">Scalable Vector Graphics</a>（SVG）。SVG 可以根据空间限制轻松缩放图表，因此无论大小如何，你最终都会获得高质量的图像。</p>
-<h1 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h1><h2 id="正确"><a href="#正确" class="headerlink" title="正确"></a>正确</h2><h3 id="运行示例代码"><a href="#运行示例代码" class="headerlink" title="运行示例代码"></a>运行示例代码</h3><h2 id="简洁"><a href="#简洁" class="headerlink" title="简洁"></a>简洁</h2><h2 id="易理解"><a href="#易理解" class="headerlink" title="易理解"></a>易理解</h2><h3 id="练习-1"><a href="#练习-1" class="headerlink" title="练习"></a>练习</h3><h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><h3 id="练习-2"><a href="#练习-2" class="headerlink" title="练习"></a>练习</h3><h2 id="可重用"><a href="#可重用" class="headerlink" title="可重用"></a>可重用</h2><h3 id="正反示例"><a href="#正反示例" class="headerlink" title="正反示例"></a>正反示例</h3><h2 id="序列性"><a href="#序列性" class="headerlink" title="序列性"></a>序列性</h2><h3 id="练习-3"><a href="#练习-3" class="headerlink" title="练习"></a>练习</h3><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>
+<h1 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h1><p>好的示例代码通常是最好的文档。即使你的段落和列表像水一样清澈，程序员仍然更喜欢好的示例代码。毕竟，文本与代码是不同的语言，并且读者最终关心的是代码。试图用文本描述代码，就像试图用英语解释一首意大利诗歌一样。</p>
+<p>好的示例是 <strong>正确</strong>且<strong>简洁</strong>的代码，你的读者可以<strong>快速理解</strong>，<strong>轻松重用</strong>，并且<strong>副作用最小</strong>。</p>
+<h2 id="正确"><a href="#正确" class="headerlink" title="正确"></a>正确</h2><p>示例代码应该满足以下条件：</p>
+<ul>
+<li>构建没有错误。</li>
+<li>能够执行它应该完成的任务。</li>
+<li>尽可能是可以上生产线的代码。例如，该代码不包含任何安全漏洞。</li>
+<li>遵循特定语言的规范。</li>
+</ul>
+<p>示例代码直接影响用户编写代码的方式。因此，示例代码应该示例最佳的编码方式。如果编码的方式不止一种，请以你的团队认为最好的方式对其进行编码。如果你的团队还没有考虑每种方法的利弊，请花一些时间去对比各个方式的优缺点。</p>
+<p>始终测试你的示例代码。随着时间的流逝，系统会发生变化，示例代码也可能会出错。与其它任何代码一样，测试并维护你的示例代码。</p>
+<p>许多团队用单元测试作为示例代码，这有时是个坏主意。因为，单元测试的主要目的是测试，而示例代码的最终目的是教育。</p>
+<p>一个程序片段是示例程序的一部分，可能只有一行或几行代码长。这种包含大量程序片段的文档通常会随着时间的推移而退化，因为团队倾向于不像完整示例那样严格地测试程序片段。</p>
+<h3 id="运行示例代码"><a href="#运行示例代码" class="headerlink" title="运行示例代码"></a>运行示例代码</h3><p>好的文档说明如何运行示例代码。例如，在运行示例代码之前，你的文档可能需要告诉用户执行以下活动：</p>
+<ul>
+<li>安装某个库。</li>
+<li>配置某些环境变量的值。</li>
+<li>配置集成开发环境（IDE）。</li>
+</ul>
+<p>用户并不总是能正确执行上述活动。在某些情况下，用户喜欢直接在文档中运行或（使用）示例代码。（如：”单击此处运行代码。“）</p>
+<p>编写者应考虑描述示例代码的预期输出或结果，尤其是对于难以运行的示例代码。</p>
+<h2 id="简洁"><a href="#简洁" class="headerlink" title="简洁"></a>简洁</h2><p>示例代码应该简短，仅包括基本组件。当一个C语言新手想学习如何调用 <code>malloc</code> 函数时，请给他一个简短的代码片段，而不是整个Linux源代码树。不相关的代码可能会分散受众的注意力并让他们感到困惑。也就是说，永远不要使用错误的做法来缩短代码；总是优先使用正确性而不是简洁性。</p>
+<h2 id="易理解"><a href="#易理解" class="headerlink" title="易理解"></a>易理解</h2><p>请遵循下列建议来创建清晰的示例代码：</p>
+<ul>
+<li>选择自描述性的类，方法和变量名。</li>
+<li>避免使用让读者难以理解的编程技巧。</li>
+<li>避免深层嵌套的代码。</li>
+<li>可选的：使用粗体或彩色体将读者注意力吸引到代码的特定部分。但是，应该明智地使用突出显示，过多的突出显示意味着读者不会特别关注任何内容。</li>
+</ul>
+<h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><p>考虑以面关于示例代码注释的推荐做法：</p>
+<ul>
+<li>保持简短，但是清晰高于简洁。</li>
+<li>避免编写明显的代码注释，但是请记住，对你（专家）而言简单的东西对新手可能并不明显。</li>
+<li>将你的评论精力集中在代码中任何不直观的地方</li>
+<li>当你的读者对这项技术非常有经验，不要解释代码是什么，解释代码为什么这么干。</li>
+</ul>
+<p>你应该将代码描述放在代码注释中还是放在示例代码之外（段落或列表）呢？请注意，复制粘贴片段的读者不仅会收集代码，还会收集任何嵌入的注释。因此，将代码描述放入代码注释中，以便可以一同复杂粘贴。相反，当你必须解释一个冗长或难以理解的概念时，通常应该将注释文本放在示例程序之前。</p>
+<blockquote>
+<p><strong>注：</strong>如果为了使代码更简短且更易于理解，而必须牺牲能够上生产环境，请在注释中解释你的决定。</p>
+</blockquote>
+<h2 id="可重用"><a href="#可重用" class="headerlink" title="可重用"></a>可重用</h2><p>为了使读者能够轻松复用你的示例代码，请提供以下内容：</p>
+<ul>
+<li>运行示例代码所需的所有信息，包括所有依赖关系和设置。</li>
+<li>可以以有用的方式扩展或定制代码。</li>
+</ul>
+<p>拥有易于理解的简洁且可编译的示例代码是一个很好的开始。但是，如果毁了读者的应用程序，他们将不会高兴。因此，在编写示例代码时，请考虑将代码集成到另一个程序中导致的任何潜在副作用。没有人想要不安全或效率极低的代码。</p>
+<h3 id="正反示例"><a href="#正反示例" class="headerlink" title="正反示例"></a>正反示例</h3><p>除了告诉读者要做什么之外，有时还要明智地向读者展示不应该做什么。例如，许多编程语言都允许程序员在等号的两侧放置空格。现在，假设你正在使用某种语言（例如bash）编写教程，该语言不允许在等号两侧放置空格。在这种情况下，同时展示好例子和反面例子将使读者受益。例如：</p>
+<p><font color="green"><strong>正确的示例</strong></font></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># A valid string assignment.</span><br><span class="line">s&#x3D;&quot;The rain in Maine.&quot;</span><br></pre></td></tr></table></figure>
+
+<p><font color="red"><strong>错误的示例</strong></font></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># An invalid string assignment because of the white space on either side of the</span><br><span class="line"># equals sign.</span><br><span class="line">s &#x3D; &quot;The rain in Maine.&quot;</span><br></pre></td></tr></table></figure>
+
+<h2 id="序列性"><a href="#序列性" class="headerlink" title="序列性"></a>序列性</h2><p>好的示例代码集展示一系列的复杂度。</p>
+<p>完全不了解某种技术的读者通常渴望简单的示例来入门。第一个，也是最基本的示例代码通常称为 <a target="_blank" rel="noopener" href="https://wikipedia.org/wiki/%22Hello,_World!%22_program">Hello World程序</a>。掌握基础知识后，工程师们想要更复杂的程序。一组好的示例代码提供了一系列简单、适中和复杂的示例程序。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>技术写作二涵盖了以下技术写作的中级课程：</p>
+<ul>
+<li>采用统一样式。</li>
+<li>换位思考。</li>
+<li>大声朗读文档（对自己）。</li>
+<li>写好初稿后，离开一会儿再回来查看文档。</li>
+<li>找一个好的同行编辑。</li>
+<li>文档大纲。或者先写下类别，然后再组织起来。</li>
+<li>介绍文档的范围和所有先决条件。</li>
+<li>首选基于任务的标题。</li>
+<li>循序渐进（在某些情况下）。</li>
+<li>在创建插图之前，请考虑写标题。</li>
+<li>将信息限制在一个图示中。</li>
+<li>通过标注来吸引读者的注意力。</li>
+<li>创建简单易懂的示例代码。</li>
+<li>保持代码注释简洁，但首选清晰而不是简洁。</li>
+<li>避免编写显而易见的代码注释。</li>
+<li>将你的注释集中在任何不直观的代码上。</li>
+<li>不仅提供正面示例，还提供反面示例。</li>
+<li>提供一系列复杂度的代码示例。</li>
+<li>养成不断修改的习惯。</li>
+<li>为不同类别的用户提供不同的文档类型。</li>
+<li>与读者已经熟悉的东西进行比较和对比。</li>
+<li>在教程中，通过示例来增强概念。</li>
+<li>在教程中，提出读者可能遇到的问题。</li>
+</ul>
+<p>如果时间允许，请考虑查看这些额外的<a target="_blank" rel="noopener" href="https://developers.google.com/tech-writing/resources">技术写作资源</a>。</p>
+
     </div>
 
     
@@ -582,7 +664,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E5%8F%97%E4%BC%97"><span class="nav-number">1.1.</span> <span class="nav-text">目标受众</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%A6%E4%B9%A0%E7%9B%AE%E6%A0%87"><span class="nav-number">1.2.</span> <span class="nav-text">学习目标</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%AA%E6%88%91%E7%BC%96%E8%BE%91"><span class="nav-number">2.</span> <span class="nav-text">自我编辑</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%87%E7%94%A8%E6%A0%B7%E5%BC%8F%E6%8C%87%E5%8D%97"><span class="nav-number">2.1.</span> <span class="nav-text">采用样式指南</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%83%8F%E4%BD%A0%E7%9A%84%E5%8F%97%E4%BC%97%E4%B8%80%E6%A0%B7%E6%80%9D%E8%80%83"><span class="nav-number">2.2.</span> <span class="nav-text">像你的受众一样思考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E5%A3%B0%E6%9C%97%E8%AF%BB"><span class="nav-number">2.3.</span> <span class="nav-text">大声朗读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A8%8D%E5%90%8E%E5%86%8D%E5%9B%9E%E6%9D%A5"><span class="nav-number">2.4.</span> <span class="nav-text">稍后再回来</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%87%E6%8D%A2%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="nav-number">2.5.</span> <span class="nav-text">切换上下文</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%BB%E6%89%BE%E5%90%8C%E4%BC%B4%E7%BC%96%E8%BE%91"><span class="nav-number">2.6.</span> <span class="nav-text">寻找同伴编辑</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%84%E7%BB%87%E5%A4%A7%E5%9E%8B%E6%96%87%E6%A1%A3"><span class="nav-number">3.</span> <span class="nav-text">组织大型文档</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%95%E6%97%B6%E7%BC%96%E5%86%99%E5%A4%A7%E5%9E%8B%E6%96%87%E6%A1%A3"><span class="nav-number">3.1.</span> <span class="nav-text">何时编写大型文档</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E7%BB%87%E6%96%87%E6%A1%A3"><span class="nav-number">3.2.</span> <span class="nav-text">组织文档</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E6%A1%A3%E5%A4%A7%E7%BA%B2"><span class="nav-number">3.2.1.</span> <span class="nav-text">文档大纲</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%A7%E7%BA%B2%E7%BB%83%E4%B9%A0"><span class="nav-number">3.2.2.</span> <span class="nav-text">大纲练习</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D%E6%96%87%E6%A1%A3"><span class="nav-number">3.2.3.</span> <span class="nav-text">介绍文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D%E7%BB%83%E4%B9%A0"><span class="nav-number">3.2.4.</span> <span class="nav-text">介绍练习</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E5%AF%BC%E8%88%AA"><span class="nav-number">3.3.</span> <span class="nav-text">添加导航</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A6%96%E5%85%88%E5%9F%BA%E4%BA%8E%E4%BB%BB%E5%8A%A1%E7%9A%84%E6%A0%87%E9%A2%98"><span class="nav-number">3.3.1.</span> <span class="nav-text">首先基于任务的标题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8%E6%A0%87%E9%A2%98%E4%B8%8B%E6%8F%90%E4%BE%9B%E6%96%87%E5%AD%97"><span class="nav-number">3.3.2.</span> <span class="nav-text">在标题下提供文字</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%87%E9%A2%98%E7%BB%83%E4%B9%A0"><span class="nav-number">3.3.3.</span> <span class="nav-text">标题练习</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%90%E6%AD%A5%E5%B1%95%E5%BC%80"><span class="nav-number">3.4.</span> <span class="nav-text">逐步展开</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8F%92%E5%9B%BE"><span class="nav-number">4.</span> <span class="nav-text">插图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%88%E5%86%99%E6%A0%87%E9%A2%98"><span class="nav-number">4.1.</span> <span class="nav-text">先写标题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">4.1.1.</span> <span class="nav-text">示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%90%E5%88%B6%E5%8D%95%E4%B8%AA%E5%9B%BE%E4%B8%AD%E7%9A%84%E4%BF%A1%E6%81%AF%E9%87%8F"><span class="nav-number">4.2.</span> <span class="nav-text">限制单个图中的信息量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%86%E4%B8%AD%E8%AF%BB%E8%80%85%E7%9A%84%E6%B3%A8%E6%84%8F%E5%8A%9B"><span class="nav-number">4.3.</span> <span class="nav-text">集中读者的注意力</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%92%E5%9B%BE%E9%87%8D%E6%9E%84"><span class="nav-number">4.4.</span> <span class="nav-text">插图重构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0"><span class="nav-number">4.4.1.</span> <span class="nav-text">练习</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%92%E5%9B%BE%E5%B7%A5%E5%85%B7"><span class="nav-number">4.5.</span> <span class="nav-text">插图工具</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="nav-number">5.</span> <span class="nav-text">示例代码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E7%A1%AE"><span class="nav-number">5.1.</span> <span class="nav-text">正确</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="nav-number">5.1.1.</span> <span class="nav-text">运行示例代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E6%B4%81"><span class="nav-number">5.2.</span> <span class="nav-text">简洁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%93%E7%90%86%E8%A7%A3"><span class="nav-number">5.3.</span> <span class="nav-text">易理解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0-1"><span class="nav-number">5.3.1.</span> <span class="nav-text">练习</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E9%87%8A"><span class="nav-number">5.4.</span> <span class="nav-text">注释</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0-2"><span class="nav-number">5.4.1.</span> <span class="nav-text">练习</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E9%87%8D%E7%94%A8"><span class="nav-number">5.5.</span> <span class="nav-text">可重用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A3%E5%8F%8D%E7%A4%BA%E4%BE%8B"><span class="nav-number">5.5.1.</span> <span class="nav-text">正反示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%8F%E5%88%97%E6%80%A7"><span class="nav-number">5.6.</span> <span class="nav-text">序列性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0-3"><span class="nav-number">5.6.1.</span> <span class="nav-text">练习</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E5%8F%97%E4%BC%97"><span class="nav-number">1.1.</span> <span class="nav-text">目标受众</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%A6%E4%B9%A0%E7%9B%AE%E6%A0%87"><span class="nav-number">1.2.</span> <span class="nav-text">学习目标</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%AA%E6%88%91%E7%BC%96%E8%BE%91"><span class="nav-number">2.</span> <span class="nav-text">自我编辑</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%87%E7%94%A8%E6%A0%B7%E5%BC%8F%E6%8C%87%E5%8D%97"><span class="nav-number">2.1.</span> <span class="nav-text">采用样式指南</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%83%8F%E4%BD%A0%E7%9A%84%E5%8F%97%E4%BC%97%E4%B8%80%E6%A0%B7%E6%80%9D%E8%80%83"><span class="nav-number">2.2.</span> <span class="nav-text">像你的受众一样思考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E5%A3%B0%E6%9C%97%E8%AF%BB"><span class="nav-number">2.3.</span> <span class="nav-text">大声朗读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A8%8D%E5%90%8E%E5%86%8D%E5%9B%9E%E6%9D%A5"><span class="nav-number">2.4.</span> <span class="nav-text">稍后再回来</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%87%E6%8D%A2%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="nav-number">2.5.</span> <span class="nav-text">切换上下文</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%BB%E6%89%BE%E5%90%8C%E4%BC%B4%E7%BC%96%E8%BE%91"><span class="nav-number">2.6.</span> <span class="nav-text">寻找同伴编辑</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%84%E7%BB%87%E5%A4%A7%E5%9E%8B%E6%96%87%E6%A1%A3"><span class="nav-number">3.</span> <span class="nav-text">组织大型文档</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%95%E6%97%B6%E7%BC%96%E5%86%99%E5%A4%A7%E5%9E%8B%E6%96%87%E6%A1%A3"><span class="nav-number">3.1.</span> <span class="nav-text">何时编写大型文档</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E7%BB%87%E6%96%87%E6%A1%A3"><span class="nav-number">3.2.</span> <span class="nav-text">组织文档</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E6%A1%A3%E5%A4%A7%E7%BA%B2"><span class="nav-number">3.2.1.</span> <span class="nav-text">文档大纲</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%A7%E7%BA%B2%E7%BB%83%E4%B9%A0"><span class="nav-number">3.2.2.</span> <span class="nav-text">大纲练习</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D%E6%96%87%E6%A1%A3"><span class="nav-number">3.2.3.</span> <span class="nav-text">介绍文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D%E7%BB%83%E4%B9%A0"><span class="nav-number">3.2.4.</span> <span class="nav-text">介绍练习</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E5%AF%BC%E8%88%AA"><span class="nav-number">3.3.</span> <span class="nav-text">添加导航</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A6%96%E5%85%88%E5%9F%BA%E4%BA%8E%E4%BB%BB%E5%8A%A1%E7%9A%84%E6%A0%87%E9%A2%98"><span class="nav-number">3.3.1.</span> <span class="nav-text">首先基于任务的标题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8%E6%A0%87%E9%A2%98%E4%B8%8B%E6%8F%90%E4%BE%9B%E6%96%87%E5%AD%97"><span class="nav-number">3.3.2.</span> <span class="nav-text">在标题下提供文字</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%87%E9%A2%98%E7%BB%83%E4%B9%A0"><span class="nav-number">3.3.3.</span> <span class="nav-text">标题练习</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%90%E6%AD%A5%E5%B1%95%E5%BC%80"><span class="nav-number">3.4.</span> <span class="nav-text">逐步展开</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8F%92%E5%9B%BE"><span class="nav-number">4.</span> <span class="nav-text">插图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%88%E5%86%99%E6%A0%87%E9%A2%98"><span class="nav-number">4.1.</span> <span class="nav-text">先写标题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">4.1.1.</span> <span class="nav-text">示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%90%E5%88%B6%E5%8D%95%E4%B8%AA%E5%9B%BE%E4%B8%AD%E7%9A%84%E4%BF%A1%E6%81%AF%E9%87%8F"><span class="nav-number">4.2.</span> <span class="nav-text">限制单个图中的信息量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%86%E4%B8%AD%E8%AF%BB%E8%80%85%E7%9A%84%E6%B3%A8%E6%84%8F%E5%8A%9B"><span class="nav-number">4.3.</span> <span class="nav-text">集中读者的注意力</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%92%E5%9B%BE%E9%87%8D%E6%9E%84"><span class="nav-number">4.4.</span> <span class="nav-text">插图重构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0"><span class="nav-number">4.4.1.</span> <span class="nav-text">练习</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%92%E5%9B%BE%E5%B7%A5%E5%85%B7"><span class="nav-number">4.5.</span> <span class="nav-text">插图工具</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="nav-number">5.</span> <span class="nav-text">示例代码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E7%A1%AE"><span class="nav-number">5.1.</span> <span class="nav-text">正确</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="nav-number">5.1.1.</span> <span class="nav-text">运行示例代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E6%B4%81"><span class="nav-number">5.2.</span> <span class="nav-text">简洁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%93%E7%90%86%E8%A7%A3"><span class="nav-number">5.3.</span> <span class="nav-text">易理解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E9%87%8A"><span class="nav-number">5.4.</span> <span class="nav-text">注释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E9%87%8D%E7%94%A8"><span class="nav-number">5.5.</span> <span class="nav-text">可重用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A3%E5%8F%8D%E7%A4%BA%E4%BE%8B"><span class="nav-number">5.5.1.</span> <span class="nav-text">正反示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%8F%E5%88%97%E6%80%A7"><span class="nav-number">5.6.</span> <span class="nav-text">序列性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

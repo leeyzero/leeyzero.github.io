@@ -1,5 +1,5 @@
 ---
-title: 【翻译】Windows消息体系
+title: '[译] Windows消息体系'
 date: 2020-10-10 22:57:21
 categories:
 - Windows

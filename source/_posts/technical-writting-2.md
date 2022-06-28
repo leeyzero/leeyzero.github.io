@@ -1,5 +1,5 @@
 ---
-title: 【翻译】 Google技术写作（二）
+title: '[译] Google技术写作（二）'
 date: 2022-05-31 09:53:16
 categories:
 - 读书笔记

@@ -9,11 +9,11 @@ tags:
 - Go 
 ---
 
-最近工作中使用golang开发比较多，而大部分工作都是使用vim完成，在配置vim的golang环境时，发现已经有很多现成的插件可用，对我而言，主要配置以下四个插件就够用了：
+最近工作中使用Go开发比较多，而大部分工作都是使用vim完成，在配置vim的Go环境时，发现已经有很多现成的插件可用，对我而言，主要配置以下四个插件就够用了：
 
 - [vim-go](https://github.com/fatih/vim-go): go语言的vim插件。支持代码格式化、语法检查、语法高亮、调试等非常多的功能。
-- [tagbar](https://github.com/majutsushi/tagbar): 用于方便查看代码结构。
-- [nerdtree](https://github.com/scrooloose/nerdtree): 用于管理和查看代码目录结构。
+- [tagbar](https://github.com/preservim/tagbar): 用于方便查看代码结构。
+- [nerdtree](https://github.com/preservim/nerdtree): 用于管理和查看代码目录结构。
 - [YouCompleteMe](https://github.com/ycm-core/YouCompleteMe): 用于代码自动补全。
 
 ## 依赖环境
@@ -77,9 +77,9 @@ Plugin 'VundleVim/Vundle.vim'
 
 Plugin 'fatih/vim-go'
 
-Plugin 'majutsushi/tagbar'
+Plugin 'preservim/tagbar'
 
-Plugin 'scrooloose/nerdtree'
+Plugin 'preservim/nerdtree'
 
 Plugin 'Valloric/YouCompleteMe'
 
@@ -133,8 +133,6 @@ let g:godef_split=2
 ```
 " 打开和关闭NERDTree快捷键
 map <F10> :NERDTreeToggle<CR>
-" 设置宽度
-" let NERDTreeWinSize=25
 ```
 
 #### tagbar插件
@@ -223,14 +221,15 @@ YouCompleteMe unavailable: requires Vim compiled with Python (2.7.1+ or 3.5.1+) 
 ```
 
 ## 参考资料
-[1].[https://learnku.com/articles/24924](https://learnku.com/articles/24924)
-[2].[https://github.com/fatih/vim-go](https://github.com/fatih/vim-go)
-[3].[https://github.com/VundleVim/Vundle.vim/blob/master/CONTRIBUTING.md](https://github.com/VundleVim/Vundle.vim/blob/master/CONTRIBUTING.md)
-[4].[https://github.com/majutsushi/tagbar](https://github.com/majutsushi/tagbar)
-[5].[https://github.com/ycm-core/YouCompleteMe](https://github.com/ycm-core/YouCompleteMe)
-[6].[https://github.com/vim/vim](https://github.com/vim/vim)
-[7].[https://ephrain.net/python-出現-undefined-symbol-pyunicodeucs4_asencodedstring-錯誤/](https://ephrain.net/python-%E5%87%BA%E7%8F%BE-undefined-symbol-pyunicodeucs4_asencodedstring-%E9%8C%AF%E8%AA%A4/)
-[8].[https://github.com/scrooloose/nerdtree](https://github.com/scrooloose/nerdtree)
-[9].[https://danieleriksson.net/2017/02/08/how-to-install-latest-python-on-centos/](https://danieleriksson.net/2017/02/08/how-to-install-latest-python-on-centos/)
+[1] [将 VIM 打造成 go 语言的 ide](https://learnku.com/articles/24924)
+[2] [vim-go](https://github.com/fatih/vim-go)
+[3] [Vundle.vim](https://github.com/VundleVim/Vundle.vim/blob/master/CONTRIBUTING.md)
+[4] [tagbar](https://github.com/preservim/tagbar)
+[5] [YouCompleteMe](https://github.com/ycm-core/YouCompleteMe)
+[6] [vim](https://github.com/vim/vim)
+[7] [python-出現-undefined-symbol-pyunicodeucs4_asencodedstring-錯誤](https://ephrain.net/python-%E5%87%BA%E7%8F%BE-undefined-symbol-pyunicodeucs4_asencodedstring-%E9%8C%AF%E8%AA%A4/)
+[8] [nerdtree](https://github.com/preservim/nerdtree)
+[9] [how-to-install-latest-python-on-centos](https://danieleriksson.net/2017/02/08/how-to-install-latest-python-on-centos/)
+
 
 

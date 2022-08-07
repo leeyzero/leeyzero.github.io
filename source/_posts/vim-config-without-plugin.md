@@ -172,7 +172,7 @@ git clone https://github.com/leeyzero/vimrc.git
 ```
 
 ## 更多参考
-[1].[http://www.ruanyifeng.com/blog/2018/09/vimrc.html](http://www.ruanyifeng.com/blog/2018/09/vimrc.html)
-[2].[https://dougblack.io/words/a-good-vimrc.html](https://dougblack.io/words/a-good-vimrc.html)
-[3].[http://vimdoc.sourceforge.net/htmldoc/options.html](http://vimdoc.sourceforge.net/htmldoc/options.html)
-[4].[https://github.com/amix/vimrc/blob/master/vimrcs/basic.vim](https://github.com/amix/vimrc/blob/master/vimrcs/basic.vim)
+[1] [Vim 配置入门](http://www.ruanyifeng.com/blog/2018/09/vimrc.html)
+[2] [a-good-vimrc](https://dougblack.io/words/a-good-vimrc.html)
+[3] [Vim documentation: options](http://vimdoc.sourceforge.net/htmldoc/options.html)
+[4] [basic vim](https://github.com/amix/vimrc/blob/master/vimrcs/basic.vim)

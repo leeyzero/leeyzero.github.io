@@ -164,6 +164,94 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2020/10/10/thinking-directui/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/10/10/thinking-directui/" class="post-title-link" itemprop="url">DirectUI的一些思考</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-10-10 23:11:56" itemprop="dateCreated datePublished" datetime="2020-10-10T23:11:56+08:00">2020-10-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-06-11 20:36:49" itemprop="dateModified" datetime="2022-06-11T20:36:49+08:00">2022-06-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Windows/" itemprop="url" rel="index"><span itemprop="name">Windows</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>对于传统Win32界面编程来讲，微软提供一整套界面标准，比如窗口、按钮、滚动条、列表等。对于每一个窗口（控件也是一个窗口），其能响应的消息和行为都有规范（通过API提供给开发者）。微软这套界面标准是为通用场景下提出的解决方案，能够满足绝大部分需求，但业务场景的多样性，使得开发者们并不满足于这套界面标准。</p>
+<h2 id="DirectUI的发展历史"><a href="#DirectUI的发展历史" class="headerlink" title="DirectUI的发展历史"></a>DirectUI的发展历史</h2><ul>
+<li><em>2005年6月，Bjarke Viksoe发布了一篇文章<a target="_blank" rel="noopener" href="http://www.viksoe.dk/code/windowless1.htm">UI: Become windowless</a>, 阐述了无窗口句柄（windowless）思想。</em></li>
+<li><em>2010年12月，金山网络宣布启动<a target="_blank" rel="noopener" href="http://code.ijinshan.com/">金山卫士开源计划</a>，该开源项目以失败告终，但有热心的网友从该项目中分离了金山卫士的界面部分成为一个独立的项目<a target="_blank" rel="noopener" href="http://code.ijinshan.com/index.html">bkwin</a>。</em></li>
+<li><em>2012年之后，由bkwin项目衍生出各种基于DirectUI思想的开源框架，如<a target="_blank" rel="noopener" href="https://github.com/duilib/duilib">Duilib</a>、<a target="_blank" rel="noopener" href="https://github.com/kevinzhwl/duiplant/tree/master/src/DUIEngine">DuiEngine</a>、<a target="_blank" rel="noopener" href="https://github.com/blueantst/DuiVision">DuiVision</a>、<a target="_blank" rel="noopener" href="https://github.com/SOUI2/soui">SOUI</a>等。</em></li>
+</ul>
+<h2 id="什么是DirectUI"><a href="#什么是DirectUI" class="headerlink" title="什么是DirectUI"></a>什么是DirectUI</h2><p><strong>DirectUI是一种界面开发思想</strong>。其核心思想是指将所有的界面控件都绘制在一个窗口上，这些控件的逻辑和绘制方式都必须自己进行编写和封装，而不是使用Windows的原生控件，所以这些控件都是<strong>无句柄的（Windowsless）</strong>。</p>
+<p>那这个名称是怎么来的呢？由于Windows有句柄窗口是一套工业标准，窗口消息和API都是公开的，所有人都知道怎么操作窗口。微软在做MSN的时候为了保护用户隐私，搞了一个DirectUIHWND，后边DirectUI这个名字就被沿用下来，后边说的DirectUI一般都是指<strong>无句柄窗口</strong>。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/10/10/thinking-directui/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2020/10/10/every-programmer-should-know-about-encoding/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -722,7 +810,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-06-11 20:31:16" itemprop="dateModified" datetime="2022-06-11T20:31:16+08:00">2022-06-11</time>
+                <time title="Modified: 2022-08-07 12:32:09" itemprop="dateModified" datetime="2022-08-07T12:32:09+08:00">2022-08-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -927,7 +1015,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-count">39</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -938,7 +1026,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-count">47</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

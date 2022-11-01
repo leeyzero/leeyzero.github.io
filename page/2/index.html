@@ -164,6 +164,98 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/09/21/oauth2-intro/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/09/21/oauth2-intro/" class="post-title-link" itemprop="url">OAuth2简介</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-09-21 23:15:52" itemprop="dateCreated datePublished" datetime="2021-09-21T23:15:52+08:00">2021-09-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-06-11 20:31:58" itemprop="dateModified" datetime="2022-06-11T20:31:58+08:00">2022-06-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%8D%8F%E8%AE%AE%E6%A0%87%E5%87%86/" itemprop="url" rel="index"><span itemprop="name">协议标准</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><strong>开放授权</strong>（OAuth, <strong>O</strong>pen <strong>Auth</strong>orization）是一个<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Open_standard">开放标准</a>，允许用户让第三方应用访问该用户在某一网站上存储的私密的资源（如照片，视频，联系人列表等），而无需将用户名的密码提供给第三方应用。OAuth2.0是OAuth的2.0版本。本文主要介绍OAuth2的授权流程。</p>
+<h2 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h2><ul>
+<li>Resource Owner：资源拥有者</li>
+<li>Resource Server：资源服务器</li>
+<li>Client：客户端</li>
+<li>Authorization Server：认证服务器</li>
+<li>User Agent：用户代理，通常指浏览器</li>
+</ul>
+<h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><p>在现实生活中就存在OAuth的场景：快递员给你送快递，但他进不了小区，他只能按下你家的门牌号，然后你通过摄像头确认他的确是给你来送快递的快递员，然后你给它解除门禁，快递员就能进入小区了给你送快递了。</p>
+<p>在这个例子中，你就是资源拥有者（Resource Owner），小区内基础设施可以理解为资源（Resource），物业就是资源服务器（Resource Server），快递员是客户端（Client），门禁就是认证服务器（Authorization Server）。</p>
+<p>你是受认证的业主，可以通过门禁卡、人脸认别等方式自由进入小区。但快递员不是业主，也想进入小区，怎么办呢？你可以直接把门禁卡给他，但这样不安全，所以门禁系统推出一个授权的功能，就是快递员先向你请求要进入小区，经过你的授权后再给他开门。如果你的快递比较多，这个快递员每天都要来送快递，每次都要你给他授权也比较麻烦，然后门禁系统又推出一个带有效期的临时出入卡，比如有效期一个周，那快速员就可以在这一个周之内自由出入小区了。</p>
+<p>以上场景就是OAuth授权的原理，为了贴合互联网应用场景，OAuth制定了一套开放标准。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/09/21/oauth2-intro/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/08/29/gin-tutorial/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -933,93 +1025,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/04/02/how-to-do-a-code-review/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/04/02/how-to-do-a-code-review/" class="post-title-link" itemprop="url">如何做Code Review</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-04-02 17:12:17" itemprop="dateCreated datePublished" datetime="2021-04-02T17:12:17+08:00">2021-04-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-06-11 20:35:15" itemprop="dateModified" datetime="2022-06-11T20:35:15+08:00">2022-06-11</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9A%8F%E7%AC%94/" itemprop="url" rel="index"><span itemprop="name">随笔</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Code Review是保障代码和产品质量的重要手段，但却被绝大部分公司所忽略。本文主要基于Google对Code Review的实践，结合自身的经验谈谈团队中该如何做Code Review。</p>
-<h2 id="1-什么是Code-Review"><a href="#1-什么是Code-Review" class="headerlink" title="1. 什么是Code Review"></a>1. 什么是Code Review</h2><p>Code Review是代码评审人（Code Reviewer）对代码提交者（Code Committer）做审查（Review）的过程。</p>
-<h2 id="2-为什么要做Code-Review"><a href="#2-为什么要做Code-Review" class="headerlink" title="2. 为什么要做Code Review"></a>2. 为什么要做Code Review</h2><ul>
-<li>提升代码/产品质量</li>
-<li>团队工程师文化传承</li>
-<li>团队成员间知识/经验分享</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/04/02/how-to-do-a-code-review/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1090,7 +1095,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-count">40</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1101,7 +1106,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-count">48</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

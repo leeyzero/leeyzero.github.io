@@ -164,6 +164,300 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/11/01/a-brief-logging-specification/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/11/01/a-brief-logging-specification/" class="post-title-link" itemprop="url">极简版日志打印规范</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-11-01 20:14:16 / Modified: 20:47:58" itemprop="dateCreated datePublished" datetime="2022-11-01T20:14:16+08:00">2022-11-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%8D%8F%E8%AE%AE%E6%A0%87%E5%87%86/" itemprop="url" rel="index"><span itemprop="name">协议标准</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>最近由于组织架构调整，团队引入不少新成员。这些成员来自不同的团队和背景，每个人的日志打印风格难免也有所差异，十分有必要制定一个统一的日志打印规范。</p>
+<p>规范日志打印主要有以下作用：</p>
+<ul>
+<li>让系统运行状态更透明，提高线上故障排查效率。</li>
+<li>减少代码风格差异，利于代码阅读和维护。</li>
+<li>统一日志格式，利于外围工具（日志监控报警工具等）处理。</li>
+</ul>
+<p>团队成员在研发过程中应该遵守该规范，文档内容可能会与你的喜好冲突，请尽量用包容的心态接受。如果有不合理之处，请先在组内提出建议，组内一致表决通过后修改规范。</p>
+<h2 id="日志的定义"><a href="#日志的定义" class="headerlink" title="日志的定义"></a>日志的定义</h2><p><strong>日志用来记录系统运行状态，是系统的重要组成部分。</strong></p>
+<p>系统的透明度反映的系统的运维难度，可以理解为系统越透明，越容易运维。日志是提升系统透明度的重要的手段之一。</p>
+<h2 id="日志级别"><a href="#日志级别" class="headerlink" title="日志级别"></a>日志级别</h2><table>
+<thead>
+<tr>
+<th>日志级别</th>
+<th>是否默认开启</th>
+<th>是否需要监控</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>TRACE</td>
+<td>否</td>
+<td>否</td>
+<td><strong>跟踪运行代码，通常是函数调用级别。</strong>日志量最大，线上通常不开启。</td>
+</tr>
+<tr>
+<td>DEBUG</td>
+<td>否</td>
+<td>否</td>
+<td><strong>记录对诊断有帮助的信息，通常面向开发人员和运维人员。</strong>日志量较大，线上通常不开启。</td>
+</tr>
+<tr>
+<td>INFO</td>
+<td>是</td>
+<td>否</td>
+<td><strong>记录系统正常运行状态下的有用信息。</strong>如服务启动/停止，配置加载等，日志量相对较大，线上默认开启。</td>
+</tr>
+<tr>
+<td>NOTICE</td>
+<td>是</td>
+<td>否</td>
+<td><strong>记录需要常态打印的重要事件。</strong>日志量可控，比如请求接口的输入输出日志。</td>
+</tr>
+<tr>
+<td>WARN</td>
+<td>是</td>
+<td>是，只需要监控部分重要的日志</td>
+<td><strong>记录系统可能正常出现的某种异常，这种异常不应该影响业务主流程，且对用户是无感知的。</strong>这种异常通常是可以自动恢复的，当异常持续出现时，需要及时查看并处理。比如因为网络抖动造成短时间内读取缓存失败。</td>
+</tr>
+<tr>
+<td>ERROR</td>
+<td>是</td>
+<td>是，需要监控全部日志</td>
+<td><strong>记录系统运行错误，这种错误会中断主流程，已经影响到用户的正常访问，紧急程度仅次于FATAL。</strong>这个级别的错误是可以恢复的，出现该级别错误时需要马上跟进处理。如数据库写入失败。</td>
+</tr>
+<tr>
+<td>FATAL</td>
+<td>是</td>
+<td>是，需要监控全部日志</td>
+<td><strong>记录最严重的系统级错误。出现这种级别的错误时，表示整个服务已经出现了某种程序的不可用。</strong>出现这个级别的错误时需要系统管理员立即介入。通常一个进程的生命周期中应该只记录一次FATAL级别的日志，即该进程遇到无法恢复的错误而退出。</td>
+</tr>
+</tbody></table>
+<h2 id="日志格式"><a href="#日志格式" class="headerlink" title="日志格式"></a>日志格式</h2><h3 id="日志的组成元素"><a href="#日志的组成元素" class="headerlink" title="日志的组成元素"></a>日志的组成元素</h3><p>一个好的日志，应该记录刚刚好的能反映当前事件的重要信息，主要包括如下：</p>
+<ul>
+<li><strong>发生了什么事件</strong></li>
+<li><strong>事件的状态是什么</strong></li>
+<li><strong>什么原因触发了该事件</strong></li>
+<li><strong>事件的关键上下文信息</strong></li>
+<li><strong>延迟是多少（如果适用）</strong></li>
+<li><strong>重复度情况（如果适用）</strong></li>
+</ul>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&quot;upload render data failed due to io timeout,render_id:xxx object_key:xxx auth_info:xxx&quot;</span><br></pre></td></tr></table></figure>
+
+<p>上述示例中：</p>
+<ul>
+<li>“upload render data failed” 是发生的事件及状态</li>
+<li>“due to io timeout” 是触发事件的原因</li>
+<li>“render_id:xxx object_key:xxx auth_info:xxx” 是事件的关键上下文信息</li>
+</ul>
+<p>事件的关键上下文信息主要用于排查问题，而不至于在多个日志中去寻找相关信息，提高排查问题的效率。</p>
+<h3 id="重要单词说明"><a href="#重要单词说明" class="headerlink" title="重要单词说明"></a>重要单词说明</h3><table>
+<thead>
+<tr>
+<th>词汇</th>
+<th>名词</th>
+<th>动词</th>
+<th>形容词</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>成功</td>
+<td>success</td>
+<td>succeed</td>
+<td>succeeded</td>
+</tr>
+<tr>
+<td>失败</td>
+<td>failure</td>
+<td>fail</td>
+<td>failed</td>
+</tr>
+</tbody></table>
+<h3 id="一些约定"><a href="#一些约定" class="headerlink" title="一些约定"></a>一些约定</h3><p>以下约定不存在正确与否，团队内成员共同表决，达成一致即可。</p>
+<p><strong>事件及状态的描述语法</strong></p>
+<table>
+<thead>
+<tr>
+<th>示例</th>
+<th>理由</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>upload render data failed</td>
+<td>事件为主体，状态是事件的属性</td>
+<td>V</td>
+</tr>
+<tr>
+<td>fail to upload render data</td>
+<td></td>
+<td>X</td>
+</tr>
+</tbody></table>
+<p><strong>主客体信息的展示</strong></p>
+<table>
+<thead>
+<tr>
+<th>示例</th>
+<th>理由</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>render_id=123456</td>
+<td>不满足大部分人的习惯</td>
+<td>X</td>
+</tr>
+<tr>
+<td>render_id= 123456(等号后面有一个空格）</td>
+<td>空格为导致awk时列数太多</td>
+<td>X</td>
+</tr>
+<tr>
+<td>render_id = 123456(等号前后有一个空格）</td>
+<td>空格为导致awk时列数太多</td>
+<td>X</td>
+</tr>
+<tr>
+<td>render_id: 123456(冒号后面有一个空格）</td>
+<td>空格导致awk时列数太多</td>
+<td>X</td>
+</tr>
+<tr>
+<td>render_id:123456</td>
+<td>符合大多数人习惯</td>
+<td>V</td>
+</tr>
+</tbody></table>
+<p><strong>连续主客体之间是否需要逗句</strong></p>
+<table>
+<thead>
+<tr>
+<th>示例</th>
+<th>理由</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>render_id:xxx, object_key:xxx</td>
+<td>如果逗号后面有空格，则逗号没有必要；<br>如果逗号后面没有空格，视觉上又太密集</td>
+<td>X</td>
+</tr>
+<tr>
+<td>render_id:xxx object_key:xxx</td>
+<td></td>
+<td>V</td>
+</tr>
+</tbody></table>
+<p><strong>首字母是否需要大写</strong></p>
+<table>
+<thead>
+<tr>
+<th>示例</th>
+<th>理由</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>upload render data failed</td>
+<td>日志可能存在拼接，统一小写，拼接后的日志存在非首字母大写问题</td>
+<td>V</td>
+</tr>
+<tr>
+<td>Upload render data failed</td>
+<td></td>
+<td>X</td>
+</tr>
+</tbody></table>
+<p><strong>句尾是否需要标点符号</strong><br>日志尽量采用陈述句，明确表明日志事件的行为。</p>
+<table>
+<thead>
+<tr>
+<th>示例</th>
+<th>理由</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>upload render data failed.</td>
+<td>日志可能存在拼接，在日志拼接时决定标点符号</td>
+<td>X</td>
+</tr>
+<tr>
+<td>upload render data failed</td>
+<td>V</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="几个重要的建议"><a href="#几个重要的建议" class="headerlink" title="几个重要的建议"></a>几个重要的建议</h2><p>以下几个建议都是一些经验总结，没有足够的理由不要违反：</p>
+<ul>
+<li><strong>Restful API日志/RPC日志</strong>：一定要打印出LOGID（不同环境可能是request_id，trace_id）、目的端地址、本次交互延迟、累计延迟、重试次数。</li>
+<li><strong>磁盘读写日志</strong>：一定要打印出延迟，如果读写出错，一定要打印出Linux的errno。</li>
+<li><strong>系统调用出错</strong>：一定要打出Linux的errno。</li>
+<li><strong>服务启动/停止</strong>：一定要打出服务启动和停止日志，启动时打印加载的配置信息。</li>
+</ul>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1] <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/27363484">最佳日志实践v2.0</a><br>[2] <a target="_blank" rel="noopener" href="https://www.dataset.com/blog/the-10-commandments-of-logging/">Logging Best Practices: The 13 You Should Know</a><br>[3] <a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels">When to use the different log levels</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/08/07/macOS-terminal-configuration/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -944,98 +1238,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/09/21/oauth2-intro/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/09/21/oauth2-intro/" class="post-title-link" itemprop="url">OAuth2简介</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-09-21 23:15:52" itemprop="dateCreated datePublished" datetime="2021-09-21T23:15:52+08:00">2021-09-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-06-11 20:31:58" itemprop="dateModified" datetime="2022-06-11T20:31:58+08:00">2022-06-11</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%8D%8F%E8%AE%AE%E6%A0%87%E5%87%86/" itemprop="url" rel="index"><span itemprop="name">协议标准</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><strong>开放授权</strong>（OAuth, <strong>O</strong>pen <strong>Auth</strong>orization）是一个<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Open_standard">开放标准</a>，允许用户让第三方应用访问该用户在某一网站上存储的私密的资源（如照片，视频，联系人列表等），而无需将用户名的密码提供给第三方应用。OAuth2.0是OAuth的2.0版本。本文主要介绍OAuth2的授权流程。</p>
-<h2 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h2><ul>
-<li>Resource Owner：资源拥有者</li>
-<li>Resource Server：资源服务器</li>
-<li>Client：客户端</li>
-<li>Authorization Server：认证服务器</li>
-<li>User Agent：用户代理，通常指浏览器</li>
-</ul>
-<h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><p>在现实生活中就存在OAuth的场景：快递员给你送快递，但他进不了小区，他只能按下你家的门牌号，然后你通过摄像头确认他的确是给你来送快递的快递员，然后你给它解除门禁，快递员就能进入小区了给你送快递了。</p>
-<p>在这个例子中，你就是资源拥有者（Resource Owner），小区内基础设施可以理解为资源（Resource），物业就是资源服务器（Resource Server），快递员是客户端（Client），门禁就是认证服务器（Authorization Server）。</p>
-<p>你是受认证的业主，可以通过门禁卡、人脸认别等方式自由进入小区。但快递员不是业主，也想进入小区，怎么办呢？你可以直接把门禁卡给他，但这样不安全，所以门禁系统推出一个授权的功能，就是快递员先向你请求要进入小区，经过你的授权后再给他开门。如果你的快递比较多，这个快递员每天都要来送快递，每次都要你给他授权也比较麻烦，然后门禁系统又推出一个带有效期的临时出入卡，比如有效期一个周，那快速员就可以在这一个周之内自由出入小区了。</p>
-<p>以上场景就是OAuth授权的原理，为了贴合互联网应用场景，OAuth制定了一套开放标准。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/09/21/oauth2-intro/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1106,7 +1308,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-count">40</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1117,7 +1319,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-count">48</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

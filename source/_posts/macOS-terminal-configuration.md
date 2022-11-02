@@ -61,8 +61,6 @@ $ sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/m
 ```
 open iTerm2 → Preferences → Profiles → Text and set Font to MesloLGS NF.
 ```
-4. 运行 `p10k configure` 将生成一个新的配置p10k配置： `~/.p10k.zsh`。
-
 
 ## 配置powerlevel10k
 

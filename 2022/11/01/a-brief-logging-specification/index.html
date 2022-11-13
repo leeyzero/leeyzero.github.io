@@ -29,7 +29,7 @@
 <meta property="og:description" content="背景最近由于组织架构调整，团队引入不少新成员。这些成员来自不同的团队和背景，每个人的日志打印风格难免也有所差异，十分有必要制定一个统一的日志打印规范。 规范日志打印主要有以下作用：  让系统运行状态更透明，提高线上故障排查效率。 减少代码风格差异，利于代码阅读和维护。 统一日志格式，利于外围工具（日志监控报警工具等）处理。  团队成员在研发过程中应该遵守该规范，文档内容可能会与你的喜好冲突，请尽量">
 <meta property="og:locale">
 <meta property="article:published_time" content="2022-11-01T12:14:16.000Z">
-<meta property="article:modified_time" content="2022-11-01T12:49:44.767Z">
+<meta property="article:modified_time" content="2022-11-13T04:58:04.243Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="logging">
 <meta name="twitter:card" content="summary">
@@ -190,10 +190,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2022-11-01 20:14:16 / Modified: 20:49:44" itemprop="dateCreated datePublished" datetime="2022-11-01T20:14:16+08:00">2022-11-01</time>
+              <time title="Created: 2022-11-01 20:14:16" itemprop="dateCreated datePublished" datetime="2022-11-01T20:14:16+08:00">2022-11-01</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-11-13 12:58:04" itemprop="dateModified" datetime="2022-11-13T12:58:04+08:00">2022-11-13</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -223,6 +229,8 @@
 <li>统一日志格式，利于外围工具（日志监控报警工具等）处理。</li>
 </ul>
 <p>团队成员在研发过程中应该遵守该规范，文档内容可能会与你的喜好冲突，请尽量用包容的心态接受。如果有不合理之处，请先在组内提出建议，组内一致表决通过后修改规范。</p>
+<a id="more"></a>
+
 <h2 id="日志的定义"><a href="#日志的定义" class="headerlink" title="日志的定义"></a>日志的定义</h2><p><strong>日志用来记录系统运行状态，是系统的重要组成部分。</strong></p>
 <p>系统的透明度反映的系统的运维难度，可以理解为系统越透明，越容易运维。日志是提升系统透明度的重要的手段之一。</p>
 <h2 id="日志级别"><a href="#日志级别" class="headerlink" title="日志级别"></a>日志级别</h2><table>
@@ -238,7 +246,13 @@
 <td>TRACE</td>
 <td>否</td>
 <td>否</td>
-<td><strong>跟踪运行代码，通常是函数调用级别。</strong>日志量最大，线上通常不开启。</td>
+<td><strong>跟踪运行代码，通常是函数调用级别。</strong>日志量最大</td>
+</tr>
+<tr>
+<td>，线上通常不开启。</td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 <tr>
 <td>DEBUG</td>

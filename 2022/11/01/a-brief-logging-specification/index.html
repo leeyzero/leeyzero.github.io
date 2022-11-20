@@ -29,7 +29,7 @@
 <meta property="og:description" content="背景最近由于组织架构调整，团队引入不少新成员。这些成员来自不同的团队和背景，每个人的日志打印风格难免也有所差异，十分有必要制定一个统一的日志打印规范。 规范日志打印主要有以下作用：  让系统运行状态更透明，提高线上故障排查效率。 减少代码风格差异，利于代码阅读和维护。 统一日志格式，利于外围工具（日志监控报警工具等）处理。  团队成员在研发过程中应该遵守该规范，文档内容可能会与你的喜好冲突，请尽量">
 <meta property="og:locale">
 <meta property="article:published_time" content="2022-11-01T12:14:16.000Z">
-<meta property="article:modified_time" content="2022-11-13T04:58:04.243Z">
+<meta property="article:modified_time" content="2022-11-20T04:02:48.411Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="logging">
 <meta name="twitter:card" content="summary">
@@ -198,7 +198,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-11-13 12:58:04" itemprop="dateModified" datetime="2022-11-13T12:58:04+08:00">2022-11-13</time>
+                <time title="Modified: 2022-11-20 12:02:48" itemprop="dateModified" datetime="2022-11-20T12:02:48+08:00">2022-11-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -246,13 +246,7 @@
 <td>TRACE</td>
 <td>否</td>
 <td>否</td>
-<td><strong>跟踪运行代码，通常是函数调用级别。</strong>日志量最大</td>
-</tr>
-<tr>
-<td>，线上通常不开启。</td>
-<td></td>
-<td></td>
-<td></td>
+<td><strong>跟踪运行代码，通常是函数调用级别。</strong>日志量最大，线上通常不开启。</td>
 </tr>
 <tr>
 <td>DEBUG</td>
@@ -291,7 +285,7 @@
 <td><strong>记录最严重的系统级错误。出现这种级别的错误时，表示整个服务已经出现了某种程序的不可用。</strong>出现这个级别的错误时需要系统管理员立即介入。通常一个进程的生命周期中应该只记录一次FATAL级别的日志，即该进程遇到无法恢复的错误而退出。</td>
 </tr>
 </tbody></table>
-<h2 id="日志格式"><a href="#日志格式" class="headerlink" title="日志格式"></a>日志格式</h2><h3 id="日志的组成元素"><a href="#日志的组成元素" class="headerlink" title="日志的组成元素"></a>日志的组成元素</h3><p>一个好的日志，应该记录刚刚好的能反映当前事件的重要信息，主要包括如下：</p>
+<h2 id="日志格式"><a href="#日志格式" class="headerlink" title="日志格式"></a>日志格式</h2><p>一个好的日志，应该记录刚刚好的能反映当前事件的重要信息，主要包括如下：</p>
 <ul>
 <li><strong>发生了什么事件</strong></li>
 <li><strong>事件的状态是什么</strong></li>
@@ -310,6 +304,7 @@
 <li>“render_id:xxx object_key:xxx auth_info:xxx” 是事件的关键上下文信息</li>
 </ul>
 <p>事件的关键上下文信息主要用于排查问题，而不至于在多个日志中去寻找相关信息，提高排查问题的效率。</p>
+<h2 id="一些细则"><a href="#一些细则" class="headerlink" title="一些细则"></a>一些细则</h2><p>以下约定不存在正确与否，团队内成员共同表决，达成一致即可。</p>
 <h3 id="重要单词说明"><a href="#重要单词说明" class="headerlink" title="重要单词说明"></a>重要单词说明</h3><table>
 <thead>
 <tr>
@@ -332,9 +327,7 @@
 <td>failed</td>
 </tr>
 </tbody></table>
-<h3 id="一些约定"><a href="#一些约定" class="headerlink" title="一些约定"></a>一些约定</h3><p>以下约定不存在正确与否，团队内成员共同表决，达成一致即可。</p>
-<p><strong>事件及状态的描述语法</strong></p>
-<table>
+<h3 id="事件及状态的描述语法"><a href="#事件及状态的描述语法" class="headerlink" title="事件及状态的描述语法"></a>事件及状态的描述语法</h3><table>
 <thead>
 <tr>
 <th>示例</th>
@@ -353,8 +346,7 @@
 <td>X</td>
 </tr>
 </tbody></table>
-<p><strong>主客体信息的展示</strong></p>
-<table>
+<h3 id="主客体信息的展示"><a href="#主客体信息的展示" class="headerlink" title="主客体信息的展示"></a>主客体信息的展示</h3><table>
 <thead>
 <tr>
 <th>示例</th>
@@ -388,8 +380,7 @@
 <td>V</td>
 </tr>
 </tbody></table>
-<p><strong>连续主客体之间是否需要逗句</strong></p>
-<table>
+<h3 id="连续主客体之间是否需要逗句"><a href="#连续主客体之间是否需要逗句" class="headerlink" title="连续主客体之间是否需要逗句"></a>连续主客体之间是否需要逗句</h3><table>
 <thead>
 <tr>
 <th>示例</th>
@@ -408,8 +399,7 @@
 <td>V</td>
 </tr>
 </tbody></table>
-<p><strong>首字母是否需要大写</strong></p>
-<table>
+<h3 id="首字母是否需要大写"><a href="#首字母是否需要大写" class="headerlink" title="首字母是否需要大写"></a>首字母是否需要大写</h3><table>
 <thead>
 <tr>
 <th>示例</th>
@@ -428,7 +418,7 @@
 <td>X</td>
 </tr>
 </tbody></table>
-<p><strong>句尾是否需要标点符号</strong><br>日志尽量采用陈述句，明确表明日志事件的行为。</p>
+<h3 id="句尾是否需要标点符号"><a href="#句尾是否需要标点符号" class="headerlink" title="句尾是否需要标点符号"></a>句尾是否需要标点符号</h3><p>日志尽量采用陈述句，明确表明日志事件的行为。</p>
 <table>
 <thead>
 <tr>
@@ -537,7 +527,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">2.</span> <span class="nav-text">日志的定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E7%BA%A7%E5%88%AB"><span class="nav-number">3.</span> <span class="nav-text">日志级别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E6%A0%BC%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">日志格式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E7%9A%84%E7%BB%84%E6%88%90%E5%85%83%E7%B4%A0"><span class="nav-number">4.1.</span> <span class="nav-text">日志的组成元素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E8%A6%81%E5%8D%95%E8%AF%8D%E8%AF%B4%E6%98%8E"><span class="nav-number">4.2.</span> <span class="nav-text">重要单词说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E7%BA%A6%E5%AE%9A"><span class="nav-number">4.3.</span> <span class="nav-text">一些约定</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%A0%E4%B8%AA%E9%87%8D%E8%A6%81%E7%9A%84%E5%BB%BA%E8%AE%AE"><span class="nav-number">5.</span> <span class="nav-text">几个重要的建议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">2.</span> <span class="nav-text">日志的定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E7%BA%A7%E5%88%AB"><span class="nav-number">3.</span> <span class="nav-text">日志级别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E6%A0%BC%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">日志格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E7%BB%86%E5%88%99"><span class="nav-number">5.</span> <span class="nav-text">一些细则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E8%A6%81%E5%8D%95%E8%AF%8D%E8%AF%B4%E6%98%8E"><span class="nav-number">5.1.</span> <span class="nav-text">重要单词说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E5%8F%8A%E7%8A%B6%E6%80%81%E7%9A%84%E6%8F%8F%E8%BF%B0%E8%AF%AD%E6%B3%95"><span class="nav-number">5.2.</span> <span class="nav-text">事件及状态的描述语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E5%AE%A2%E4%BD%93%E4%BF%A1%E6%81%AF%E7%9A%84%E5%B1%95%E7%A4%BA"><span class="nav-number">5.3.</span> <span class="nav-text">主客体信息的展示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9E%E7%BB%AD%E4%B8%BB%E5%AE%A2%E4%BD%93%E4%B9%8B%E9%97%B4%E6%98%AF%E5%90%A6%E9%9C%80%E8%A6%81%E9%80%97%E5%8F%A5"><span class="nav-number">5.4.</span> <span class="nav-text">连续主客体之间是否需要逗句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A6%96%E5%AD%97%E6%AF%8D%E6%98%AF%E5%90%A6%E9%9C%80%E8%A6%81%E5%A4%A7%E5%86%99"><span class="nav-number">5.5.</span> <span class="nav-text">首字母是否需要大写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%A5%E5%B0%BE%E6%98%AF%E5%90%A6%E9%9C%80%E8%A6%81%E6%A0%87%E7%82%B9%E7%AC%A6%E5%8F%B7"><span class="nav-number">5.6.</span> <span class="nav-text">句尾是否需要标点符号</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%A0%E4%B8%AA%E9%87%8D%E8%A6%81%E7%9A%84%E5%BB%BA%E8%AE%AE"><span class="nav-number">6.</span> <span class="nav-text">几个重要的建议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">7.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

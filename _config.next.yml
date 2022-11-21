@@ -201,6 +201,7 @@ links_settings:
   layout: inline
 
 links:
+  High Scalability: http://highscalability.com/
   Dr.Dobb's: "https://www.drdobbs.com/"
   Leslie Lamport: "http://lamport.azurewebsites.net/pubs/pubs.html"
   The Clean Code Blog: "http://blog.cleancoder.com/"

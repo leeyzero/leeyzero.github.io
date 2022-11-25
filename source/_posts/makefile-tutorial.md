@@ -1,10 +1,11 @@
-l---
+---
 title: Makefile入门
 date: 2020-10-10 23:48:19
 categories:
-- Linux
+- 开发工具
 tags:
 - Makefile
+- Linux
 ---
 
 [make](https://en.wikipedia.org/wiki/Make_(software))是一个自动化构建工具，广泛应用于Unix及其类Unix系统中。make最先应用于编译C语言项目，不仅如此，只要某个文件发生变化就需要重新构建的项目都可以使用make工具进行构建。

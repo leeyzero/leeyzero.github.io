@@ -2,7 +2,7 @@
 title: MacOS下使用lrzsz传输文件
 date: 2020-10-10 23:20:43
 categories:
-- Linux
+- 开发环境
 tags:
 - lrzsz
 - mac

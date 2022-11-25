@@ -2,7 +2,7 @@
 title: 搭建Hexo环境
 date: 2021-04-02 17:00:31
 categories:
-- 开发工具&环境
+- 开发环境
 tags:
 - Hexo
 - CentOS

@@ -2,7 +2,7 @@
 title: Hello World
 date: 2020-10-09 23:00:34
 categories:
-- 开发工具&环境
+- 开发环境
 tags: 
 - Hexo 
 ---

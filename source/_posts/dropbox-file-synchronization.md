@@ -2,7 +2,7 @@
 title: Dropbox同步原理
 date: 2021-05-23 22:44:23
 categories:
-- 分布式系统
+- 系统设计
 tags:
 - Dropbox
 - 文件同步

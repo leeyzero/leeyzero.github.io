@@ -2,7 +2,7 @@
 title: Vim无插件配置
 date: 2020-10-09 23:00:56
 categories:
-- 开发工具&环境
+- 开发环境
 tags:
 - Linux
 - Vim

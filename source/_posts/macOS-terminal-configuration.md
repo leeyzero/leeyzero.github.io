@@ -2,7 +2,7 @@
 title: 配置macOS终端环境
 date: 2022-08-07 23:30:40
 categories:
-- 开发工具&环境
+- 开发环境
 tags:
 - iTerm2
 - oh-my-zsh

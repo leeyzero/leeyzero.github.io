@@ -2,7 +2,7 @@
 title: CentOS搭建CodeServer环境
 date: 2022-05-08 21:20:20
 categories:
-- 开发工具&环境
+- 开发环境
 tags:
 - VSCode
 - CentOS
@@ -138,7 +138,57 @@ $ ps -ef | grep nginx
 用浏览器打开你配置的域名，如果一切正常的话，就可以进入code-server的登录界面，输入在~/.config/code-server/config.yaml中配置的密码即可登录使用vscode了。
 
 # 配置https
-即便不配置https也不影响使用，但每次启动都有一个不安全的警告弹窗，等有空了再搞一下。
+[Let's Entrypt](https://letsencrypt.org/)是一个免费的证书颁发机构（CA），可以提供免费的证书。[certbot](https://certbot.eff.org/)工具提供了一键安装和自动续约功能。
+
+1. 打开[certbot.eff.org](https://certbot.eff.org/)，选择系统和Web服务器，我使用的CentOS 8 + Nginx。
+2. 安装snapd，参考[教程](https://snapcraft.io/docs/installing-snap-on-centos)。
+3. 安装certbot，参考[教程](https://certbot.eff.org/instructions?ws=nginx&os=centosrhel8)。
+4. 下载并安装证书
+```
+$ sudo certbot --nginx -d {code-server.your-domain}
+```
+
+{code-server.your-domain}是访问code-server的域名。安装证书成功后，在`conf.d/code-server.conf`中，可以看到certbot添加的内容：
+```
+server {
+    ...
+    listen [::]:443 ssl ipv6only=on; # managed by Certbot
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/leeyzero.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/leeyzero.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+    ...
+}
+
+server {
+    if ($host = {code-server.your-domain}) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    listen [::]:80;
+
+    server_name {code-server.your-domain};
+    return 404; # managed by Certbot
+}
+```
+
+5. nginx重新加载配置
+```
+$ sudo service nginx restart
+```
+
+如果你使用的是云托管主机，安全规则入方向记得打开443端口。配置完成后，再试访问你的域名，是不是已经变成https了呢？
+
+6. 自动续约证书
+```
+$ sudo crontab -e
+15 3 * * * /usr/bin/certbot renew --quiet
+```
+
+每天凌晨3：15自动检查证书是否过期，并自动续约。
 
 # 更新code-server
 code-server在不断更新版本，从官网下载最新版本，如当前最新版本为[4.4.0](https://github.com/coder/code-server/releases)（2022-05-8）使用以下命令更新后按上述步骤重启nginx和code-server即可。
@@ -147,9 +197,11 @@ $ sudo rpm -Uvh code-server-4.3.0-amd64.rpm
 ```
 
 # 参考资料
-- [code-server github](https://github.com/cdr/code-server/releases)
-- [code-server install.md](https://github.com/cdr/code-server/blob/v3.6.0/doc/install.md#fedora-centos-rhel-suse)
-- [How To Set Up the code-server Cloud IDE Platform on CentOS 7](https://www.digitalocean.com/community/tutorials/how-to-set-up-the-code-server-cloud-ide-platform-on-centos-7)
-- [code-server discussions-4316](https://github.com/coder/code-server/discussions/4316)
+[1] [code-server github](https://github.com/cdr/code-server/releases)
+[2] [code-server install.md](https://github.com/cdr/code-server/blob/v3.6.0/doc/install.md#fedora-centos-rhel-suse)
+[3] [How To Set Up the code-server Cloud IDE Platform on CentOS 7](https://www.digitalocean.com/community/tutorials/how-to-set-up-the-code-server-cloud-ide-platform-on-centos-7)
+[4] [code-server discussions-4316](https://github.com/coder/code-server/discussions/4316)
+[5] [letsencrypt.org](https://letsencrypt.org/)
+[6] [certbot.eff.org](https://certbot.eff.org/)
 
 

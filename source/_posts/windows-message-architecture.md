@@ -2,9 +2,10 @@
 title: '[译] Windows消息体系'
 date: 2020-10-10 22:57:21
 categories:
-- Windows
+- 操作系统
 tags:
 - 消息循环
+- Windows
 ---
 
 原文出自：[Windows Messaging Architecture](https://xavierantony.wordpress.com/2010/08/24/windows-messaging-architecture/)

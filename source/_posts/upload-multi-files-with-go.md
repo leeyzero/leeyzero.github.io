@@ -2,7 +2,7 @@
 title: 使用Go实现批量文件上传
 date: 2021-11-28 12:20:24
 categories:
-- 编程语言
+- Web开发
 tags:
 - Go
 ---

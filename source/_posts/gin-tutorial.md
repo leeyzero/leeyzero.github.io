@@ -2,7 +2,7 @@
 title: Gin简介
 date: 2021-08-29 16:23:26
 categories:
-- 开发工具
+- Web开发
 tags:
 - Go
 - Gin

@@ -8,24 +8,27 @@ tags:
 ---
 
 ## 背景
+
 最近由于组织架构调整，团队引入不少新成员。这些成员来自不同的团队和背景，每个人的日志打印风格难免也有所差异，十分有必要制定一个统一的日志打印规范。
 
 规范日志打印主要有以下作用：
+
 - 让系统运行状态更透明，提高线上故障排查效率。
 - 减少代码风格差异，利于代码阅读和维护。
 - 统一日志格式，利于外围工具（日志监控报警工具等）处理。
-
 
 团队成员在研发过程中应该遵守该规范，文档内容可能会与你的喜好冲突，请尽量用包容的心态接受。如果有不合理之处，请先在组内提出建议，组内一致表决通过后修改规范。
 
 <!--more-->
 
 ## 日志的定义
+
 **日志用来记录系统运行状态，是系统的重要组成部分。**
 
 系统的透明度反映的系统的运维难度，可以理解为系统越透明，越容易运维。日志是提升系统透明度的重要的手段之一。
 
 ## 日志级别
+
 | 日志级别 | 是否默认开启 | 是否需要监控 | 适用场景 |
 | ------- | ---------- | ---------- | ------- |
 | TRACE	| 否 | 否 | **跟踪运行代码，通常是函数调用级别。**日志量最大，线上通常不开启。|
@@ -39,6 +42,7 @@ tags:
 ## 日志格式
 
 一个好的日志，应该记录刚刚好的能反映当前事件的重要信息，主要包括如下：
+
 - **发生了什么事件**
 - **事件的状态是什么**
 - **什么原因触发了该事件**
@@ -48,7 +52,7 @@ tags:
 
 示例：
 
-```
+```shell
 "upload render data failed due to io timeout,render_id:xxx object_key:xxx auth_info:xxx"
 ```
 
@@ -65,18 +69,18 @@ tags:
 以下约定不存在正确与否，团队内成员共同表决，达成一致即可。
 
 ### 重要单词说明
+
 | 词汇 | 名词 | 动词 | 形容词 |
 | --- | ---- | --- | ---- |
 | 成功 | success | succeed | succeeded |
 | 失败 | failure | fail	| failed |
 
-
 ### 事件及状态的描述语法
 
 | 示例 | 理由 |  结论 |
 | --- | --- | --- |
-| upload render data failed | 事件为主体，状态是事件的属性 | V	|
-fail to upload render data | | X | 
+| upload render data failed | 事件为主体，状态是事件的属性 | V |
+fail to upload render data | | X |
 
 ### 主客体信息的展示
 
@@ -88,30 +92,31 @@ fail to upload render data | | X |
 | render_id: 123456(冒号后面有一个空格）| 空格导致awk时列数太多 | X |
 | render_id:123456 | 符合大多数人习惯 | V |
 
-
 ### 连续主客体之间是否需要逗句
 
 | 示例 | 理由 |  结论 |
 | --- | --- | --- |
 |render_id:xxx, object_key:xxx|如果逗号后面有空格，则逗号没有必要；<br>如果逗号后面没有空格，视觉上又太密集 | X |
-|render_id:xxx object_key:xxx| | V |	
+|render_id:xxx object_key:xxx| | V |
 
 ### 首字母是否需要大写
 
 | 示例 | 理由 |  结论 |
 | --- | --- | --- |
 | upload render data failed	| 日志可能存在拼接，统一小写，拼接后的日志存在非首字母大写问题 | V |
-| Upload render data failed | | X | 
+| Upload render data failed | | X |
 
 ### 句尾是否需要标点符号
+
 日志尽量采用陈述句，明确表明日志事件的行为。
 
 | 示例 | 理由 |  结论 |
 | --- | --- | --- |
-| upload render data failed. | 日志可能存在拼接，在日志拼接时决定标点符号 | X | 
-| upload render data failed	| | V | 	
+| upload render data failed. | 日志可能存在拼接，在日志拼接时决定标点符号 | X |
+| upload render data failed	| | V |
 
 ## 几个重要的建议
+
 以下几个建议都是一些经验总结，没有足够的理由不要违反：
 
 - **Restful API日志/RPC日志**：一定要打印出LOGID（不同环境可能是request_id，trace_id）、目的端地址、本次交互延迟、累计延迟、重试次数。
@@ -120,6 +125,7 @@ fail to upload render data | | X |
 - **服务启动/停止**：一定要打出服务启动和停止日志，启动时打印加载的配置信息。
 
 ## 参考资料
+
 [1] [最佳日志实践v2.0](https://zhuanlan.zhihu.com/p/27363484)
 [2] [Logging Best Practices: The 13 You Should Know](https://www.dataset.com/blog/the-10-commandments-of-logging/)
 [3] [When to use the different log levels](https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels)

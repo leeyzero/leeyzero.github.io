@@ -189,7 +189,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2022-11-26 14:23:25 / Modified: 17:29:48" itemprop="dateCreated datePublished" datetime="2022-11-26T14:23:25+08:00">2022-11-26</time>
+              <time title="Created: 2022-11-26 14:23:25 / Modified: 19:43:38" itemprop="dateCreated datePublished" datetime="2022-11-26T14:23:25+08:00">2022-11-26</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -212,8 +212,28 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>之前搭了一个<a href="/2022/05/08/deploy-codeserver-on-centos/" title="codeserver环境">codeserver环境</a>，今天周末有空，把<a target="_blank" rel="noopener" href="https://www.leeyzero.com/">网站</a>升级成了HTTPS，</p>
-<h2 id="系统环境"><a href="#系统环境" class="headerlink" title="系统环境"></a>系统环境</h2><h2 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h2><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2>
+          <p>之前搭建了一个 <a href="/2022/05/08/deploy-codeserver-on-centos/" title="codeserver">codeserver</a> 的开发环境，但还遗留了配置HTTPS访问域名的问题。本周正好有空搞下，本来打算花钱买一个HTTPS证书，发现 <a target="_blank" rel="noopener" href="https://letsencrypt.org/">Let’s Encrypt</a> 提供了免费的HTTPS证书，而且还提供了配套的工具让网站开启HTTPS变得非常简单，本文记录下安装步骤。</p>
+<p>在介绍安装步骤之前先简单介绍一下 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/HTTPS">HTTPS</a> 的工作原理，不感兴趣的同学可以直接跳过。</p>
+<p>简单来说，HTTPS 就是安全的HTTP（S表示Secure的意思），我们知道HTTP报文是采用明文传输的，报文容易被窃听或篡改。HTTPS 是在传输层和应用层中加一个安全层（SSL），负责对报文进行加密和解密。</p>
+<p>传统的<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Symmetric-key_algorithm">对称加密</a>（加密解密使用相同密钥）要在传输两端共享密钥，涉及到密钥安全问题。而<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Public-key_cryptography">非对称加密</a>（公钥加密，私钥解密）可以完美解决密钥交换问题。非对称加密的公钥是公开的，任何人都可以使用这个公钥进行加密。</p>
+<p>但别人又怎么相信这个公钥是你发布的呢，这又是一个信任问题，解决办法是引入一个可信息的第三方机构。通常的做法是将这个公钥放到一个证书（Certificate）中，然后由这个可信任的第三方机构来统一认证和颁发。这个可信任的第三方机构就是<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Certificate_authority">证书颁发机构</a>（CA，Certificate Authority）。</p>
+<p>拿到证书后，怎么验证这个证书是不是第三方机构颁发的呢？（哈哈，是不是感觉问题好多呀），答案是使用<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Digital_signature">数字签名</a>技术，简单来说就是为证书的内容做一个签名，并附到证书的末尾，这个签名具有惟一性和不可伪造性。</p>
+<p>客户端（通常是浏览器）收到证书时会对证书合法性进行检查。如果这个机构是可信任的权威机构颁发的，浏览器可能已经知道其公开密钥了（浏览器会预先安装很多签名颁发机构的证书），这样，就可以通过数字签名来验证证书的完整性了。</p>
+<p>所以，客户端和服务端进行HTTPS通信时，除了进行正常的TCP三次握手外，还需要进行SSL握手，这个过程主要是从服务端拿到证书、验证证书的合法性，然后交换加密密钥。后续的通信就可以使用这个加密密钥对报文加密和解密了。</p>
+<p>突然发现写多了（化繁为简能力还有提高），以上就是HTTPS的大致原理，当然HTTPS的细节交互更加复杂，以上概述只是让大家对HTTPS有个宏观上的认识。有了这个背景，我们就知道启用HTTPS主要需要以下两个步骤：</p>
+<ul>
+<li>从CA机构获取一个受信任的HTTPS证书。</li>
+<li>将证书部署到服务端。</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://letsencrypt.org/">Let’s Encrypt</a> 就是一个可信息的证书颁发机构，它颁发的免费数字证书浏览器是信任的，而且它还提供便捷的安装和续约工具，下面就进入安装环节吧。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/11/26/free-certificates-for-https/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -946,7 +966,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-11-25 19:29:53" itemprop="dateModified" datetime="2022-11-25T19:29:53+08:00">2022-11-25</time>
+                <time title="Modified: 2022-11-26 19:35:29" itemprop="dateModified" datetime="2022-11-26T19:35:29+08:00">2022-11-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">

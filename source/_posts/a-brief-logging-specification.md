@@ -1,8 +1,8 @@
 ---
-title: 极简版日志打印规范
+title: 极简日志打印规范
 date: 2022-11-01 20:14:16
 categories:
-- 协议标准
+- 开发工具
 tags: 
 - logging
 ---

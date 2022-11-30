@@ -84,12 +84,12 @@ $ sudo crontab -e
 9. 重新加载nginx配置
 
 ```shell
-$ sudo service nginx restart
+$ sudo service nginx reload
 ```
 
 10. 测试https是否生效
 
-使用游览器打开你的网站 [https://yourwebsite.com/](https://yourwebsite.com/)，看看https是否已经生效呢。如果https已生效，将会在浏览器地址栏看到一把代表https的小锁，点开后可以看到证书的相关信息。
+使用浏览器打开你的网站 [https://yourwebsite.com/](https://yourwebsite.com/)，看看https是否已经生效呢。如果https已生效，将会在浏览器地址栏看到一把代表https的小锁，点开后可以看到证书的相关信息。
 
 ## 踩坑记录
 

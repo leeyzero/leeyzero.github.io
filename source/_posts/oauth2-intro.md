@@ -2,7 +2,7 @@
 title: OAuth2简介
 date: 2021-09-21 23:15:52
 categories:
-- 协议标准
+- Web开发
 tags:
 - OAuth2
 ---

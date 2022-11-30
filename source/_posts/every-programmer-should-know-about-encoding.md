@@ -2,9 +2,10 @@
 title: 每个程序员都应该知道的字符编码
 date: 2020-10-10 23:04:28
 categories:
-- 协议标准
+- 开发工具
 tags:
 - 字符编码
+- ASCII
 - Unicode
 - UTF-8
 ---

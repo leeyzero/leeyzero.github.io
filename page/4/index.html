@@ -164,6 +164,95 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2020/10/10/vim-for-golang/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/10/10/vim-for-golang/" class="post-title-link" itemprop="url">Vim配置Go开发环境</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-10-10 23:43:20" itemprop="dateCreated datePublished" datetime="2020-10-10T23:43:20+08:00">2020-10-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-11-25 19:32:45" itemprop="dateModified" datetime="2022-11-25T19:32:45+08:00">2022-11-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" itemprop="url" rel="index"><span itemprop="name">开发环境</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>最近工作中使用Go开发比较多，而大部分工作都是使用vim完成，在配置vim的Go环境时，发现已经有很多现成的插件可用，对我而言，主要配置以下四个插件就够用了：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/fatih/vim-go">vim-go</a>: go语言的vim插件。支持代码格式化、语法检查、语法高亮、调试等非常多的功能。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/preservim/tagbar">tagbar</a>: 用于方便查看代码结构。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/preservim/nerdtree">nerdtree</a>: 用于管理和查看代码目录结构。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/ycm-core/YouCompleteMe">YouCompleteMe</a>: 用于代码自动补全。</li>
+</ul>
+<h2 id="依赖环境"><a href="#依赖环境" class="headerlink" title="依赖环境"></a>依赖环境</h2><h3 id="安装go环境"><a href="#安装go环境" class="headerlink" title="安装go环境"></a>安装go环境</h3><p>参考go官网，按步骤安装，配置好<code>GOROOT</code>和<code>GOPATH</code>环境变更即可，配置go的vim IDE环境需要依赖vim和vim-go插件。</p>
+<p>vim-go插件需要vim使用8.0以上的版本，而YouCompleteMe需要python2.7.1+或3.5.1+。如果你系统的vim和python版本满足条件，可以忽略下面两个步骤。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/10/10/vim-for-golang/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2020/10/10/vim-tutorial/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -623,7 +712,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-06-11 20:26:48" itemprop="dateModified" datetime="2022-06-11T20:26:48+08:00">2022-06-11</time>
+                <time title="Modified: 2022-11-28 11:02:05" itemprop="dateModified" datetime="2022-11-28T11:02:05+08:00">2022-11-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -631,7 +720,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%8D%8F%E8%AE%AE%E6%A0%87%E5%87%86/" itemprop="url" rel="index"><span itemprop="name">协议标准</span></a>
+                  <a href="/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">开发工具</span></a>
                 </span>
             </span>
 
@@ -931,101 +1020,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2020/10/10/cef-windows-source/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/10/cef-windows-source/" class="post-title-link" itemprop="url">CEF Windows环境源码编译</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-10-10 22:21:09" itemprop="dateCreated datePublished" datetime="2020-10-10T22:21:09+08:00">2020-10-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-11-25 19:29:46" itemprop="dateModified" datetime="2022-11-25T19:29:46+08:00">2022-11-25</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">开发工具</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>由于项目需要用到内嵌浏览器，IE内核太依赖于操作系统，对H5的支持也不太好。<a target="_blank" rel="noopener" href="https://bitbucket.org/chromiumembedded/cef">CEF</a>是基于<a target="_blank" rel="noopener" href="http://www.chromium.org/Home">chromium 项目</a>的内嵌浏览器开源框架，已经应用到了<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Chromium_Embedded_Framework#Applications_using_CEF">很多产品</a>中，而且有比较健全的<a target="_blank" rel="noopener" href="http://magpcss.org/ceforum/index.php">论坛</a>和<a target="_blank" rel="noopener" href="https://bitbucket.org/chromiumembedded/cef">官方支持</a>，是项目的不二选择。由于客户端要运行到Windows XP系统，但Chome浏览器在49版本(对应CEF3版本为2623，以下说的CEF均指CEF3)后不再支持Win7以下系统。CEF<a target="_blank" rel="noopener" href="http://opensource.spotify.com/cefbuilds/index.html">二进制发布官网</a>上并未包含2623版本, 但CEF提供了源码发布，官方也给了<a target="_blank" rel="noopener" href="https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding">源码编译文档说明</a>，虽然按照官方文档说明进行构建，但在编译CEF 2623版本过程还是遇到不少问题，在此做个记录供网友参考。</p>
-<h2 id="准备编译环境"><a href="#准备编译环境" class="headerlink" title="准备编译环境"></a>准备编译环境</h2><ul>
-<li>OS: Win7 64bit 以上系统, 至少8G内存，60G以上硬盘，最好是SSD</li>
-<li>Visual Studio: VS2015u3 + Win10.0.14393 SDK + Ninja</li>
-<li>Python 2.7+</li>
-<li>下载 <a target="_blank" rel="noopener" href="https://bitbucket.org/chromiumembedded/cef/raw/master/tools/automate/automate-git.py">automate-git.py 脚本</a></li>
-</ul>
-<blockquote>
-<p>注意:</p>
-<ol>
-<li>由于某些原因（你懂的），源代码是同步不下来的，建议使用VPN。另外，CEF基于chromium，源码比较大，同步源码时间比较漫长，耐心等待；</li>
-<li>安装VS2015u3的时候，默认是不会安装Win10.0.14393 SDK的，所以需要你手动勾选；</li>
-<li>安装python后需要将python的执行环境加入到环境变量中；</li>
-</ol>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/10/10/cef-windows-source/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1096,18 +1090,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-count">44</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-count">60</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

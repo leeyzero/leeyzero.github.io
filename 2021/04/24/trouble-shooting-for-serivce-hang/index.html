@@ -247,7 +247,7 @@
 <p>发现大量accept调用报错，从日志信息可以看出，的确是系统的文件句柄数（FD）耗尽了，导致连接被reset掉，这也能说明为什么客户端侧看到了大量<code>connection reset by peer</code>错误了。</p>
 <p>X服务打开了大量socket文件句柄，且绝大多数连接状态都是CLOSE_WAIT，如果业务逻辑有阻塞的确可能会出现把句柄数数打满。</p>
 <p>分析了一下业务逻辑，业务逻辑本身不复杂，只有一次IO网络请求，是从数据库查询数据，从日志中发现了一些端倪：</p>
-<a id="more"></a>
+<span id="more"></span>
 
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">....</span><br><span class="line">cost:941.583774ms dbstats:&#123;60 60 60 0 25 1.13992ms 6 0&#125;</span><br></pre></td></tr></table></figure>
 

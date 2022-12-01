@@ -234,7 +234,7 @@
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p><a target="_blank" rel="noopener" href="https://www.mysql.com/">MySQL</a>是一款开源的关系型数据库，广泛应用于Web后端的数据存储。索引是MySQL非常重要技术组成部分，深入理解MySQL的索引原理，有助于我们建立高性能的索引以及对索引进行调优。</p>
 <p>MySQL支持多种索引类型，如B-Tree索引、哈希索引、全文索引等。索引是在存储引擎中实现的，在实际环境中，应用比较多的是InnoDB存储引擎和MyISAM存储引擎，这两个存储引擎底层都是使用的B-Tree索引。所以，为了不引起歧义，本文讨论的MySQL索引，没有特殊说明，都是指的B-Tree索引。</p>
-<a id="more"></a>
+<span id="more"></span>
 
 <h2 id="什么是索引"><a href="#什么是索引" class="headerlink" title="什么是索引"></a>什么是索引</h2><p>当你想在一个图书图找到一本书时，比如<a target="_blank" rel="noopener" href="https://item.jd.com/11220393.html">《高性能MySQL》</a>，你会怎么做呢？</p>
 <p>首先你通过一级分类找到计算机类的书籍摆放的位置，然后通过二级分类找到数据库相关的书籍的摆放位置，最后通过书名的字母顺序找到这本书。</p>

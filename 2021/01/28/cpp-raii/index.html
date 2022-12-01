@@ -225,7 +225,7 @@
       
         <p>RAII作为C++资源管理的一种惯用法，是每一位C++程序员都应该掌握的基本技能。在google上搜索关键字RAII,  有二百多万条搜索结果。说明这个话题在网上已经被讨论过无数次，也发现了一些好文章给我不少启发，这篇文章主要是做个总结并谈谈自己的理解。 </p>
 <h2 id="什么是RAII"><a href="#什么是RAII" class="headerlink" title="什么是RAII"></a>什么是RAII</h2><p>资源获取即初始化（<em>Resource Acquisition Is Initialization</em>），即<strong>RAII</strong>。RAII是一种C++编程技术。<strong>它利用栈对象在离开作用域后自动析构的语言特点，将受限资源的生命周期绑定到该对象上，当对象析构时以达到自动释放资源的目的</strong>。 这里说的资源都是指的受限资源，比如堆上分配的内存、文件句柄、线程、数据库连接、网络连接等。 </p>
-<a id="more"></a>
+<span id="more"></span>
 
 <h2 id="资源管理问题"><a href="#资源管理问题" class="headerlink" title="资源管理问题"></a>资源管理问题</h2><p>操作系统的资源是有限的，当我们向操作系统索取资源，使用完后应即时归还给操作操作，这是一个良好的编程习惯，资源获取操作流程如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">获取资源 &gt; 使用资源 &gt; 释放资源</span><br></pre></td></tr></table></figure>

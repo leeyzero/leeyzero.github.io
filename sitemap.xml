@@ -2,7 +2,70 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://leeyzero.github.io/2022/02/20/mr-impl/</loc>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2-overview/</loc>
+    
+    <lastmod>2022-12-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2a-leader-election/</loc>
+    
+    <lastmod>2022-12-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2022/02/20/mit-6-824-lab1-mapreduce/</loc>
+    
+    <lastmod>2022-12-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2020/10/10/vim-tutorial/</loc>
+    
+    <lastmod>2022-12-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2022/05/06/go-concurrency-in-action/</loc>
+    
+    <lastmod>2022-12-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2d-log-compaction/</loc>
+    
+    <lastmod>2022-12-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2c-persistence/</loc>
+    
+    <lastmod>2022-12-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2b-log-replication/</loc>
     
     <lastmod>2022-12-14</lastmod>
     
@@ -120,15 +183,6 @@
   
   <url>
     <loc>https://leeyzero.github.io/2020/10/10/windows-message-architecture/</loc>
-    
-    <lastmod>2022-11-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2020/10/10/vim-tutorial/</loc>
     
     <lastmod>2022-11-25</lastmod>
     
@@ -363,15 +417,6 @@
   
   <url>
     <loc>https://leeyzero.github.io/2021/07/02/go-concurrency-pattern/</loc>
-    
-    <lastmod>2022-06-11</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2022/05/06/go-concurrency-in-action-md/</loc>
     
     <lastmod>2022-06-11</lastmod>
     
@@ -862,6 +907,13 @@
   
   <url>
     <loc>https://leeyzero.github.io/tags/6-824/</loc>
+    <lastmod>2022-12-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/tags/Raft/</loc>
     <lastmod>2022-12-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

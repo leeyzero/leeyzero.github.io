@@ -166,6 +166,442 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/08/07/macOS-terminal-configuration/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/08/07/macOS-terminal-configuration/" class="post-title-link" itemprop="url">配置macOS终端环境</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-08-07 23:30:40" itemprop="dateCreated datePublished" datetime="2022-08-07T23:30:40+08:00">2022-08-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-12-01 11:59:09" itemprop="dateModified" datetime="2022-12-01T11:59:09+08:00">2022-12-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" itemprop="url" rel="index"><span itemprop="name">开发环境</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>最近换了一台mac，配置了一下终端（terminal）环境，在此记录一下，以便后续查阅，同时给分享给网友作为参考。本文不会细无具细，只会列举出主要步骤和相关配置参考资料。主要包括以下四个部分：</p>
+<ul>
+<li>安装 <a target="_blank" rel="noopener" href="https://iterm2.com/">iTerm2</a></li>
+<li>安装 <a target="_blank" rel="noopener" href="https://github.com/robbyrussell/oh-my-zsh">oh-my-zsh</a></li>
+<li>配置 <a target="_blank" rel="noopener" href="https://github.com/romkatv/powerlevel10k#extremely-customizable">powerlevel10k</a></li>
+<li>配置插件</li>
+</ul>
+<p>终端效果:<br><img src="/images/macOS-terminal-configuration/terminal.png"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/08/07/macOS-terminal-configuration/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/06/26/how-to-read-a-book/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/06/26/how-to-read-a-book/" class="post-title-link" itemprop="url">如何阅读一本书</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-06-26 15:48:45" itemprop="dateCreated datePublished" datetime="2022-06-26T15:48:45+08:00">2022-06-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-06-28 12:30:03" itemprop="dateModified" datetime="2022-06-28T12:30:03+08:00">2022-06-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>最近读了<a target="_blank" rel="noopener" href="https://item.jd.com/13199090.html">《如何阅读一本书》</a>，很遗憾自己没有早点读到这本书，同时也庆幸自己现在读到这本书。<strong>阅读的目标有两种，一种是为了获取资讯，另一种是为了增进理解</strong>。《如何阅读一本书》便是一本教你如何通常阅读以增进理解的实用书籍。</p>
+<p>打开你的手机，看看你一周的花在各大手机APP上的时间。抖音、快手、知乎、B站、微信公众号…，这些time killer是不是占用了大量的时间？看起来你每天（被）输入了大量信息，但这些信息是否真能增进我们对自己世界的了解呢。很遗憾，并没有。发生这一现象的原因主要有两点：</p>
+<ul>
+<li><strong>这些媒体经过精心的设计，对资讯进行精美的包装，让受众根本用不着自己做结论。他们直接将包装后的观点装进自己的脑海中，缺乏对事物的思考。</strong></li>
+<li><strong>这些媒体提供的绝大部分是资讯类信息，而且比较零碎，缺乏逻辑性。太多的资讯如同太少的资讯一样，都是对理解力的阻碍。现代媒体正以压倒性的泛滥资讯阻碍了我们的理解力。</strong></li>
+</ul>
+<p>诚然，互联网上的确有很多非常不错的知识。但书籍（也包括电子书）仍然是获取知识最重要的信息来源。如何通过阅读以增进理解力本身是一种艺术，《如何阅读一本书》提供了很多值得参考的规则，值得花时间投入学习。但诚如作者所说，对于一本实用性的书，当你读完并赞同作为的观点后，作者的任务就完成了，但作为读者，你的任务才刚刚开始。作者在书中所建议的方法对你是不是有效，需要你在实践中寻找答案。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/06/26/how-to-read-a-book/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/05/31/technical-writting-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/05/31/technical-writting-2/" class="post-title-link" itemprop="url">[译] Google技术写作（二）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-05-31 09:53:16" itemprop="dateCreated datePublished" datetime="2022-05-31T09:53:16+08:00">2022-05-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-06-28 12:31:11" itemprop="dateModified" datetime="2022-06-28T12:31:11+08:00">2022-06-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>本文翻译自 <a target="_blank" rel="noopener" href="https://developers.google.com/tech-writing/overview">Google Technical Writing Courses</a>，是Google推出的技术写作课程，该课程包含两个部分，本文是第二部分。</p>
+<ul>
+<li><a href="/2022/05/31/technical-writting-1/" title="技术写作（一）">技术写作（一）</a>：教你如何写出更清晰的技术文档，是学习第二部分的基础。</li>
+<li><a href="/2022/05/31/technical-writting-2/" title="技术写作（二）">技术写作（二）</a>：帮助你提升技术沟通技巧。
+
+</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/05/31/technical-writting-2/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/05/31/technical-writting-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/05/31/technical-writting-1/" class="post-title-link" itemprop="url">[译] Google技术写作（一）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-05-31 09:49:26" itemprop="dateCreated datePublished" datetime="2022-05-31T09:49:26+08:00">2022-05-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-06-28 12:30:59" itemprop="dateModified" datetime="2022-06-28T12:30:59+08:00">2022-06-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>本文翻译自 <a target="_blank" rel="noopener" href="https://developers.google.com/tech-writing/overview">Google Technical Writing Courses</a>，是Google推出的技术写作课程，该课程包含两个部分，本文是第一部分。</p>
+<ul>
+<li><a href="/2022/05/31/technical-writting-1/" title="技术写作（一）">技术写作（一）</a>：教你如何写出更清晰的技术文档，是学习第二部分的基础。</li>
+<li><a href="/2022/05/31/technical-writting-2/" title="技术写作（二）">技术写作（二）</a>：帮助你提升技术沟通技巧。
+
+</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/05/31/technical-writting-1/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/05/15/thinking-about-unittest/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/05/15/thinking-about-unittest/" class="post-title-link" itemprop="url">单元测试的实践与思考</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-05-15 17:06:38" itemprop="dateCreated datePublished" datetime="2022-05-15T17:06:38+08:00">2022-05-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-06-11 20:33:39" itemprop="dateModified" datetime="2022-06-11T20:33:39+08:00">2022-06-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">测试</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>从个人经历过的多个团队中，发现有一个共性是：极少有团队注重单元测试。甚至当我想在团队中倡导单元测试时，有个研发经理跟我表达单元测试没有任何意义的结论。我不知道这是个人的不幸呢，还是整个中国互联网公司的现状如此？</p>
+<p>本文算是给单元测试”正名”，介绍单元测试的意义以及编写可测试代码的一些原则和思考。</p>
+<h2 id="什么是单元测试"><a href="#什么是单元测试" class="headerlink" title="什么是单元测试"></a>什么是单元测试</h2><blockquote>
+<p>单元测试是一段<strong>自动化</strong>的代码，这段代码调用被测试的<strong>工作单元</strong>，之后对这个单元的单个最终结果的某些假设进行检验。单元测试几乎都是用单元测试框架编写的。单元测试容易编写，能够快速运行。单元测试<strong>可靠、可读、并且可维护。</strong>只要产品代码不发生变化，单元测试的结果是稳定的。</p>
+<p>——<a target="_blank" rel="noopener" href="https://piazza.com/class_profile/get_resource/j11t8bsxngk3r3/j2lw6zcyt5t6lu">The Art of Unit Testing</a></p>
+</blockquote>
+<p>工作单元是指从调用系统的一个公共方法到产生一个测试可见的最终结果，其间这个系统发生的行为总称为一个工作单元。一个单元可以小到只包含一个方法，也可以大到包括实现某个功能的多个类和函数。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/05/15/thinking-about-unittest/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/05/08/deploy-codeserver-on-centos/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -252,7 +688,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/05/06/go-concurrency-in-action-md/">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/05/06/go-concurrency-in-action/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -266,7 +702,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/05/06/go-concurrency-in-action-md/" class="post-title-link" itemprop="url">Go并发编程实践</a>
+            <a href="/2022/05/06/go-concurrency-in-action/" class="post-title-link" itemprop="url">Go并发编程实践</a>
         </h2>
 
         <div class="post-meta">
@@ -283,7 +719,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-06-11 20:27:08" itemprop="dateModified" datetime="2022-06-11T20:27:08+08:00">2022-06-11</time>
+                <time title="Modified: 2022-12-14 12:29:25" itemprop="dateModified" datetime="2022-12-14T12:29:25+08:00">2022-12-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -315,7 +751,7 @@
 <p>更多请参考：<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Herb_Sutter">Herb Sutter</a> 2005年在Dr. Dobb’s 发表的文章：<a target="_blank" rel="noopener" href="http://www.gotw.ca/publications/concurrency-ddj.htm">The Free Lunch Is Over</a>。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/05/06/go-concurrency-in-action-md/#more" rel="contents">
+              <a class="btn" href="/2022/05/06/go-concurrency-in-action/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -339,7 +775,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/02/20/mr-impl/">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/02/20/mit-6-824-lab1-mapreduce/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -353,7 +789,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/02/20/mr-impl/" class="post-title-link" itemprop="url">MIT 6.824 Lab1: MapReduce</a>
+            <a href="/2022/02/20/mit-6-824-lab1-mapreduce/" class="post-title-link" itemprop="url">MIT 6.824 Lab1: MapReduce</a>
         </h2>
 
         <div class="post-meta">
@@ -370,7 +806,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-14 09:04:23" itemprop="dateModified" datetime="2022-12-14T09:04:23+08:00">2022-12-14</time>
+                <time title="Modified: 2022-12-14 13:31:47" itemprop="dateModified" datetime="2022-12-14T13:31:47+08:00">2022-12-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -393,7 +829,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>之前虽然看过很多分布式系统相关的书籍、论文和一些开源项目，但很少自己动手去实现。理论跟工程实现通常有非常大的差别，一个看似很简单的协议，在工程实现上可能非常困难。<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/schedule.html">6.824</a>是MIT开设的分布式系统课程，非常系统的讲解了分布式系统的主流技术，同时将理论和实践相结合，是一个非常好的课程。</p>
+          <p>之前虽然看过很多分布式系统相关的书籍、论文和一些开源项目，但很少自己动手去实现。理论跟工程实现通常有非常大的差别，一个看似很简单的协议，在工程实现上可能非常困难。<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/schedule.html">6.824</a>是MIT开设的分布式系统课程，非常系统的讲解了分布式系统的主流技术，同时将理论和实践相结合，是一个非常好的课程。</p>
 <p>本文是笔者在学习<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/notes/l01.txt">6.824 lec1</a>课程的一些总结和思考，算是一个学习笔记。在看这篇文章之前，我希望读者先提前阅读以下资料：</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/mapreduce.pdf">MapReduce: Simplified Data Processing on Large Clusters</a></li>
@@ -403,7 +839,7 @@
 <p>本文主要分三个部分，第一部分概述性的介绍mapreduce的原理；第二部分概述性的介绍mapreduce的实现；第三部分介绍工程实现上需要注意的一些问题，完整代码实现参考<a target="_blank" rel="noopener" href="https://github.com/leeyzero/6.824/tree/main/src/mr">github</a>。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/02/20/mr-impl/#more" rel="contents">
+              <a class="btn" href="/2022/02/20/mit-6-824-lab1-mapreduce/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -601,425 +1037,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/08/29/gin-tutorial/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/29/gin-tutorial/" class="post-title-link" itemprop="url">Gin简介</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-08-29 16:23:26" itemprop="dateCreated datePublished" datetime="2021-08-29T16:23:26+08:00">2021-08-29</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-11-26 19:43:46" itemprop="dateModified" datetime="2022-11-26T19:43:46+08:00">2022-11-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Web%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">Web开发</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Gin是一个用Go语言实现的高性能web框架，其API实现优雅，性能卓越，上手简单，而且比较轻量级，很容易引入到项目中。本文是一篇对Gin框架的学习笔记，不会对Gin框架的用法做面面俱到的，而是对Gin框架做一个整体上的认识与入门。</p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>1、首先需要先安装<a target="_blank" rel="noopener" href="https://golang.org/">Go</a>，依赖版本为1.13+，执行下面命令安装Gin：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> go get -u github.com/gin-gonic/gin</span></span><br></pre></td></tr></table></figure>
-
-<p>2、在代码中引入Gin包</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">&quot;github.com/gin-gonic/gin&quot;</span></span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/29/gin-tutorial/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/07/27/reading-ddia/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/27/reading-ddia/" class="post-title-link" itemprop="url">[读书笔记] 数据密集型应用</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-07-27 11:28:14" itemprop="dateCreated datePublished" datetime="2021-07-27T11:28:14+08:00">2021-07-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-06-28 12:30:39" itemprop="dateModified" datetime="2022-06-28T12:30:39+08:00">2022-06-28</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>最近断断续续花了一个月时间看了一遍<a target="_blank" rel="noopener" href="https://item.jd.com/12437624.html">数据密集型应用系统设计</a>，也就是大家所说的DDIA（Designing Data-Intensive Applications）。这是一本一看就停不下来的书，强烈安利做业务系统的同学看看。那这本书到底在讲什么呢？</p>
-<p>数据模型是对现实世界的抽象，可以从微观角度理解为“数据结构”，它是一个应用系统中最重要的部分。数据模型在一定程度上会影响到系统设计人员解决问题的方式。关系型数据库在很长一段时间大行其道（虽然NoSQL越来越流行，但关系型数据库仍然有一席之地），通常我们在做系统设计时首先会对现实对象建模，建立对象之间的关系，以便能更好的用关系型数据库来表现。然而从这本书中我们可以看到，关系型数据库并不是惟一的数据模型，在做系统设计的时候，不应该受具体数据模型影响，了解各数据模型的优缺点和应用场景，有助于我们设计更具可靠性、可扩展性以及可维护性的系统。</p>
-<p>一句话概括：<strong>这是一本介绍各种数据库原理及其应用的书</strong>。</p>
-<p>具体来讲，本书从可靠性、可扩展性和可维护性角度展开，介绍各类数据库原理和应用。全书一共分成了三个部分：</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/07/27/reading-ddia/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/07/12/questions-worth-thinking-about/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/12/questions-worth-thinking-about/" class="post-title-link" itemprop="url">几个值得思考的问题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-07-12 23:35:50" itemprop="dateCreated datePublished" datetime="2021-07-12T23:35:50+08:00">2021-07-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-08 23:35:00" itemprop="dateModified" datetime="2022-05-08T23:35:00+08:00">2022-05-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9A%8F%E7%AC%94/" itemprop="url" rel="index"><span itemprop="name">随笔</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>今天从老东家离职了，在老东家度过了人生中黄金的5年，细细想来，虽然走了很多弯路，但最终走到了正确的道路上。关于为什么要离职，其实是一个值得思考的问题。按照马云爸爸的说法，离职无非是两种原因：要么是受到委屈，要么是为了钱。诚然，我目前还没有脱离这个层次，但经过8年的社会工作洗礼，至少还对其它的追求有点念想，希望5年后再看这篇文章时不会被生活磨平了棱角。</p>
-<p>这次离职更多的还是个人职业发展问题。对个人职业发展还是有一个比较明确的目标，但在执行路径上其实并不是很清晰。每一次选择都是为了向目标最近一点，但这个选择是否正确，短期来看其实是很难判断的。对于离职，有几个值得思考的问题，虽然自己有做过思考，但还未做理性的分析。这几个问题是：</p>
-<p>1、离职是不是在逃避问题？<br>2、从A团队离职的原因？针对这些原因有没有去做改变？<br>3、在B团队会不会有同样的问题？针对这些问题又将如何去应对？<br>4、2-3后，你想成为什么样的人？<br>5、你内心的源动力是什么？如果只是靠外界驱动，这种驱动力是不稳定的。</p>
-<p>对于这些问题，的确值得思考，有些问题其实是有明确答案的，有些问题直到目前也还没有想得很清楚，这其实是一种思维惰性，也可以说是自己的天花板，目前正在想办法突破，也算是今年的一个小目标吧。先将问题记录于此，也供网友参考，待到自己真正想清楚那天，再写一篇文章回答这些问题，希望这天不会太久！</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/07/02/go-concurrency-pattern/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/02/go-concurrency-pattern/" class="post-title-link" itemprop="url">Go并发编程模式</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-07-02 23:38:31" itemprop="dateCreated datePublished" datetime="2021-07-02T23:38:31+08:00">2021-07-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-06-11 20:27:16" itemprop="dateModified" datetime="2022-06-11T20:27:16+08:00">2022-06-11</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>并发是Go语言最重要的语言特性之一，是Go语言区别于其它语言的重要特征。Go语言原生支持并发，可以充分发挥多核CPU的机器性能，同时在语言层面上，Go以十分简洁的语法提供丰富的并发能力，让并发编程并得简单。本文总结Go语言并发编程的常用模式，模式也就是我们说的套路，先学会模仿，再学会融汇贯通，最后才能创造出新的模式，这就是所谓的无招胜有招吧。</p>
-<h2 id="Go对并发的支持"><a href="#Go对并发的支持" class="headerlink" title="Go对并发的支持"></a>Go对并发的支持</h2><p>对于桌面客户端应用程序，为了提升客户端的运行效率和简化多线程编程，通常的做法是在客户端启动时，启动三个常驻线程，分别是UI线程，逻辑线程和IO线程。每个线程维护一个事件循环，线程之间通信（数据传输）只能通过消息队列进行传递，消息队列是线程安全。</p>
-<p>这么做主要有两个好处，一是常驻线程避免创建和销毁线程的开销，多核情况下，通常没有线程上下文切换，线程运行效率高。二是通过消息队列传递数据，各个线程对数据进行操作时不用所以资源竞争问题，这极大降低了多线程编程的难度，并且设计出的程序也更简单，更容易理解。</p>
-<p>接触到Go之后，才知道这种编程模型其实就是C. A. R. Hoare的<a target="_blank" rel="noopener" href="http://www.usingcsp.com/">Communicating Sequential Processes, CSP</a>。Go语言原生支持并发（goroutine）和通道（channel），并且还提供了<a target="_blank" rel="noopener" href="https://golang.org/ref/spec#Select_statements">select</a>对多路通道进行控制，极大简化了并发编程的难度。</p>
-<p>接下来，本文将介绍Go并发编程的常用模式。本文并不适合没有Go语言基础的读者，在阅读以下内容前，请先查阅以下内容：</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://golang.org/ref/spec">The Go Programming Language Specification</a></li>
-<li><a target="_blank" rel="noopener" href="https://golang.org/doc/effective_go">Effective Go</a></li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/07/02/go-concurrency-pattern/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/06/08/end-to-end-principle/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/06/08/end-to-end-principle/" class="post-title-link" itemprop="url">端到端设计原则</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-06-08 01:01:17" itemprop="dateCreated datePublished" datetime="2021-06-08T01:01:17+08:00">2021-06-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-11-25 19:27:54" itemprop="dateModified" datetime="2022-11-25T19:27:54+08:00">2022-11-25</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>最近又看了一遍 <a target="_blank" rel="noopener" href="http://web.mit.edu/saltzer/www/publications/endtoend/endtoend.pdf">End-To-End Argument In System Design</a>，有一些新的思考，但都集中在一些点上，不够系统，在此先记录下来，后续有新的想法再做补充和整理。</p>
-<h2 id="核心观点"><a href="#核心观点" class="headerlink" title="核心观点"></a>核心观点</h2><p>这篇论文在由MIT计算机科学实验室发表于1984年，是一篇非常经典的关于系统设计的论文。论文论证了分布式系统设计的一个事实：<strong>端到端的可靠通信只能由通信的两端（End-Point）来保证，而中间的媒介（如消息中间件、网关、路由器以及TCP协议栈等）只能提高通信效率，但无法保证通信两端的可靠性。</strong></p>
-<p><strong>在一个系统设计中，系统设计师的主要工作是对功能进行合理抽象，明确定义功能边界。</strong>将功能职责进行合理划分的设计原则是系统设计师最重要的工具之一，端到端设计原则便是这样的工具，它在分布式系统设计中，对功能职责的划分起了一定的指导作用。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/06/08/end-to-end-principle/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1090,7 +1107,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-count">49</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1101,7 +1118,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-count">63</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

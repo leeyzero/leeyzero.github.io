@@ -1,1 +1,1 @@
-https://leeyzero.github.io/2022/11/28/understanding-rest-architecture-1/
+https://leeyzero.github.io/2022/12/14/mit-6-824-lab2d-log-compaction/

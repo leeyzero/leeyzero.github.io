@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2-overview/</loc>
-    <lastmod>2022-12-14</lastmod>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2a-leader-election/</loc>
+    <lastmod>2022-12-15</lastmod>
   </url>
   <url>
-    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2a-leader-election/</loc>
-    <lastmod>2022-12-14</lastmod>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2-overview/</loc>
+    <lastmod>2022-12-15</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2b-log-replication/</loc>
+    <lastmod>2022-12-15</lastmod>
   </url>
   <url>
     <loc>https://leeyzero.github.io/2022/02/20/mit-6-824-lab1-mapreduce/</loc>
@@ -26,10 +30,6 @@
   </url>
   <url>
     <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2c-persistence/</loc>
-    <lastmod>2022-12-14</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2b-log-replication/</loc>
     <lastmod>2022-12-14</lastmod>
   </url>
   <url>

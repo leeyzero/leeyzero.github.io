@@ -197,7 +197,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-15 20:15:35" itemprop="dateModified" datetime="2022-12-15T20:15:35+08:00">2022-12-15</time>
+                <time title="Modified: 2022-12-16 09:16:59" itemprop="dateModified" datetime="2022-12-16T09:16:59+08:00">2022-12-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -232,8 +232,9 @@
 <p>本文是第四个子实验，需要实现Raft日志压缩，在实际生产环境中，磁盘空间是有限的，较大的日志，在节点崩溃恢复时也需要较长的时候进行日志回放，这些在现实场景中都是不能接受的，日志压缩主要解决这个问题。在开始实验前，先阅读以下材料：</p>
 <ul>
 <li>阅读论文：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">In Search of an Understandable Consensus Algorithm</a>，以下简称论文。</li>
-<li>阅读实验指导：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2C</a></li>
+<li>阅读实验指导：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2D</a></li>
 </ul>
+<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1] <a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">In Search of an Understandable Consensus Algorithm</a><br>[2] <a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2D</a></p>
 
       
     </div>
@@ -284,7 +285,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-15 20:17:02" itemprop="dateModified" datetime="2022-12-15T20:17:02+08:00">2022-12-15</time>
+                <time title="Modified: 2022-12-16 09:17:03" itemprop="dateModified" datetime="2022-12-16T09:17:03+08:00">2022-12-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -321,6 +322,7 @@
 <li>阅读论文：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">In Search of an Understandable Consensus Algorithm</a>，以下简称论文。</li>
 <li>阅读实验指导：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2C</a></li>
 </ul>
+<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1] <a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">In Search of an Understandable Consensus Algorithm</a><br>[2] <a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2C</a></p>
 
       
     </div>
@@ -371,7 +373,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-15 20:23:04" itemprop="dateModified" datetime="2022-12-15T20:23:04+08:00">2022-12-15</time>
+                <time title="Modified: 2022-12-16 09:22:20" itemprop="dateModified" datetime="2022-12-16T09:22:20+08:00">2022-12-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -409,7 +411,8 @@
 <li>阅读实验指导：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2B</a></li>
 <li>阅读<a target="_blank" rel="noopener" href="https://thesquareplanet.com/blog/students-guide-to-raft/#an-aside-on-optimizations">Students’ Guide to Raft</a>，本文中介绍了些论文中没有给出的实现细节。</li>
 </ul>
-<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h2 id="注意的问题"><a href="#注意的问题" class="headerlink" title="注意的问题"></a>注意的问题</h2><h3 id="Leader如何判断半数以上的日志复制成功"><a href="#Leader如何判断半数以上的日志复制成功" class="headerlink" title="Leader如何判断半数以上的日志复制成功"></a>Leader如何判断半数以上的日志复制成功</h3><h3 id="Follower何时提交日志"><a href="#Follower何时提交日志" class="headerlink" title="Follower何时提交日志"></a>Follower何时提交日志</h3><h3 id="如何快速判断冲突日志"><a href="#如何快速判断冲突日志" class="headerlink" title="如何快速判断冲突日志"></a>如何快速判断冲突日志</h3><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1] <a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">In Search of an Understandable Consensus Algorithm</a><br>[2] <a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2B</a><br>[3] <a target="_blank" rel="noopener" href="https://thesquareplanet.com/blog/students-guide-to-raft/#an-aside-on-optimizations">Students’ Guide to Raft</a></p>
+<p>Raft日志复制是Raft协议最核心的部分，也是最难的部分。论文中将日志复制和安全性是分开讨论的，实现的时候我们需要将这两部分结合起来。另外论文中对一些实现细节是空白的，如日志冲突的优化，这要求我们要实现的时候要考虑各种边界问题。</p>
+<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><h3 id="Leader如何判断半数以上的日志复制成功"><a href="#Leader如何判断半数以上的日志复制成功" class="headerlink" title="Leader如何判断半数以上的日志复制成功"></a>Leader如何判断半数以上的日志复制成功</h3><h3 id="Follower何时提交日志"><a href="#Follower何时提交日志" class="headerlink" title="Follower何时提交日志"></a>Follower何时提交日志</h3><h3 id="如何快速判断冲突日志"><a href="#如何快速判断冲突日志" class="headerlink" title="如何快速判断冲突日志"></a>如何快速判断冲突日志</h3><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1] <a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">In Search of an Understandable Consensus Algorithm</a><br>[2] <a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2B</a><br>[3] <a target="_blank" rel="noopener" href="https://thesquareplanet.com/blog/students-guide-to-raft/#an-aside-on-optimizations">Students’ Guide to Raft</a></p>
 
       
     </div>

@@ -2,6 +2,24 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2c-persistence/</loc>
+    
+    <lastmod>2022-12-17</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2d-log-compaction/</loc>
+    
+    <lastmod>2022-12-17</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2b-log-replication/</loc>
     
     <lastmod>2022-12-17</lastmod>
@@ -11,27 +29,9 @@
   </url>
   
   <url>
-    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2c-persistence/</loc>
-    
-    <lastmod>2022-12-16</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2d-log-compaction/</loc>
-    
-    <lastmod>2022-12-16</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2a-leader-election/</loc>
     
-    <lastmod>2022-12-16</lastmod>
+    <lastmod>2022-12-17</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

@@ -197,7 +197,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-17 10:51:45" itemprop="dateModified" datetime="2022-12-17T10:51:45+08:00">2022-12-17</time>
+                <time title="Modified: 2022-12-17 14:06:42" itemprop="dateModified" datetime="2022-12-17T14:06:42+08:00">2022-12-17</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -229,13 +229,24 @@
 
 </li>
 </ul>
-<p>本文是第四个子实验，需要实现Raft日志压缩，在实际生产环境中，磁盘空间是有限的，较大的日志，在节点崩溃恢复时也需要较长的时候进行日志回放，这些在现实场景中都是不能接受的，日志压缩主要解决这个问题。在开始实验前，先阅读以下材料：</p>
+<p>本文是第四个子实验，需要实现Raft日志压缩，在开始实验前，先阅读以下材料：</p>
 <ul>
 <li>阅读论文：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">In Search of an Understandable Consensus Algorithm</a>，以下简称论文。</li>
 <li>阅读实验指导：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2D</a></li>
 </ul>
-<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><h2 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h2><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1] <a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">In Search of an Understandable Consensus Algorithm</a><br>[2] <a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2D</a></p>
+<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>Raft的日志会随着接收客户端的请求数而不断增长，对实际生产环境中的系统而言，内存是有限的，较大的日志，在服务崩溃重启时需要较长时间加载恢复，这会造成服务的可用性问题。日志压缩主要解决这些问题。</p>
+<p>Raft采用快照（Snapshot)来实现日志压缩。主要原理时，将当前整个系统的状态作为一个快照（可以理解为一个复本，相当于保证了当前的系统状态）持久化到稳定存储中，然后就可以丢弃这个快照点之前的所有日志了。论文中给出了一个快照示例如下：</p>
+<img src="/images/mit-6-824-lab2d/figure12.png" width=500 />
 
+<p>上图中，在快照上，日志长度为7。在index=5处生成了一个快照（snaphot），快照中除记录了状态机的状态：<code>x &lt;- 0, y &lt;- 9</code>外，还记录了本次快照包含的最后一个日志记录的index和term（下面会解释为什么需要存储这两个信息）。快照成功后，我们就可以丢弃index=5之前（包括index=5）的所有日志了，日志压缩后长度为2，内存得以释放。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/12/14/mit-6-824-lab2d-log-compaction/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 

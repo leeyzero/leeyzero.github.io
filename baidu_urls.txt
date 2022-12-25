@@ -1,1 +1,1 @@
-https://leeyzero.github.io/2022/12/14/mit-6-824-lab2d-log-compaction/
+https://leeyzero.github.io/2022/12/25/go-data-structure-slice/

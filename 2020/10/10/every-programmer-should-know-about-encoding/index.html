@@ -35,7 +35,7 @@
 <meta property="og:image" content="https://leeyzero.github.io/images/encoding/3.png">
 <meta property="og:image" content="https://leeyzero.github.io/images/encoding/4.png">
 <meta property="article:published_time" content="2020-10-10T15:04:28.000Z">
-<meta property="article:modified_time" content="2022-12-28T16:11:34.897Z">
+<meta property="article:modified_time" content="2022-12-28T16:13:08.436Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="字符编码">
 <meta property="article:tag" content="ASCII">
@@ -208,7 +208,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-29 00:11:34" itemprop="dateModified" datetime="2022-12-29T00:11:34+08:00">2022-12-29</time>
+                <time title="Modified: 2022-12-29 00:13:08" itemprop="dateModified" datetime="2022-12-29T00:13:08+08:00">2022-12-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -247,7 +247,7 @@
 </blockquote>
 <p>于是各种编码标准应用而生，其中应用比较广泛的是UTF-8。</p>
 <h2 id="UTF-8"><a href="#UTF-8" class="headerlink" title="UTF-8"></a>UTF-8</h2><p>什么是UTF-8？它跟Unicode是什么关系？</p>
-<p>UTF是 <em>Unicode/UCS Transformation Format</em> 的首字母缩写，即把Unicode字符转换为某种格式之意。<strong>UTF-8只是Unicode字符集的一种编码实现方式之一</strong>。其它实现方式还有UTF-16和UTF-32等。UTF-8最大的特点是它是一种变长编码方式，它可以用1~4个字节表示一个字符，其编码规则也比较简单，简述为以下两条规则：</p>
+<p>UTF是 <em>Unicode/UCS Transformation Format</em> 的首字母缩写，即把Unicode字符转换为某种格式之意。<strong>UTF-8只是Unicode字符集的一种编码实现</strong>。其它实现还有UTF-16和UTF-32等。UTF-8最大的特点是它是一种变长编码方式，它可以用1~4个字节表示一个字符，其编码规则也比较简单，简述为以下两条规则：</p>
 <blockquote>
 <p><em>1. 对于单字节的符号，字节的第一位设为0，后面7位为这个符号的Unicode 码。因此对于英语字母，UTF-8编码和ASCII码是相同的。</em></p>
 <p><em>2. 对于n个字节的符号(n &gt; 1)，第一个字节的前n位都设为1，第n + 1位设为0，后面字节的前两位一律设为10。剩下的没有提及的二进制位，全部为这个符号的 Unicode 码。</em></p>

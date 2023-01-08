@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://leeyzero.github.io/2022/05/06/go-concurrency-in-action/</loc>
+    <lastmod>2023-01-08</lastmod>
+  </url>
+  <url>
     <loc>https://leeyzero.github.io/2022/12/25/go-data-structure-slice/</loc>
     <lastmod>2023-01-08</lastmod>
   </url>
@@ -38,10 +42,6 @@
   </url>
   <url>
     <loc>https://leeyzero.github.io/2020/10/10/vim-tutorial/</loc>
-    <lastmod>2022-12-14</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2022/05/06/go-concurrency-in-action/</loc>
     <lastmod>2022-12-14</lastmod>
   </url>
   <url>

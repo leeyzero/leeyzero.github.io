@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://leeyzero.github.io/2020/10/10/every-programmer-should-know-about-encoding/</loc>
-    <lastmod>2022-12-28</lastmod>
+    <loc>https://leeyzero.github.io/2023/01/08/go-data-structure-string/</loc>
+    <lastmod>2023-01-08</lastmod>
   </url>
   <url>
     <loc>https://leeyzero.github.io/2022/12/25/go-data-structure-slice/</loc>
-    <lastmod>2022-12-25</lastmod>
+    <lastmod>2023-01-08</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2020/10/10/every-programmer-should-know-about-encoding/</loc>
+    <lastmod>2023-01-07</lastmod>
   </url>
   <url>
     <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2d-log-compaction/</loc>

@@ -31,7 +31,7 @@
 <meta property="og:description" content="最近花了一个周的零星时间，看了《编写可读代码艺术》，收获颇多。虽然平时也经常使用书中提到的一些方法编写代码，但只是一种直观感觉认为这种方式是“正确”的。书中将这些方法提炼成一条条原则，并采用大量实例佐证这些原则。书中系统化的介绍了如何编写可读代码，并提出很多指导性原则，整本书不到200页，非常值得阅读。 基本原则何为好代码，何为坏代码，每个人的判断标准可能并不一样，但作者提了总的指导原则：代码应当">
 <meta property="og:locale">
 <meta property="article:published_time" content="2020-10-10T15:32:06.000Z">
-<meta property="article:modified_time" content="2022-11-25T11:33:36.199Z">
+<meta property="article:modified_time" content="2023-01-08T06:33:22.104Z">
 <meta property="article:author" content="LeeYzero">
 <meta name="twitter:card" content="summary">
 
@@ -199,7 +199,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-11-25 19:33:36" itemprop="dateModified" datetime="2022-11-25T19:33:36+08:00">2022-11-25</time>
+                <time title="Modified: 2023-01-08 14:33:22" itemprop="dateModified" datetime="2023-01-08T14:33:22+08:00">2023-01-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -266,18 +266,20 @@
 <li>把相关的代码行分组，形成代码块</li>
 </ul>
 <p>另外需要注意的是，每个人的编码风格可能并不相同，例如，类定义的大括号该放在哪里：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">class Logger &#123;</span><br><span class="line">    ....</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Logger</span> &#123;</span></span><br><span class="line">    ....</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 <p>还是：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">class Logger </span><br><span class="line">&#123;</span><br><span class="line">    ....</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Logger</span> </span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    ....</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 <p>这里两种风格都不影响可读性，但如果两种风格同时放在一起，就会对可读性有影响了。有时，即使我们感觉使用了“错误”的风格，但我们还是需要遵守项目的习惯，因为<strong>一致的风格比“正确”的风格更重要。</strong></p>
 <h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><p>注释的目的是帮助读者了解作者在写代码时已经知道的那些事情。 如果代码本身就能很好的反映事实，那基本不需要注释；另外，如果需要靠一些“拐杖式注释”来粉饰代码，那应该把代码改好。 对于为什么代码写成这样而不是那样的内在理由或这样写的背景以及代码中的一些缺陷，需要写下注释； </p>
 <p>对于写完的注释，看是否能真实表达代码意图，最好的办法就是让同事看你写的注释能否看懂。最后就是注释一定要与代码同步，如果修改完代码后，注释却没有同步修改，将会误导读者，这种比没有注释更严重。</p>
 <h2 id="控制流"><a href="#控制流" class="headerlink" title="控制流"></a>控制流</h2><h3 id="条件语句中参数的顺序"><a href="#条件语句中参数的顺序" class="headerlink" title="条件语句中参数的顺序"></a>条件语句中参数的顺序</h3><p>先来比较一下下面两段代码的易读性：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if (length &gt;&#x3D; 10)</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (length &gt;= <span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+
 <p>和</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if (10 &lt;&#x3D; length)</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="number">10</span> &lt;= length)</span><br></pre></td></tr></table></figure>
+
 <p>对大多数据程序员来说，第一段更易读。为什么为这样呢？因为这符合自然语言的语法习惯，我们通常会说“如果你小于18岁”而不是说”如果18岁大于等于你的年龄”。下面指导原则很有帮助：</p>
 <table>
 <thead>
@@ -297,18 +299,18 @@
 <li>先处理有趣或者是可疑的情况</li>
 </ul>
 <h3 id="三目运算符"><a href="#三目运算符" class="headerlink" title="三目运算符"></a>三目运算符</h3><p>它对于可读性的影响是富有争议的。拥挤者认为可以只写一行而不用写成多行；反对者则说可能会造成阅读的混乱而且难以调试。但如果三目运算符的值都是常量，其可读性是比较高的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">time_str +&#x3D; (hour &gt;&#x3D; 12) ? &quot;pm&quot; : &quot;am&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">time_str += (hour &gt;= <span class="number">12</span>) ? <span class="string">&quot;pm&quot;</span> : <span class="string">&quot;am&quot;</span></span><br></pre></td></tr></table></figure>
 
 <p>如果要避免使用三目运算符，那就得写成：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if (hour &gt;&#x3D; 12) &#123;</span><br><span class="line">    time_str +&#x3D; &quot;pm&quot;;</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    time_str +&#x3D; &quot;am&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (hour &gt;= <span class="number">12</span>) &#123;</span><br><span class="line">    time_str += <span class="string">&quot;pm&quot;</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    time_str += <span class="string">&quot;am&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>这就有点冗长了。然而如果表达式很复杂，就会变得难于理解：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">return exponent &gt;&#x3D; 0 ? mantissa * (1 &lt;&lt; exponent) : mantissa &#x2F; (1 &lt;&lt; -exponent);</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> exponent &gt;= <span class="number">0</span> ? mantissa * (<span class="number">1</span> &lt;&lt; exponent) : mantissa / (<span class="number">1</span> &lt;&lt; -exponent);</span><br></pre></td></tr></table></figure>
 
 <h3 id="避免do-while循环"><a href="#避免do-while循环" class="headerlink" title="避免do/while循环"></a>避免do/while循环</h3><p>通常来讲，逻辑条件应该出现在它们所“保护”的代码之前，这也是if、while和for语句的工作方式，因为你通常会从前往后读代码，而do/while循环就有点不自然了。很多读者会读这段代码两遍。幸运的是，实践中大多数的do/while循环都可以写成while循环。</p>
 <h3 id="最小化嵌套"><a href="#最小化嵌套" class="headerlink" title="最小化嵌套"></a>最小化嵌套</h3><p>嵌套很深的代码很难理解。每个嵌套层次都在读者的“思维栈”上又增加了一个条件。当读者见到一个右大括号<code>&#125;</code>时，可能很难“出栈”来回忆它背后的条件是什么。可以通过提早返回来减少嵌套或减少循环内的嵌套。</p>
 <h3 id="从函数中提前返回"><a href="#从函数中提前返回" class="headerlink" title="从函数中提前返回"></a>从函数中提前返回</h3><p>有些程序员认为函数永远不应该出现多条return语句。其实从函数中提前返回没有任何问题，而且很受欢迎。如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public boolean Contains(String str, String substr) &#123;</span><br><span class="line">    if (str &#x3D;&#x3D; null || substr &#x3D;&#x3D; null) return false;</span><br><span class="line">    if (substr.equals(&quot;&quot;)) return true;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">Contains</span><span class="params">(String str, String substr)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (str == <span class="keyword">null</span> || substr == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">if</span> (substr.equals(<span class="string">&quot;&quot;</span>)) <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>通常来说想要单一出口的一个动机是保证调用函数结尾的清理代码。但现在编码语言为这种保证提供了更精细的方式：</p>
 <table>
@@ -345,10 +347,10 @@
 <li>它通过用简单的名字描述子表达式来让代码文档化</li>
 <li>它帮助读者识别代码中的主要概念</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">if line.split(&#39;:&#39;)[0].strip() &#x3D;&#x3D; &quot;root&quot;:</span><br><span class="line">    ....</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> line.split(<span class="string">&#x27;:&#x27;</span>)[<span class="number">0</span>].strip() == <span class="string">&quot;root&quot;</span>:</span><br><span class="line">    ....</span><br></pre></td></tr></table></figure>
 
 <p>如果引入一个解释变量就容易理解了：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">username &#x3D; line.split(&#39;:&#39;)[0].strip()</span><br><span class="line">if username &#x3D;&#x3D; &quot;root&quot;:</span><br><span class="line">    ....</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">username = line.split(<span class="string">&#x27;:&#x27;</span>)[<span class="number">0</span>].strip()</span><br><span class="line"><span class="keyword">if</span> username == <span class="string">&quot;root&quot;</span>:</span><br><span class="line">    ....</span><br></pre></td></tr></table></figure>
 
 <h3 id="使用德摩根定理"><a href="#使用德摩根定理" class="headerlink" title="使用德摩根定理"></a>使用德摩根定理</h3><p>对于布尔表达式，有两种等价写法：</p>
 <ul>
@@ -356,10 +358,10 @@
 <li>not (a and b and c) &lt;=&gt; (not a) or (not b) or (not c)</li>
 </ul>
 <p>有时，使用这些法则可以让布尔表达式更具可读性，如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if (!(file_exists &amp;&amp; !is_protected)) &#123;</span><br><span class="line">  ....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!(file_exists &amp;&amp; !is_protected)) &#123;</span><br><span class="line">  ....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>可心把它改写成：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if (!file_exists || is_protected) &#123;</span><br><span class="line">    ....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!file_exists || is_protected) &#123;</span><br><span class="line">    ....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>对于变量的运用，主要有以下三个问题：</p>
 <ol>

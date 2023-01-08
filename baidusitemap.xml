@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://leeyzero.github.io/2022/05/31/technical-writting-2/</loc>
+    <lastmod>2023-01-08</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2022/05/31/technical-writting-1/</loc>
+    <lastmod>2023-01-08</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2021/05/05/talking-about-how-to-intervewing/</loc>
+    <lastmod>2023-01-08</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2021/01/24/redis-distribute-lock/</loc>
+    <lastmod>2023-01-08</lastmod>
+  </url>
+  <url>
     <loc>https://leeyzero.github.io/2022/05/06/go-concurrency-in-action/</loc>
     <lastmod>2023-01-08</lastmod>
   </url>
@@ -145,14 +161,6 @@
     <lastmod>2022-11-24</lastmod>
   </url>
   <url>
-    <loc>https://leeyzero.github.io/2022/05/31/technical-writting-2/</loc>
-    <lastmod>2022-06-28</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2022/05/31/technical-writting-1/</loc>
-    <lastmod>2022-06-28</lastmod>
-  </url>
-  <url>
     <loc>https://leeyzero.github.io/2021/07/27/reading-ddia/</loc>
     <lastmod>2022-06-28</lastmod>
   </url>
@@ -174,14 +182,6 @@
   </url>
   <url>
     <loc>https://leeyzero.github.io/2022/05/15/thinking-about-unittest/</loc>
-    <lastmod>2022-06-11</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2021/05/05/talking-about-how-to-intervewing/</loc>
-    <lastmod>2022-06-11</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2021/01/24/redis-distribute-lock/</loc>
     <lastmod>2022-06-11</lastmod>
   </url>
   <url>

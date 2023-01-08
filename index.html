@@ -280,7 +280,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-01-08 10:08:43" itemprop="dateModified" datetime="2023-01-08T10:08:43+08:00">2023-01-08</time>
+                <time title="Modified: 2023-01-08 11:02:08" itemprop="dateModified" datetime="2023-01-08T11:02:08+08:00">2023-01-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -306,7 +306,7 @@
           <p>在Go语言中，<strong>slice是一种非常重要的数据结构，用于描述数组存储的连续部分，它本质上是对数组的引用</strong>。slice是建立在数组基础上，是对数组的一种封装，它屏蔽了数组底层细节，但使用起来更方便、灵活，再配合内建函数append和copy使得slice具有更强的表现力。</p>
 <p>如果不了解slice的内部实现原理，可能会写出低效的代码，甚至会写出一些让你意想不到的BUG。本文先介绍slice的实现原理，再介绍slice一些经验和需要避免的问题。</p>
 <p>在开始之前，先来看下面示例输出的结果是什么呢？如果你知道答案，说明你已经完全明白slice的实现原理，可以跳过原理部分介绍，后面的经验之谈可能会对你有帮助。</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sliceExample</span><span class="params">()</span></span> &#123;</span><br><span class="line">    a := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;</span><br><span class="line">    s1, s2 := a[:<span class="number">3</span>], a[:<span class="number">3</span>:<span class="number">3</span>]</span><br><span class="line">    s1, s2 = <span class="built_in">append</span>(s1, <span class="number">100</span>), <span class="built_in">append</span>(s2, <span class="number">101</span>)</span><br><span class="line">    fmt.Println(a, s1, s2)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;</span><br><span class="line">s1, s2 := a[:<span class="number">3</span>], a[:<span class="number">3</span>:<span class="number">3</span>]</span><br><span class="line">s1, s2 = <span class="built_in">append</span>(s1, <span class="number">100</span>), <span class="built_in">append</span>(s2, <span class="number">101</span>)</span><br><span class="line">fmt.Println(a, s1, s2)</span><br></pre></td></tr></table></figure>
 
 <h2 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h2><p>由于slice是建立在数组的基础上，需要先了解Go中数组的一些概念，然后介绍slice的内部结构和分片操作，最后介绍内建append和copy函数在slice中的应用。</p>
           <!--noindex-->

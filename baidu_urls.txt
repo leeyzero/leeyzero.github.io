@@ -1,1 +1,1 @@
-https://leeyzero.github.io/2023/01/08/go-data-structure-string/
+https://leeyzero.github.io/2023/01/20/go-data-structure-interface/

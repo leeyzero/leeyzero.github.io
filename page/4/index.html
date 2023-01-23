@@ -166,6 +166,107 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/04/24/trouble-shooting-for-serivce-hang/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/04/24/trouble-shooting-for-serivce-hang/" class="post-title-link" itemprop="url">记一次服务hang死故障排查</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-04-24 12:13:02" itemprop="dateCreated datePublished" datetime="2021-04-24T12:13:02+08:00">2021-04-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-01-08 14:39:12" itemprop="dateModified" datetime="2023-01-08T14:39:12+08:00">2023-01-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/" itemprop="url" rel="index"><span itemprop="name">故障排查</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>之前排查了一个服务hang死的线上故障，觉得这个问题比较有代表性，本文记录故障排查的经过，并做一些总结和思考。</p>
+<h2 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h2><p>周末线上一个比较核心的服务（以下称为X服务）出现大量5xx报警。从客户端看到的现象是客户端请求X服务时，出现大量的链接被重置（connection reset by peer）的错误。</p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>从经验来看，90%以上的问题都是上线引入的。故障出现在周末，按规范来说，非特殊情况下，周末是不允许上线，跟相关角色确认后，本次故障不是上线引入。</p>
+<p>观察线上流量，在出现故障时间点，流量的确有大幅上涨，从宏观分析来看，有可能流量突然上涨是一个诱因。</p>
+<p>任意找了一台有问题的机器，发现了一个比较有意思的现象：<strong>服务X出现了大量CLOSE_WAIT状态的连接。从TCP的状态转换可知，CLOSE_WAIT是被动关闭一方在收到FIN并返回ACK后进入的状态</strong>。TCP状态机如下：</p>
+<p><img src="/images/trouble-shooting-for-service-hang/tcpfsm.png" alt="img"></p>
+<p>也就是说X服务在收到客户端请求后，客户端关闭连接，还服务端进程并没有关闭连接，分析了web server的框架代码，正常情况下，一个请求处理完后会关闭这个连接，<strong>出现这种情况可能是业务逻辑出现阻塞，导致服务端请求的连接一直不能关闭</strong>。</p>
+<p>查看了一下X服务打开的socket句柄数:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> lsof | grep `ps -ef | grep x-service | grep -v <span class="string">&#x27;grep&#x27;</span> | awk <span class="string">&#x27;&#123;print $2&#125;&#x27;</span>` | grep sock | wc -l</span></span><br><span class="line">10231</span><br></pre></td></tr></table></figure>
+
+<p>发现X服务打开的连接数非常多，达到10231个，看下实例的句柄数上限：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">unlimit</span> -n</span></span><br><span class="line">10240</span><br></pre></td></tr></table></figure>
+
+<p>句柄数像是已经被耗尽了，用strace看了下X服务的系统调用：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> strace -p `ps -ef | grep x-service | grep -v <span class="string">&#x27;grep&#x27;</span> | awk <span class="string">&#x27;&#123;print $2&#125;&#x27;</span>`</span></span><br></pre></td></tr></table></figure>
+
+<p>从系统调用日志中发现了一些关键信息：</p>
+<p><img src="/images/trouble-shooting-for-service-hang/strace.png"></p>
+<p>发现大量accept调用报错，从日志信息可以看出，的确是系统的文件句柄数（FD）耗尽了，导致连接被reset掉，这也能说明为什么客户端侧看到了大量<code>connection reset by peer</code>错误了。</p>
+<p>X服务打开了大量socket文件句柄，且绝大多数连接状态都是CLOSE_WAIT，如果业务逻辑有阻塞的确可能会出现把句柄数数打满。</p>
+<p>分析了一下业务逻辑，业务逻辑本身不复杂，只有一次IO网络请求，是从数据库查询数据，从日志中发现了一些端倪：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/04/24/trouble-shooting-for-serivce-hang/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/04/18/trouble-shooting-for-request-cost-incr/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -947,89 +1048,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2020/10/10/write-readable-code/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/10/write-readable-code/" class="post-title-link" itemprop="url">[读书笔记] 编写可读代码的艺术</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-10-10 23:32:06" itemprop="dateCreated datePublished" datetime="2020-10-10T23:32:06+08:00">2020-10-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-01-08 14:33:22" itemprop="dateModified" datetime="2023-01-08T14:33:22+08:00">2023-01-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>最近花了一个周的零星时间，看了《编写可读代码艺术》，收获颇多。虽然平时也经常使用书中提到的一些方法编写代码，但只是一种直观感觉认为这种方式是“正确”的。书中将这些方法提炼成一条条原则，并采用大量实例佐证这些原则。书中系统化的介绍了如何编写可读代码，并提出很多指导性原则，整本书不到200页，非常值得阅读。</p>
-<h2 id="基本原则"><a href="#基本原则" class="headerlink" title="基本原则"></a>基本原则</h2><p>何为好代码，何为坏代码，每个人的判断标准可能并不一样，但作者提了总的指导原则：<strong>代码应当易于理解</strong>来诠释什么是好的代码，并用可读性基本定理：<strong>代码的写法应当全人理解它所需的时间最小化</strong>来衡量代码的可理解程度。即“可读”是一个总的指导原则，而可读性基本定理则是对“可读”的定量判断。当我们在犹豫不决时，可读性基本定理可以帮你做判断。 </p>
-<h2 id="命名"><a href="#命名" class="headerlink" title="命名"></a>命名</h2><p>在编写代码时，做的最多的一件事情就是命名，我们会对变量、函数、类、包等命名，命名的本质是把信息封装到名字中，好的命名，可以帮忙你快速理解代码。书中提到了很多指导原则，我认为比较重要有些原则的如下：</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/10/10/write-readable-code/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1100,7 +1118,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-count">52</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1111,7 +1129,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">65</span>
+        <span class="site-state-item-count">66</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

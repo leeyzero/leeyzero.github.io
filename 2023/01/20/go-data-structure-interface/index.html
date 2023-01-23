@@ -32,7 +32,7 @@
 <meta property="og:locale">
 <meta property="og:image" content="https://leeyzero.github.io/images/go-data-structure-interface/iface.png">
 <meta property="article:published_time" content="2023-01-20T07:59:00.000Z">
-<meta property="article:modified_time" content="2023-01-23T15:08:00.519Z">
+<meta property="article:modified_time" content="2023-01-23T15:10:17.617Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="Go">
 <meta property="article:tag" content="interface">
@@ -203,7 +203,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-01-23 23:08:00" itemprop="dateModified" datetime="2023-01-23T23:08:00+08:00">2023-01-23</time>
+                <time title="Modified: 2023-01-23 23:10:17" itemprop="dateModified" datetime="2023-01-23T23:10:17+08:00">2023-01-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -231,11 +231,13 @@
 <p>本文通过示例介绍接口的基本用法，然后引出接口的内部数据结构，再介绍接口的动态类型转换和接口派发原理以及效率，最后介绍一些需要注意的问题。</p>
 <h2 id="接口初识"><a href="#接口初识" class="headerlink" title="接口初识"></a>接口初识</h2><p><strong>接口是对实现的抽象</strong>。在Go语言中，接口是一组方法签名，使用interface关键字表示，Go中接口具有如下特点：</p>
 <ul>
-<li><strong>接口的实现是隐式的。</strong></li>
+<li><strong>接口实现是隐式的。</strong></li>
 <li><strong>interface{}是一种静态类型。</strong></li>
 <li><strong>接口类型可以动态检查和转换</strong>。</li>
 </ul>
-<h3 id="接口的实现是隐式的"><a href="#接口的实现是隐式的" class="headerlink" title="接口的实现是隐式的"></a>接口的实现是隐式的</h3><p>接口的实现是隐式的是指，接口的实现跟接口的声明是解耦的，只要实现了接口声明的所有方法，那么就说明实现了这个接口，这是相对于C++、JAVA等静态语言需要显示声明实现而言的。</p>
+<span id="more"></span>
+
+<h3 id="接口实现是隐式的"><a href="#接口实现是隐式的" class="headerlink" title="接口实现是隐式的"></a>接口实现是隐式的</h3><p>接口的实现是隐式的是指，接口的实现跟接口的声明是解耦的，只要实现了接口声明的所有方法，那么就说明实现了这个接口，这是相对于C++、JAVA等静态语言需要显示声明实现而言的。</p>
 <p>例如，在Golang中定义了一个接口<code>Stringer</code>：</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Stringer <span class="keyword">interface</span> &#123;</span><br><span class="line">    String() <span class="keyword">string</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -390,7 +392,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E5%88%9D%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">接口初识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%98%AF%E9%9A%90%E5%BC%8F%E7%9A%84"><span class="nav-number">1.1.</span> <span class="nav-text">接口的实现是隐式的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#interface-%E6%98%AF%E4%B8%80%E7%A7%8D%E9%9D%99%E6%80%81%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.2.</span> <span class="nav-text">interface{}是一种静态类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E7%B1%BB%E5%9E%8B%E5%8A%A8%E6%80%81%E6%A3%80%E6%9F%A5%E5%92%8C%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.3.</span> <span class="nav-text">接口类型动态检查和转换</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-number">3.</span> <span class="nav-text">动态类型转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E6%96%B9%E6%B3%95%E6%9F%A5%E8%AF%A2%E6%95%88%E7%8E%87%E4%BB%A5%E5%8F%8A%E5%8A%A8%E6%80%81%E6%B4%BE%E5%8F%91"><span class="nav-number">4.</span> <span class="nav-text">接口方法查询效率以及动态派发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">5.</span> <span class="nav-text">一些需要注意的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E5%88%9D%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">接口初识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E5%AE%9E%E7%8E%B0%E6%98%AF%E9%9A%90%E5%BC%8F%E7%9A%84"><span class="nav-number">1.1.</span> <span class="nav-text">接口实现是隐式的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#interface-%E6%98%AF%E4%B8%80%E7%A7%8D%E9%9D%99%E6%80%81%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.2.</span> <span class="nav-text">interface{}是一种静态类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E7%B1%BB%E5%9E%8B%E5%8A%A8%E6%80%81%E6%A3%80%E6%9F%A5%E5%92%8C%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.3.</span> <span class="nav-text">接口类型动态检查和转换</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-number">3.</span> <span class="nav-text">动态类型转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E6%96%B9%E6%B3%95%E6%9F%A5%E8%AF%A2%E6%95%88%E7%8E%87%E4%BB%A5%E5%8F%8A%E5%8A%A8%E6%80%81%E6%B4%BE%E5%8F%91"><span class="nav-number">4.</span> <span class="nav-text">接口方法查询效率以及动态派发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">5.</span> <span class="nav-text">一些需要注意的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

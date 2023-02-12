@@ -1,1 +1,1 @@
-https://leeyzero.github.io/2023/01/20/go-data-structure-interface/
+https://leeyzero.github.io/2023/01/23/go-data-structure-map/

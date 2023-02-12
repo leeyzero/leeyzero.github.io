@@ -166,6 +166,95 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2020/10/10/exception-and-crash/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/10/10/exception-and-crash/" class="post-title-link" itemprop="url">应用程序异常处理与崩溃收集</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-10-10 22:13:02" itemprop="dateCreated datePublished" datetime="2020-10-10T22:13:02+08:00">2020-10-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-01-08 14:37:17" itemprop="dateModified" datetime="2023-01-08T14:37:17+08:00">2023-01-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>对于Windows应用, 当应用发布出去之后，如果应用程序在用户机器上发生了崩溃，我们需要这样一种手段，即在程序崩溃的瞬间能够“记录”下崩溃时进程、线程、栈、栈上下文等信息，这些信息对我们分析崩溃原因非常有帮助。另外，由于客户端程序一般是运行在用户的机器上，当生成崩溃信息后，还需要将这些信息上报至服务器，以方便开发者能够快捷地拿到这些崩溃信息进行分析。一般来说客户端程序崩溃的收集与处理流程如下图： </p>
+<p><img src="/images/exception-and-crash/1.png"></p>
+<ol>
+<li>开发者开发好代码后，由编译集群编译后将产出的二进制等文件放入产品库中，产品库会记录每次发布的版本号(version)、安装程序(*.exe)、对应版本的符号表(.pdb)等信息。</li>
+<li>通过各种发布渠道发布最新版本。</li>
+<li>用户在使用过程中产生崩溃，生成崩溃时主进程启动一个辅助进程（BugReport.exe）收集崩溃信息。</li>
+<li>辅助进程将收集到的崩溃信息上传至服务器。</li>
+<li>开发者根据程序版本号(version)和用户标识(用户id)从服务器上拿到用户机器上程序生成的崩溃信息(*.dmp)，再从产品库中提取对应版本的符号表文件，最后利用调试工具(Visual Studio、WinDbg等)分析崩溃原因，将修复后的版本再次按照以上流程发布出去。</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/10/10/exception-and-crash/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2020/10/09/vim-config-without-plugin/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -402,7 +491,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">52</span>
+          <span class="site-state-item-count">53</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -413,7 +502,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">66</span>
+        <span class="site-state-item-count">68</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

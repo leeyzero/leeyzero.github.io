@@ -25,14 +25,14 @@
 
   <meta name="description" content="最近半年主要在对一个10余年的商业化系统进行重构。对于商业化系统来讲，普遍存在状态多、链路长、业务逻辑复杂等特点。加上系统设计之初并未考虑到后续业务的发展形态，在承接业务需求时，不断打补丁，存在很多ad hoc方案，系统最终变成了一个”大泥球“，导致的问题是业务迭代效率低，代码变更故障率高。这篇文章主要对如何解决复杂问题谈谈自己的一些思考，供大家参考。 思考框架首先谈谈什么是复杂问题。复杂问题是一">
 <meta property="og:type" content="article">
-<meta property="og:title" content="关于如何解决复杂问题的一些思考">
+<meta property="og:title" content="关于解决复杂问题的一些思考">
 <meta property="og:url" content="https://leeyzero.github.io/2024/04/06/thinking-about-solving-complicated-problem/index.html">
 <meta property="og:site_name" content="LeeYzero的博客">
 <meta property="og:description" content="最近半年主要在对一个10余年的商业化系统进行重构。对于商业化系统来讲，普遍存在状态多、链路长、业务逻辑复杂等特点。加上系统设计之初并未考虑到后续业务的发展形态，在承接业务需求时，不断打补丁，存在很多ad hoc方案，系统最终变成了一个”大泥球“，导致的问题是业务迭代效率低，代码变更故障率高。这篇文章主要对如何解决复杂问题谈谈自己的一些思考，供大家参考。 思考框架首先谈谈什么是复杂问题。复杂问题是一">
 <meta property="og:locale">
 <meta property="og:image" content="https://leeyzero.github.io/images/thinking-about-solving-complicated-problem/1.png">
 <meta property="article:published_time" content="2024-04-06T03:28:19.000Z">
-<meta property="article:modified_time" content="2024-04-06T04:14:39.212Z">
+<meta property="article:modified_time" content="2024-04-06T04:16:18.226Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="抽象">
 <meta property="article:tag" content="分治">
@@ -54,7 +54,7 @@
   };
 </script>
 
-  <title>关于如何解决复杂问题的一些思考 | LeeYzero的博客</title>
+  <title>关于解决复杂问题的一些思考 | LeeYzero的博客</title>
   
 
 
@@ -188,7 +188,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          关于如何解决复杂问题的一些思考
+          关于解决复杂问题的一些思考
         </h1>
 
         <div class="post-meta">
@@ -199,7 +199,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2024-04-06 11:28:19 / Modified: 12:14:39" itemprop="dateCreated datePublished" datetime="2024-04-06T11:28:19+08:00">2024-04-06</time>
+              <time title="Created: 2024-04-06 11:28:19 / Modified: 12:16:18" itemprop="dateCreated datePublished" datetime="2024-04-06T11:28:19+08:00">2024-04-06</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">

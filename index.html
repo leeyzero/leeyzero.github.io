@@ -191,7 +191,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2024-04-14 15:18:04 / Modified: 16:21:44" itemprop="dateCreated datePublished" datetime="2024-04-14T15:18:04+08:00">2024-04-14</time>
+              <time title="Created: 2024-04-14 15:18:04 / Modified: 16:24:43" itemprop="dateCreated datePublished" datetime="2024-04-14T15:18:04+08:00">2024-04-14</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -214,7 +214,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>虽然PHP做业务后端逐步在被Go等语言替代，但使用PHP做简单业务封装和数据组装时，开发效率依然是比较高效的。使用Nginx运行PHP的常用方法是FastCGI模块。PHP-FPM (FastCGI进程管理器）极大地提高了你的Nginx+PHP环境的性能，所以这对高负载的网站很有用。本教程介绍在CentOS8上安装Nginx并配置PHP-FPM的步骤。</p>
+          <p>虽然PHP做业务后端逐步在被Go等语言替代，但使用PHP做简单业务封装和数据组装时，开发效率依然是比较高效的。使用Nginx运行PHP的常用方法是FastCGI模块。PHP-FPM (FastCGI进程管理器）极大地提高了你的Nginx+PHP环境的性能，所以这对高负载的网站很有用。本教程介绍在CentOS8上安装Nginx并配置PHP-FPM的步骤，以便后续参考。</p>
 <h2 id="依赖环境"><a href="#依赖环境" class="headerlink" title="依赖环境"></a>依赖环境</h2><ul>
 <li>CentOS8</li>
 <li>拥有sudo权限</li>
@@ -235,46 +235,14 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo firewall-cmd --zone=public --permanent --add-service=http</span><br><span class="line">sudo firewall-cmd --zone=public --permanent --add-service=https</span><br><span class="line">sudo firewall-cmd --reload</span><br></pre></td></tr></table></figure>
 
 <p>在浏览器使用ip访问主机器，看是否能访问到nginx的默认页面了呢？</p>
-<p><img src="/images/deploy-php-on-centos/nginx.png" alt="nginx default page"></p>
-<h2 id="Step2-安装PHP和PHP-FPM"><a href="#Step2-安装PHP和PHP-FPM" class="headerlink" title="Step2 安装PHP和PHP-FPM"></a>Step2 安装PHP和PHP-FPM</h2><p>安装php和php-fpm</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dnf install php php-fpm</span><br></pre></td></tr></table></figure>
-
-<p>检查php是否已正常安装</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php -v</span><br></pre></td></tr></table></figure>
-
-<p>启动php-fpm服务，同时让php-fpm服务在系统启动时自动启动。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl enable php-fpm</span><br><span class="line">sudo systemctl start php-fpm</span><br></pre></td></tr></table></figure>
-
-<p>检查php-fpm是否已启动</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl status php-fpm</span><br></pre></td></tr></table></figure>
-
-<h2 id="Step3-配置PHP-FPM"><a href="#Step3-配置PHP-FPM" class="headerlink" title="Step3 配置PHP-FPM"></a>Step3 配置PHP-FPM</h2><p>本文配置nginx和php-fpm通信，我们使用unix套接字，打php-fpm的配置文件：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /etc/php-fpm.d/www.conf</span><br></pre></td></tr></table></figure>
-
-<p>修改以下内容</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">; 进程所属用户和组，默认为apache，这里改为nginx</span><br><span class="line">user = nginx</span><br><span class="line">group = nginx</span><br><span class="line"></span><br><span class="line">; Nginx和PHP-FPM通信采用unix套接字，下文会配置Nginx</span><br><span class="line">listen = /run/php-fpm/www.sock</span><br><span class="line"></span><br><span class="line">; 为unix套接字设置读写权限</span><br><span class="line">listen.owner = nginx</span><br><span class="line">listen.group = nginx</span><br><span class="line">listen.mode = 0660</span><br></pre></td></tr></table></figure>
-
-<p>重启PHP-FPM</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl restart php-fpm</span><br></pre></td></tr></table></figure>
-
-<h2 id="Step4-配置Nginx"><a href="#Step4-配置Nginx" class="headerlink" title="Step4 配置Nginx"></a>Step4 配置Nginx</h2><p>在Nginx中为您的域创建一个服务器块，并将其配置为使用PHP-FPM来处理PHP文件。创建一个服务器块文件:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /etc/nginx/conf.d/example.com.conf</span><br></pre></td></tr></table></figure>
-
-<p>其中example.com替换成你的域名。下面添加了套接字文件的代理配置。并将所有PHP脚本配置为使用PHP-FPM处理程序执行。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80 default_server;</span><br><span class="line">    server_name  example.com www.example.com;</span><br><span class="line">    root         /usr/share/nginx/html;</span><br><span class="line"> </span><br><span class="line">    # Load configuration files for the default server block.</span><br><span class="line">    include /etc/nginx/default.d/*.conf;</span><br><span class="line">    </span><br><span class="line">    location / &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    location ~* \.php$ &#123;</span><br><span class="line">        # With php-fpm unix sockets</span><br><span class="line">        fastcgi_pass unix:/run/php-fpm/www.sock;</span><br><span class="line">        include fastcgi_params;</span><br><span class="line">        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;</span><br><span class="line">        fastcgi_param SCRIPT_NAME $fastcgi_script_name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>重启nginx</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl restart nginx</span><br></pre></td></tr></table></figure>
-
-<h2 id="Step5-测试"><a href="#Step5-测试" class="headerlink" title="Step5 测试"></a>Step5 测试</h2><p>在<code>/usr/share/nginx/html</code>目录下新建一个phpinfo.php文件：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;&lt;?php phpinfo(); ?&gt;&quot; /usr/share/nginx/html/info.php</span><br></pre></td></tr></table></figure>
-
-<p>在浏览器访问地址<code>http://www.example.com/info.php</code>，成功配置会展示下图php信息。</p>
-<p><img src="/images/deploy-php-on-centos/php.png" alt="php info page"></p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://tecadmin.net/install-nginx-php-fpm-centos-8/">How to Install Nginx with PHP-FPM on CentOS 8</a></li>
-</ul>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/04/14/deploy-php-on-centos/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 

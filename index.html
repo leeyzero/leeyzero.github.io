@@ -166,6 +166,133 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2024/04/14/deploy-php-on-centos/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/04/14/deploy-php-on-centos/" class="post-title-link" itemprop="url">CentOS搭建Nginx+PHP环境</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-04-14 15:18:04 / Modified: 16:21:44" itemprop="dateCreated datePublished" datetime="2024-04-14T15:18:04+08:00">2024-04-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" itemprop="url" rel="index"><span itemprop="name">开发环境</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>虽然PHP做业务后端逐步在被Go等语言替代，但使用PHP做简单业务封装和数据组装时，开发效率依然是比较高效的。使用Nginx运行PHP的常用方法是FastCGI模块。PHP-FPM (FastCGI进程管理器）极大地提高了你的Nginx+PHP环境的性能，所以这对高负载的网站很有用。本教程介绍在CentOS8上安装Nginx并配置PHP-FPM的步骤。</p>
+<h2 id="依赖环境"><a href="#依赖环境" class="headerlink" title="依赖环境"></a>依赖环境</h2><ul>
+<li>CentOS8</li>
+<li>拥有sudo权限</li>
+<li>更新dnf</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dnf update </span><br></pre></td></tr></table></figure>
+
+<h2 id="Step1-安装Nginx"><a href="#Step1-安装Nginx" class="headerlink" title="Step1 安装Nginx"></a>Step1 安装Nginx</h2><p>Nginx在仓库中已经存在，可以使用dnf工具直接安装：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dnf install nginx</span><br></pre></td></tr></table></figure>
+
+<p>启动Nginx服务，同时让Nginx服务在系统启动时自动启动。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl enable nginx</span><br><span class="line">sudo systemctl start nginx</span><br></pre></td></tr></table></figure>
+
+<p>检查nginx是否已启动</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl status nginx</span><br></pre></td></tr></table></figure>
+
+<p>如果您的系统上启用了防火墙，请确保打开HTTP端口以供远程系统访问。HTTP为80端口，HTTPS，为443端口。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo firewall-cmd --zone=public --permanent --add-service=http</span><br><span class="line">sudo firewall-cmd --zone=public --permanent --add-service=https</span><br><span class="line">sudo firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p>在浏览器使用ip访问主机器，看是否能访问到nginx的默认页面了呢？</p>
+<p><img src="/images/deploy-php-on-centos/nginx.png" alt="nginx default page"></p>
+<h2 id="Step2-安装PHP和PHP-FPM"><a href="#Step2-安装PHP和PHP-FPM" class="headerlink" title="Step2 安装PHP和PHP-FPM"></a>Step2 安装PHP和PHP-FPM</h2><p>安装php和php-fpm</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dnf install php php-fpm</span><br></pre></td></tr></table></figure>
+
+<p>检查php是否已正常安装</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php -v</span><br></pre></td></tr></table></figure>
+
+<p>启动php-fpm服务，同时让php-fpm服务在系统启动时自动启动。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl enable php-fpm</span><br><span class="line">sudo systemctl start php-fpm</span><br></pre></td></tr></table></figure>
+
+<p>检查php-fpm是否已启动</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl status php-fpm</span><br></pre></td></tr></table></figure>
+
+<h2 id="Step3-配置PHP-FPM"><a href="#Step3-配置PHP-FPM" class="headerlink" title="Step3 配置PHP-FPM"></a>Step3 配置PHP-FPM</h2><p>本文配置nginx和php-fpm通信，我们使用unix套接字，打php-fpm的配置文件：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /etc/php-fpm.d/www.conf</span><br></pre></td></tr></table></figure>
+
+<p>修改以下内容</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">; 进程所属用户和组，默认为apache，这里改为nginx</span><br><span class="line">user = nginx</span><br><span class="line">group = nginx</span><br><span class="line"></span><br><span class="line">; Nginx和PHP-FPM通信采用unix套接字，下文会配置Nginx</span><br><span class="line">listen = /run/php-fpm/www.sock</span><br><span class="line"></span><br><span class="line">; 为unix套接字设置读写权限</span><br><span class="line">listen.owner = nginx</span><br><span class="line">listen.group = nginx</span><br><span class="line">listen.mode = 0660</span><br></pre></td></tr></table></figure>
+
+<p>重启PHP-FPM</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl restart php-fpm</span><br></pre></td></tr></table></figure>
+
+<h2 id="Step4-配置Nginx"><a href="#Step4-配置Nginx" class="headerlink" title="Step4 配置Nginx"></a>Step4 配置Nginx</h2><p>在Nginx中为您的域创建一个服务器块，并将其配置为使用PHP-FPM来处理PHP文件。创建一个服务器块文件:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /etc/nginx/conf.d/example.com.conf</span><br></pre></td></tr></table></figure>
+
+<p>其中example.com替换成你的域名。下面添加了套接字文件的代理配置。并将所有PHP脚本配置为使用PHP-FPM处理程序执行。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80 default_server;</span><br><span class="line">    server_name  example.com www.example.com;</span><br><span class="line">    root         /usr/share/nginx/html;</span><br><span class="line"> </span><br><span class="line">    # Load configuration files for the default server block.</span><br><span class="line">    include /etc/nginx/default.d/*.conf;</span><br><span class="line">    </span><br><span class="line">    location / &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    location ~* \.php$ &#123;</span><br><span class="line">        # With php-fpm unix sockets</span><br><span class="line">        fastcgi_pass unix:/run/php-fpm/www.sock;</span><br><span class="line">        include fastcgi_params;</span><br><span class="line">        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;</span><br><span class="line">        fastcgi_param SCRIPT_NAME $fastcgi_script_name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>重启nginx</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl restart nginx</span><br></pre></td></tr></table></figure>
+
+<h2 id="Step5-测试"><a href="#Step5-测试" class="headerlink" title="Step5 测试"></a>Step5 测试</h2><p>在<code>/usr/share/nginx/html</code>目录下新建一个phpinfo.php文件：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;&lt;?php phpinfo(); ?&gt;&quot; /usr/share/nginx/html/info.php</span><br></pre></td></tr></table></figure>
+
+<p>在浏览器访问地址<code>http://www.example.com/info.php</code>，成功配置会展示下图php信息。</p>
+<p><img src="/images/deploy-php-on-centos/php.png" alt="php info page"></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://tecadmin.net/install-nginx-php-fpm-centos-8/">How to Install Nginx with PHP-FPM on CentOS 8</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2024/04/06/thinking-about-solving-complicated-problem/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1018,112 +1145,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/12/14/mit-6-824-lab2b-log-replication/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/12/14/mit-6-824-lab2b-log-replication/" class="post-title-link" itemprop="url">MIT 6.824 Lab2A: 日志复制</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-12-14 09:09:23" itemprop="dateCreated datePublished" datetime="2022-12-14T09:09:23+08:00">2022-12-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-17 10:44:41" itemprop="dateModified" datetime="2022-12-17T10:44:41+08:00">2022-12-17</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式系统</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>上一篇 <a href="/2022/12/14/mit-6-824-lab2a-leader-election/" title="Lab2A: 选主">Lab2A: 选主</a> 中介绍了Raft选主的实现，本篇介绍Raft日志复制的原理和实现。实验二共包含四个子实验：</p>
-<ul>
-<li><a href="/2022/12/14/mit-6-824-lab2a-leader-election/" title="Lab2A: 选主">Lab2A: 选主</a></li>
-<li><a href="/2022/12/14/mit-6-824-lab2b-log-replication/" title="Lab2B: 日志复制">Lab2B: 日志复制</a></li>
-<li><a href="/2022/12/14/mit-6-824-lab2c-persistence/" title="Lab2C: 持久化">Lab2C: 持久化</a></li>
-<li><a href="/2022/12/14/mit-6-824-lab2d-log-compaction/" title="Lab2D: 日志压缩">Lab2D: 日志压缩</a>
-
-</li>
-</ul>
-<p>本文是第二个子实验，需要实现Raft日志复制。由于Raft的强领导人特性，命令都是通过Leader顺序追回到日志中，然后通过Leader复制到各Follower中，由于Raft的日志安全特性，使得集群节点中的日志最终达到一致。在开始实验前，先阅读以下材料：</p>
-<ul>
-<li>阅读论文：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">In Search of an Understandable Consensus Algorithm</a>，以下简称论文。</li>
-<li>阅读实验指导：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2B</a></li>
-<li>阅读<a target="_blank" rel="noopener" href="https://thesquareplanet.com/blog/students-guide-to-raft/#an-aside-on-optimizations">Students’ Guide to Raft</a>，本文中介绍了些论文中没有给出的实现细节。</li>
-</ul>
-<p>Raft日志复制是Raft协议最核心的部分，也是最难的部分。论文中将日志复制和安全性是分开讨论的，实现的时候我们需要将这两部分结合起来。另外论文中对一些实现细节是空白的，如日志冲突的优化，这要求我们要实现的时候要考虑各种边界问题。</p>
-<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>选主成功后，Leader就开始接收客户端的请求。每个请求是能够被复制状态机执行的命令（command）。Leader首先将命令作为一个日志记录（entry）追回到日志中，然后并行地向集群中的其它节点发起AppendEntries RPC请求。当日志记录被安全复制到其它节点后，Leader将该记录应用到状态机中，并将状态机执行的结果返回给客户端。如果Follower崩溃或网络丢包，Leader会不断重试向Follower发送AppendEntries RPC，走到Follower最终全部保存了Leader的日志记录。</p>
-<p>以上就是Raft日志复制的全部流程，它涉及到很多细节，这里我主要说一下日志记录和安全性。</p>
-<p>日志可以理解成是一个包含日志记录(entry)的列表，每个日志记录包含了三个信息：</p>
-<ul>
-<li>Term：Leader生成日志记录时任期号</li>
-<li>Index：日志记录在日志中的索引号</li>
-<li>Command：可以被状态机执行的命令</li>
-</ul>
-<p>Term和Index主要用于日志一致冲突检测（下面会介绍）；Command是上层状态机的一个概念，Raft其实并不理解，只是Raft需要解决Command的一致性问题，所以Raft把Command当成一个上下文参数存储到一个日志记录中，当Raft认为一个日志记录在集群中已经达成一致后，Raft只是将这个Command再较交给状态机去执行。这个地方说的达成一致，就是指日志已经被安全复制。</p>
-<p>在讨论什么叫安全复制之前，先直接抛出Raft给出的安全性保证，这些保证在论文中的详细论述和证明，在此不一一展开</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/12/14/mit-6-824-lab2b-log-replication/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1194,7 +1215,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-count">57</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1205,7 +1226,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">78</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

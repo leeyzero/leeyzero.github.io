@@ -166,6 +166,391 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2024/04/17/go-json-unmarshal-loss-precision-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/04/17/go-json-unmarshal-loss-precision-2/" class="post-title-link" itemprop="url">Go json.Unmarshal 精度丢失问题分析（2/2）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2024-04-17 23:37:26" itemprop="dateCreated datePublished" datetime="2024-04-17T23:37:26+08:00">2024-04-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-04-27 16:23:55" itemprop="dateModified" datetime="2024-04-27T16:23:55+08:00">2024-04-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="缘起"><a href="#缘起" class="headerlink" title="缘起"></a>缘起</h2><p>最近出现一例json.Unmarshal导致的精度丢失引发的线上问题，虽然这个问题在被及时发现，未对业务造成损失，但细挖这个问题的原因仍然比较有意思。这篇文章会从技术层面深入分析json.Unmarshal精度丢失的原因以及处理建议，以避免后续开发过程中再次踩坑。</p>
+<p>在 <a href="/2024/04/16/go-json-unmarshal-loss-precision-1/" title="Part1">Part1</a> 中，我们着重说明了json.Unmarshal处理大整数可能出现精度丢失的问题，但遗留了一个问题，即大整数置换成浮点数时，为什么会造成精度丢失，在这篇文章中我会详细解释原因。</p>
+<p>Go语言对浮点数的处理遵循<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/IEEE_754">IEEE-745</a>标准，该标准规定了浮点数在计算机中的二进制表示以及舍入方式，下面先补充一些基础知识，然后再结合 <a href="/2024/04/16/go-json-unmarshal-loss-precision-1/" title="Part1">Part1</a> 中的case，分析精度丢失的原因。</p>
+<h2 id="十进制与二进制"><a href="#十进制与二进制" class="headerlink" title="十进制与二进制"></a>十进制与二进制</h2><p>十进制用0-9表示，逢十进一，同时二进制用0和1表示，逢二进一。而每个位可以使用位的值乘以位的权重表示，直接看例子：</p>
+<p>十进制12.34可以表示为：<br>12.34 = 1×10<sup>1</sup> + 2×10<sup>0</sup> + 3×10<sup>−1</sup> + 4×10<sup>−2</sup> = 12.34</p>
+<p>同理二进制101.11也可以表示为：</p>
+<p>101.11 = 1×2<sup>2</sup> + 0×2<sup>1</sup> + 1×2<sup>0</sup> + 1×2<sup>−1</sup> + 1×2<sup>−2</sup> = 4 + 0 + 1 + 1/2 + 1/4 = 5.75</p>
+<p><strong>十进制小数点向左移动1位相当于将该数除以10，向右移动1位相当于将该数乘以10。</strong><br>例如：123/10 = 12.3，12.3×10 = 123。</p>
+<p>同理，<strong>二进制小数点向左移动1位相当于将该数除以2，向右移动1位相当于将该数乘以2。</strong></p>
+<p>例如：11/2 = 1.1，1.1x2 = 11</p>
+<h2 id="科学记数法"><a href="#科学记数法" class="headerlink" title="科学记数法"></a>科学记数法</h2><p>科学记数法，是一种数字的表示法，用于表示极大或极小的数。例如：</p>
+<p>0.00000000000000000000000167262158 = 1.67262158×10<sup>−24</sup><br>1898130000000000000000000000 = 1.89813×10<sup>27</sup></p>
+<p>等号右边就是科学记数法的表示格式，即：a×10<sup>n</sup></p>
+<p>其中：</p>
+<ul>
+<li>|a|&gt;=1 且 |a|&lt;10</li>
+<li>n为整数</li>
+</ul>
+<p>二进制的科学记数法同理，即：ax2<sup>n</sup><br>其中：</p>
+<ul>
+<li>|a|&gt;=1 且 |a|&lt;2</li>
+<li>n为整数</li>
+</ul>
+<p>举个例子，看看如何将二进制数表示为科学记数法的格式。</p>
+<p>5.75<sub>10</sub> = 101.11<sub>2</sub> = 1.0111<sub>2</sub>×2<sup>2</sup>（小数点向右移动1位相当于将该数乘以2）</p>
+<h2 id="IEEE-745"><a href="#IEEE-745" class="headerlink" title="IEEE-745"></a>IEEE-745</h2><p>在计算机中，浮点是一种对于实数的近似值数值表示法，由一个有效数字（即尾数）加上幂数来表示，通常是乘以某个基数的整数次指数得到。以这种表示法表示的数值，称为浮点数。可以简单理解为：<strong>浮点数是十进制科学记数法在计算机中的二进制表示，即二进制的科学记数法。</strong></p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/IEEE_754">IEEE-745</a>标准化了计算机中浮点数的表示方法，内容比较多，这里主要讲解<strong>浮点数的表示</strong>和<strong>浮点数的舍入</strong>。</p>
+<h3 id="浮点数的表示"><a href="#浮点数的表示" class="headerlink" title="浮点数的表示"></a>浮点数的表示</h3><p>IEEE-745标准用 V = (-1)<sup>s</sup> x M x 2<sup>E</sup> 的形式来表示，其中：</p>
+<ul>
+<li>符号（sign）：s决定这个数是正数（s=0）还是负数（s=1）</li>
+<li>阶码（exponent）：E的作用是对浮点数加权，这个权重是2的E次幂（可能是负数）</li>
+<li>尾数（signifcand）：M是一个二进制小数，用于存储“有效数字”的小数部分。</li>
+</ul>
+<p>将浮点数的位表示划分为三个域，分别对这些域进行二进制编码：</p>
+<ul>
+<li>1位符号域，直接编码符号s，0表示正数，1表示负数。</li>
+<li>k位阶码域，exp = e<sub>k-1</sub> … e<sub>1</sub>e<sub>0</sub> 编码阶码E，规定为实际指数值加上一个偏移值，偏移值为2<sup>k-1</sup> - 1，k为存储指数的比特位长度。</li>
+<li>m位小数域, frac = f<sub>m-1</sub> … f<sub>1</sub>f<sub>0</sub> 编码尾数M，使用原码表示。</li>
+</ul>
+<p>IEEE745 规定了四种表示浮点数值的方式，但常用的是单精度（32位）和双精度（64位）。它们的二进制bit位，s、exp和frac字段位分别为：</p>
+<ul>
+<li>单精度浮点格式：n=32位、s=1位、k=8位、m=23位。</li>
+<li>双精度浮点格式，n=64位，s=1位，k=11位，m=52位。</li>
+</ul>
+<img src="/images/go-json-unmarshal-loss-precision/1.png" alt="image" style="zoom:45%;" /> 
+
+<p>举个例子，我们将整数78转换成64位浮点数表示应该是多少呢？</p>
+<ol>
+<li>将78表示成二进制数：1001110，浮点数表示为1.001110 x 2<sup>6</sup></li>
+<li>分别对三个字段进行二进制编码</li>
+</ol>
+<ul>
+<li>符号位（1位）：78为正数，符号位编码为0</li>
+<li>阶码位（11位）：指数为6，阶码值为：实际指数 + 偏移量 = 6 + 2<sup>11-1</sup> - 1 = 6 + 1023 = 1029 = 10000000101</li>
+<li>小数位（52位）：1.001110中整数部分始终为1，不显示表示，小数部分001110直接使用52位原码表示为：0000000000000000000000000000000000000000000000001110</li>
+</ul>
+<p>所以78的浮点数二进制表示为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 - 10000000101 - 0000000000000000000000000000000000000000000000001110</span><br></pre></td></tr></table></figure>
+
+<p>你可以有些疑问，为什么阶码需要加一个偏移量？偏移量为什么是2<sup>k-1</sup> - 1而不是2<sup>k-1</sup>。这些问题会引入更多问题，仅对分析这个case来讲没有太大帮助，在此只做简单解释，不展开。</p>
+<p><strong>为什么阶码需要加一个偏移量？</strong><br>阶码的定义是有符号的，加上一个偏移可以将负值平移至正整数空间，这样阶码的计算就不用关心符号了，这有利于计算机做比较运算。</p>
+<p><strong>偏移量为什么是2<sup>k-1</sup> - 1而不是2<sup>k-1</sup>？</strong><br>上面例子中浮点数的表示只是浮点数的规格化表示，标准中对于k位的阶码为全0或全1时，用于表示非规格化和特殊值。规则如下：</p>
+<table>
+<thead>
+<tr>
+<th>形式</th>
+<th>指数</th>
+<th>小数部分</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>零</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>规格化形式</td>
+<td>[1, 2<sup>k</sup> - 2]</td>
+<td>[1, 2)</td>
+</tr>
+<tr>
+<td>非规格化形式</td>
+<td>0</td>
+<td>(0, 1)</td>
+</tr>
+<tr>
+<td>无穷</td>
+<td>2<sup>k</sup> - 1（全1）</td>
+<td>0</td>
+</tr>
+<tr>
+<td>NaN</td>
+<td>2<sup>k</sup> - 1（全1）</td>
+<td>非0</td>
+</tr>
+</tbody></table>
+<h3 id="浮点数的舍入"><a href="#浮点数的舍入" class="headerlink" title="浮点数的舍入"></a>浮点数的舍入</h3><p>浮点数的表示限制了浮点数的范围和精度，浮点数运算只能近似地表示实数运算。比如0.2可以用实数精确表示，但不能用二进制精确表示，它的二进制为0.001100110011……（0011循环）。</p>
+<p>因此对于一个数值，如果不能精确表示时，需要找到最接近的值进行表示，这就是舍入(rounding）。IEEE 745规定了四种舍入方式。默认方式是偶数舍入（round-to-even)，也称为向最接近的值舍入（round-to-nearest）。</p>
+<p>比如将金额舍入到最接近的整数元时，将1.40元舍入为1元，1.60舍入成2元，而1.50距离1和2都一样，此是向偶数合入，所以1.50和2.50都舍入为2元。</p>
+<p>其它舍入方式如下：</p>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>1.40</th>
+<th>1.60</th>
+<th>1.50</th>
+<th>2.50</th>
+<th>-1.50</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>向偶数舍入</td>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+<td>-2</td>
+</tr>
+<tr>
+<td>向零舍入</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>-1</td>
+</tr>
+<tr>
+<td>向下舍入</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>-2</td>
+</tr>
+<tr>
+<td>向上舍入</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+<td>3</td>
+<td>-1</td>
+</tr>
+</tbody></table>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>有了上面的背景知识，我们再回到这个case。分析为什么大整数16505201442738640729不能用float64精确表示。</p>
+<p>这篇<a target="_blank" rel="noopener" href="https://www.51cto.com/article/697019.html">文章</a>中提到“float64可存储的最大整数是小于int64”的结论其实是错误的，float64能表示的范围非常大（可以看下math.MaxFloat64有多大）。这里的主要问题在于float64并不能精确的表示所有int64的值，下面我们来看看为什么会是这样。</p>
+<p>大整数16505201442738640729的二进制表示为：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fmt.Printf(<span class="string">&quot;%.064b\n&quot;</span>, <span class="keyword">uint64</span>(<span class="number">16505201442738640729</span>))</span><br></pre></td></tr></table></figure>
+
+<p>上述代码输出：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1110010100001110010000010100001110001100101100111001011101011001</span><br></pre></td></tr></table></figure>
+
+<p>使用浮点数表示为：<br>1.110010100001110010000010100001110001100101100111001011101011001 x 2<sup>63</sup></p>
+<p>下面来看它在内存中的二进制如何表示：</p>
+<ul>
+<li>符号位（1位）：正数，0</li>
+<li>阶码位（11位）：指数为63，阶码值为：实际指数 + 偏移量 = 63 + 2<sup>11-1</sup> - 1 = 63 + 1023 = 1086 = 10000111110</li>
+<li>小数位（52）：小数中一共有63位，但小数位只有有52位，需要进行截断，如下（空格后是需要截断的小数位）</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1100101000011100100000101000011100011001011001110010 11101011001</span><br></pre></td></tr></table></figure>
+
+<p>发生截断会导致精确丢失，需要进行舍入，上述小数位向下舍入为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1100101000011100100000101000011100011001011001110010 (对应的十进制值为：16505201442738638848）</span><br></pre></td></tr></table></figure>
+
+<p>向上舍入为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1100101000011100100000101000011100011001011001110011（对应的十进制值为：16505201442738640896）</span><br></pre></td></tr></table></figure>
+
+<p>注：Go标准库math包中提供了一个函数<a target="_blank" rel="noopener" href="https://pkg.go.dev/math#Float64frombits">Float64frombits</a>，可以计算出向下舍入和向上舍入后的float64值：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">MakeFloat64FromBits</span><span class="params">(sign1 <span class="keyword">uint32</span>, exp11 <span class="keyword">uint32</span>, frac52 <span class="keyword">uint64</span>)</span> <span class="title">float64</span></span> &#123;</span><br><span class="line">    sign := (<span class="keyword">uint64</span>(sign1) &amp; <span class="number">0x1</span>) &lt;&lt; <span class="number">63</span></span><br><span class="line">    exp := (<span class="keyword">uint64</span>(exp11) &amp; <span class="number">0x7ff</span>) &lt;&lt; <span class="number">52</span></span><br><span class="line">    frac := frac52 &amp; <span class="number">0xfffffffffffff</span></span><br><span class="line">    bit := sign | exp | frac</span><br><span class="line">    <span class="keyword">return</span> math.Float64frombits(bit)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    f1 := MakeFloat64FromBits(<span class="number">0</span>, <span class="number">1086</span>, <span class="number">0xca1c828719672</span>)</span><br><span class="line">    fmt.Printf(<span class="string">&quot;向下舍入: %f\n&quot;</span>, f1)</span><br><span class="line"></span><br><span class="line">    f2 := MakeFloat64FromBits(<span class="number">0</span>, <span class="number">1086</span>, <span class="number">0xca1c828719673</span>)</span><br><span class="line">    fmt.Printf(<span class="string">&quot;向上舍入: %f\n&quot;</span>, f2)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">向下舍入: 16505201442738638848.000000</span><br><span class="line">向上舍入: 16505201442738640896.000000</span><br></pre></td></tr></table></figure>
+
+<p>根据向偶数舍入规则，大整数16505201442738640729离16505201442738640896更近，所以小数位的二进制最终表示为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1100101000011100100000101000011100011001011001110011。</span><br></pre></td></tr></table></figure>
+
+<p>最终我们得到16505201442738640729使用浮点数表示后，在内存中的二进制布局为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 - 10000111110 - 1100101000011100100000101000011100011001011001110011</span><br></pre></td></tr></table></figure>
+
+<p>至此，我们已经清楚，为什么16505201442738640729转换成浮点数会丢失精度了。但在Go语言中，大整数16505201442738640729的浮点表示，在内存中的布局是不是这样呢？我们可以使用math包中提供了一个函数Float64bits，可以将float64的浮点数转换成uint64的二进制数。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">PrintFloat64Bit</span><span class="params">(f <span class="keyword">float64</span>)</span></span> &#123;</span><br><span class="line">    bits := math.Float64bits(f)</span><br><span class="line">    binary := fmt.Sprintf(<span class="string">&quot;%.64b&quot;</span>, bits)</span><br><span class="line">    <span class="comment">// 符号位、指数位、小数位</span></span><br><span class="line">    fmt.Printf(<span class="string">&quot;%s | %s | %s\n&quot;</span>, binary[<span class="number">0</span>:<span class="number">1</span>], binary[<span class="number">1</span>:<span class="number">12</span>], binary[<span class="number">12</span>:<span class="number">64</span>])</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    f := <span class="keyword">float64</span>(<span class="keyword">uint64</span>(<span class="number">16505201442738640729</span>))</span><br><span class="line">    PrintFloat64Bit(f)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 | 10000111110 | 1100101000011100100000101000011100011001011001110011</span><br></pre></td></tr></table></figure>
+
+<p>可以看出，大整数16505201442738640729的浮点表示在内存中的布局跟上面计算的结果是一致的。如果再进一步分析，可以看到，Go中strconv.ParseFloat的实现采用了<a target="_blank" rel="noopener" href="https://nigeltao.github.io/blog/2020/eisel-lemire.html">The Eisel-Lemire ParseNumberF64 Algorithm</a>，该算法将字面量转成双精度浮点数，其主要目标是为了速度，但算法实现比较复杂，感兴趣的可以深入学习。</p>
+<h2 id="分析工具"><a href="#分析工具" class="headerlink" title="分析工具"></a>分析工具</h2><p>上面例子中我们通过人工或代码实现进行分析，主要是为了加深理解，其实已经有现成的工具<a target="_blank" rel="noopener" href="https://christophervickery.com/babbage/IEEE-754/">IEEE-754 Analysis</a>帮助我们分析。</p>
+<img src="/images/go-json-unmarshal-loss-precision/2.png" alt="image" style="zoom:70%;" /> 
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/IEEE_754">IEEE-745 Wiki</a></li>
+<li><a target="_blank" rel="noopener" href="https://item.jd.com/12006637.html#crumb-wrap">深入理解计算机系统</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/mf1mH-aGWgcC6v2R8ijE8A">从科学记数法到浮点数标准IEEE 754</a></li>
+<li><a target="_blank" rel="noopener" href="https://nigeltao.github.io/blog/2020/eisel-lemire.html">The Eisel-Lemire ParseNumberF64 Algorithm</a></li>
+<li><a target="_blank" rel="noopener" href="https://christophervickery.com/babbage/IEEE-754/">IEEE-754 Analysis</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2024/04/16/go-json-unmarshal-loss-precision-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/04/16/go-json-unmarshal-loss-precision-1/" class="post-title-link" itemprop="url">Go json.Unmarshal 精度丢失问题分析（1/2）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2024-04-16 23:37:26" itemprop="dateCreated datePublished" datetime="2024-04-16T23:37:26+08:00">2024-04-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-04-27 16:22:20" itemprop="dateModified" datetime="2024-04-27T16:22:20+08:00">2024-04-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="缘起"><a href="#缘起" class="headerlink" title="缘起"></a>缘起</h2><p>最近出现一例json.Unmarshal导致的精度丢失引发的线上问题，虽然这个问题在被及时发现，未对业务造成损失，但细挖这个问题的原因仍然比较有意思。这篇文章会从技术层面深入分析json.Unmarshal精度丢失的原因以及处理建议，以避免后续开发过程中再次踩坑。</p>
+<p>在分析这个问题的过程中，发现涉及Go对浮点数数值的处理，又涉及IEEE-745标准中的一些细节，放在一篇文章中会增大文章的阅读难度，故拆分成了两个部分：</p>
+<ul>
+<li><a href="/2024/04/16/go-json-unmarshal-loss-precision-1/" title="Part1">Part1</a>： 引出json.Unmarshal处理大整数可能出现精度丢失的问题，并浅层次分析原因以及解决办法。</li>
+<li><a href="/2024/04/17/go-json-unmarshal-loss-precision-2/" title="Part2">Part2</a>： 先补充IEEE-745的背景知识，然后解释为什么json.Unmarshal处理大整数可能会出现精度丢失。
+
+</li>
+</ul>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>这个问题的现象是，原始json string是一个字典，其中包含了一个大整数，在业务场景中，需要向该字典中追加一些字段，然后再序列化后进行存储。为了使用上的方便，代码中使用map[string]any去接收json.Unmarshal的结果，然后再使用json.Marshal序列化，结果发现序列化后的大整数跟原始大整数不致。</p>
+<p>下面代码片段做了一些简化，同时忽略错误处理细节：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">str := <span class="string">`&#123;&quot;id&quot;:16505201442738640729&#125;`</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> m <span class="keyword">map</span>[<span class="keyword">string</span>]any</span><br><span class="line">json.Unmarshal([]<span class="keyword">byte</span>(str), &amp;m)</span><br><span class="line"></span><br><span class="line">data, _ := json.Marshal(&amp;m)</span><br><span class="line">fmt.Println(<span class="keyword">string</span>(data))</span><br></pre></td></tr></table></figure>
+
+<p>上面代码片段输出：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;id&quot;:16505201442738640000&#125;</span><br></pre></td></tr></table></figure>
+
+<p>原始json string中，id的值是16505201442738640729，经过json.Unmarshal和json.Marshal后，id的值变成了16505201442738640000，看起来出现了精度有丢失。</p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>在上面代码片断中，如果<strong>使用any类型接受整型时，json.Unmarshal会默认使用float64存储整型</strong>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">str := <span class="string">`&#123;&quot;id&quot;:16505201442738640729&#125;`</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> m <span class="keyword">map</span>[<span class="keyword">string</span>]any</span><br><span class="line">json.Unmarshal([]<span class="keyword">byte</span>(str), &amp;m)</span><br><span class="line">fmt.Println(m[<span class="string">&quot;id&quot;</span>], reflect.TypeOf(m[<span class="string">&quot;id&quot;</span>]))</span><br></pre></td></tr></table></figure>
+
+<p>输出结果为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1.650520144273864e+19 float64</span><br></pre></td></tr></table></figure>
+
+<p>在encoding/json包，decode.go中，可以看到其实现：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// convertNumber converts the number literal s to a float64 or a Number</span></span><br><span class="line"><span class="comment">// depending on the setting of d.useNumber.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(d *decodeState)</span> <span class="title">convertNumber</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="params">(any, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> d.useNumber &#123;</span><br><span class="line">        <span class="keyword">return</span> Number(s), <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line">    f, err := strconv.ParseFloat(s, <span class="number">64</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, &amp;UnmarshalTypeError&#123;Value: <span class="string">&quot;number &quot;</span> + s, Type: reflect.TypeOf(<span class="number">0.0</span>), Offset: <span class="keyword">int64</span>(d.off)&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Go在处理json.Unmarshal时，如果未开启<a target="_blank" rel="noopener" href="https://pkg.go.dev/encoding/json#Decoder.UseNumber">UseNumber</a>，默认会将数值类型的字面量转换成float64。如果启用UseNumber，则会使用json.Number存储，从源码中，我们可以看到，json.Number其实底层就是string：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A Number represents a JSON number literal.</span></span><br><span class="line"><span class="keyword">type</span> Number <span class="keyword">string</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// String returns the literal text of the number.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n Number)</span> <span class="title">String</span><span class="params">()</span> <span class="title">string</span></span> &#123; <span class="keyword">return</span> <span class="keyword">string</span>(n) &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Float64 returns the number as a float64.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n Number)</span> <span class="title">Float64</span><span class="params">()</span> <span class="params">(<span class="keyword">float64</span>, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> strconv.ParseFloat(<span class="keyword">string</span>(n), <span class="number">64</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Int64 returns the number as an int64.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n Number)</span> <span class="title">Int64</span><span class="params">()</span> <span class="params">(<span class="keyword">int64</span>, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> strconv.ParseInt(<span class="keyword">string</span>(n), <span class="number">10</span>, <span class="number">64</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>看起来问题比较好解决了，可以直接使用json.Decoder，开启UseNumber，json.Unmarshal将数值字面量转化成json.Number，就不会发生精度丢失了。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">str := <span class="string">`&#123;&quot;id&quot;:16505201442738640729&#125;`</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> m <span class="keyword">map</span>[<span class="keyword">string</span>]any</span><br><span class="line">decoder := json.NewDecoder(strings.NewReader(str))</span><br><span class="line">decoder.UseNumber()</span><br><span class="line">decoder.Decode(&amp;m)</span><br><span class="line"></span><br><span class="line">fmt.Println(m[<span class="string">&quot;id&quot;</span>], reflect.TypeOf(m[<span class="string">&quot;id&quot;</span>]))</span><br><span class="line">data, _ := json.Marshal(&amp;m)</span><br><span class="line">fmt.Println(<span class="keyword">string</span>(data))</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">16505201442738640729 json.Number</span><br><span class="line">&#123;&quot;id&quot;:16505201442738640729&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至此，看起来问题已经解决了，但是我们仍然没有搞明白字面量转成浮点数时，为什么会发生精度丢失？要回答这个问题涉及Go语言中对浮点数的处理方式。这部分内容留在 <a href="/2024/04/17/go-json-unmarshal-loss-precision-2/" title="Part2">Part2</a> 分析。</p>
+<p>需要说明的是：在Go语言中，使用json.Unmarshal函数将JSON数据反序列化为Go结构时，整数类型默认被转换为float64类型的原因是JSON中的数字默认为浮点数。 根据JSON规范，数字可以表示为整数或浮点数，而Go语言中的float64类型可以容纳JSON中的所有数字范围，但float64并不能精确表示所有数值。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>json.Unmarshal时，使用any接收时，默认会使用float64存储整数，这可能会导致大整数精度丢失。</li>
+<li>使用json.Decoder，并开启UseNumber，使用json.Number存储大整数。</li>
+</ul>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/square/go-jose/issues/351">json.Unmarshal converts json literal integer to float64 instead of int64 when taget type is of type interface{}</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2024/04/14/deploy-php-on-centos/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -275,7 +660,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2024/04/06/thinking-about-solving-complicated-problem/" class="post-title-link" itemprop="url">关于解决复杂问题的一些思考</a>
+            <a href="/2024/04/06/thinking-about-solving-complicated-problem/" class="post-title-link" itemprop="url">[读书笔记] 解决复杂问题的一些思考</a>
         </h2>
 
         <div class="post-meta">
@@ -284,10 +669,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2024-04-06 11:28:19 / Modified: 12:16:18" itemprop="dateCreated datePublished" datetime="2024-04-06T11:28:19+08:00">2024-04-06</time>
+              <time title="Created: 2024-04-06 11:28:19" itemprop="dateCreated datePublished" datetime="2024-04-06T11:28:19+08:00">2024-04-06</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-04-27 16:26:28" itemprop="dateModified" datetime="2024-04-27T16:26:28+08:00">2024-04-27</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -907,212 +1298,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/12/14/mit-6-824-lab2d-log-compaction/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/12/14/mit-6-824-lab2d-log-compaction/" class="post-title-link" itemprop="url">MIT 6.824 Lab2C: 日志压缩</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-12-14 09:10:09" itemprop="dateCreated datePublished" datetime="2022-12-14T09:10:09+08:00">2022-12-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-17 14:06:42" itemprop="dateModified" datetime="2022-12-17T14:06:42+08:00">2022-12-17</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式系统</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>上一篇 <a href="/2022/12/14/mit-6-824-lab2c-persistence/" title="Lab2C: 持久化">Lab2C: 持久化</a> 中介绍了Raft持久化的实现，本篇介绍Raft日志压缩原理和实现。实验二共包含四个子实验：</p>
-<ul>
-<li><a href="/2022/12/14/mit-6-824-lab2a-leader-election/" title="Lab2A: 选主">Lab2A: 选主</a></li>
-<li><a href="/2022/12/14/mit-6-824-lab2b-log-replication/" title="Lab2B: 日志复制">Lab2B: 日志复制</a></li>
-<li><a href="/2022/12/14/mit-6-824-lab2c-persistence/" title="Lab2C: 持久化">Lab2C: 持久化</a></li>
-<li><a href="/2022/12/14/mit-6-824-lab2d-log-compaction/" title="Lab2D: 日志压缩">Lab2D: 日志压缩</a>
-
-</li>
-</ul>
-<p>本文是第四个子实验，需要实现Raft日志压缩，在开始实验前，先阅读以下材料：</p>
-<ul>
-<li>阅读论文：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">In Search of an Understandable Consensus Algorithm</a>，以下简称论文。</li>
-<li>阅读实验指导：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2D</a></li>
-</ul>
-<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>Raft的日志会随着接收客户端的请求数而不断增长，对实际生产环境中的系统而言，内存是有限的，较大的日志，在服务崩溃重启时需要较长时间加载恢复，这会造成服务的可用性问题。日志压缩主要解决这些问题。</p>
-<p>Raft采用快照（Snapshot)来实现日志压缩。主要原理时，将当前整个系统的状态作为一个快照（可以理解为一个复本，相当于保证了当前的系统状态）持久化到稳定存储中，然后就可以丢弃这个快照点之前的所有日志了。论文中给出了一个快照示例如下：</p>
-<img src="/images/mit-6-824-lab2d/figure12.png" width=500 />
-
-<p>上图中，在快照上，日志长度为7。在index=5处生成了一个快照（snaphot），快照中除记录了状态机的状态：<code>x &lt;- 0, y &lt;- 9</code>外，还记录了本次快照包含的最后一个日志记录的index和term（下面会解释为什么需要存储这两个信息）。快照成功后，我们就可以丢弃index=5之前（包括index=5）的所有日志了，日志压缩后长度为2，内存得以释放。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/12/14/mit-6-824-lab2d-log-compaction/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/12/14/mit-6-824-lab2c-persistence/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/12/14/mit-6-824-lab2c-persistence/" class="post-title-link" itemprop="url">MIT 6.824 Lab2C: 持久化</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-12-14 09:09:45" itemprop="dateCreated datePublished" datetime="2022-12-14T09:09:45+08:00">2022-12-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-17 10:52:54" itemprop="dateModified" datetime="2022-12-17T10:52:54+08:00">2022-12-17</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式系统</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>上一篇 <a href="/2022/12/14/mit-6-824-lab2b-log-replication/" title="Lab2B: 日志复制">Lab2B: 日志复制</a> 中介绍了Raft日志复制的实现，本篇介绍Raft持久化的原理和实现。实验二共包含四个子实验：</p>
-<ul>
-<li><a href="/2022/12/14/mit-6-824-lab2a-leader-election/" title="Lab2A: 选主">Lab2A: 选主</a></li>
-<li><a href="/2022/12/14/mit-6-824-lab2b-log-replication/" title="Lab2B: 日志复制">Lab2B: 日志复制</a></li>
-<li><a href="/2022/12/14/mit-6-824-lab2c-persistence/" title="Lab2C: 持久化">Lab2C: 持久化</a></li>
-<li><a href="/2022/12/14/mit-6-824-lab2d-log-compaction/" title="Lab2D: 日志压缩">Lab2D: 日志压缩</a>
-
-</li>
-</ul>
-<p>本文是第三个子实验，需要实现Raft持久化。持久化是指将Raft的部分状态存储到非易失的存储介质中，这样即便节点崩溃，也不至于丢失数据，当服务恢复后，可以从之前持久化的状态处开始工作。在开始实验前，先阅读以下材料：</p>
-<ul>
-<li>阅读论文：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">In Search of an Understandable Consensus Algorithm</a>，以下简称论文。</li>
-<li>阅读实验指导：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2C</a></li>
-</ul>
-<p>Raft持久化本来是属于日志复制的一部分，但上一篇中我们已经看到，日志复制的原理和实现已经比较复杂了，所以课程将持久化单独拆分成了独立的一个子实验。</p>
-<p>Lab2C比想象的简单，不是它本身就简单，而课程设置的比较简单。在实际生产环境中，持久化一般会将日志写入磁盘，涉及到磁盘I/O操作以及对内存状态的序列化与反序列化。在这个实验中不需要进行这样操作，实验中已经实现了一个Persister对象，将Raft状态的持久化封装成接口。它的实现也比较简单，只是模拟了持久化（实际上还是存储在内存）。</p>
-<p>可能这个实验面向的人群主要是学生，主要实验目的是想让学生明白Raft持久化原理和意义，认为持久化到磁盘只是一种实现方式，并不是本实验的重点吧。但对一个软件工程师而言，熟练掌握磁盘I/O操作是一项基本功。</p>
-<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>Raft持久化是指将Raft状态序列化后存储到存储介质，本实验无需关心存储介质的问题，所以我们只需要对Raft状态进行序列化和反序列化。实现中提供了labgob包可能对任意类型的状态进行序列化和反序列化，这里就不展开了，大家看看labgob包的测试用例就会使用。</p>
-<p>那我们需要持久化哪些Raft状态呢？</p>
-<p>再次回顾论文Figure 8（这个图非常非常重要）中的左上图，需要对以下三个状态进行持久化：</p>
-<ul>
-<li>currentTerm：当前任期，在Lab2A中已经介绍过了。</li>
-<li>votedFor：当前任期中，投票给了谁，在Lab2A中已经介绍过了。</li>
-<li>log[]：日志，每一项是一个LogEntry，在上一篇中已经定义过了。</li>
-</ul>
-<p>那我们什么时候持久化Raft状态呢？</p>
-<p>按照论文中的说明，节点在追加日志后，需要将日志持久化。追加日志有两种情况：一种是Leader接受客户端命令，将命令作为一条新的日志记录追加到日志中；另一种是Follower复制Leader的日志记录追加日志。所以我们只需要在这两种追加日志的情况下，持久化Raft状态即可。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/12/14/mit-6-824-lab2c-persistence/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1183,7 +1368,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">57</span>
+          <span class="site-state-item-count">59</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1194,7 +1379,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-count">80</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

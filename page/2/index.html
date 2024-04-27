@@ -166,6 +166,212 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/12/14/mit-6-824-lab2d-log-compaction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/12/14/mit-6-824-lab2d-log-compaction/" class="post-title-link" itemprop="url">MIT 6.824 Lab2C: 日志压缩</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-12-14 09:10:09" itemprop="dateCreated datePublished" datetime="2022-12-14T09:10:09+08:00">2022-12-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-12-17 14:06:42" itemprop="dateModified" datetime="2022-12-17T14:06:42+08:00">2022-12-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式系统</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>上一篇 <a href="/2022/12/14/mit-6-824-lab2c-persistence/" title="Lab2C: 持久化">Lab2C: 持久化</a> 中介绍了Raft持久化的实现，本篇介绍Raft日志压缩原理和实现。实验二共包含四个子实验：</p>
+<ul>
+<li><a href="/2022/12/14/mit-6-824-lab2a-leader-election/" title="Lab2A: 选主">Lab2A: 选主</a></li>
+<li><a href="/2022/12/14/mit-6-824-lab2b-log-replication/" title="Lab2B: 日志复制">Lab2B: 日志复制</a></li>
+<li><a href="/2022/12/14/mit-6-824-lab2c-persistence/" title="Lab2C: 持久化">Lab2C: 持久化</a></li>
+<li><a href="/2022/12/14/mit-6-824-lab2d-log-compaction/" title="Lab2D: 日志压缩">Lab2D: 日志压缩</a>
+
+</li>
+</ul>
+<p>本文是第四个子实验，需要实现Raft日志压缩，在开始实验前，先阅读以下材料：</p>
+<ul>
+<li>阅读论文：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">In Search of an Understandable Consensus Algorithm</a>，以下简称论文。</li>
+<li>阅读实验指导：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2D</a></li>
+</ul>
+<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>Raft的日志会随着接收客户端的请求数而不断增长，对实际生产环境中的系统而言，内存是有限的，较大的日志，在服务崩溃重启时需要较长时间加载恢复，这会造成服务的可用性问题。日志压缩主要解决这些问题。</p>
+<p>Raft采用快照（Snapshot)来实现日志压缩。主要原理时，将当前整个系统的状态作为一个快照（可以理解为一个复本，相当于保证了当前的系统状态）持久化到稳定存储中，然后就可以丢弃这个快照点之前的所有日志了。论文中给出了一个快照示例如下：</p>
+<img src="/images/mit-6-824-lab2d/figure12.png" width=500 />
+
+<p>上图中，在快照上，日志长度为7。在index=5处生成了一个快照（snaphot），快照中除记录了状态机的状态：<code>x &lt;- 0, y &lt;- 9</code>外，还记录了本次快照包含的最后一个日志记录的index和term（下面会解释为什么需要存储这两个信息）。快照成功后，我们就可以丢弃index=5之前（包括index=5）的所有日志了，日志压缩后长度为2，内存得以释放。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/12/14/mit-6-824-lab2d-log-compaction/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/12/14/mit-6-824-lab2c-persistence/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/12/14/mit-6-824-lab2c-persistence/" class="post-title-link" itemprop="url">MIT 6.824 Lab2C: 持久化</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-12-14 09:09:45" itemprop="dateCreated datePublished" datetime="2022-12-14T09:09:45+08:00">2022-12-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-12-17 10:52:54" itemprop="dateModified" datetime="2022-12-17T10:52:54+08:00">2022-12-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式系统</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>上一篇 <a href="/2022/12/14/mit-6-824-lab2b-log-replication/" title="Lab2B: 日志复制">Lab2B: 日志复制</a> 中介绍了Raft日志复制的实现，本篇介绍Raft持久化的原理和实现。实验二共包含四个子实验：</p>
+<ul>
+<li><a href="/2022/12/14/mit-6-824-lab2a-leader-election/" title="Lab2A: 选主">Lab2A: 选主</a></li>
+<li><a href="/2022/12/14/mit-6-824-lab2b-log-replication/" title="Lab2B: 日志复制">Lab2B: 日志复制</a></li>
+<li><a href="/2022/12/14/mit-6-824-lab2c-persistence/" title="Lab2C: 持久化">Lab2C: 持久化</a></li>
+<li><a href="/2022/12/14/mit-6-824-lab2d-log-compaction/" title="Lab2D: 日志压缩">Lab2D: 日志压缩</a>
+
+</li>
+</ul>
+<p>本文是第三个子实验，需要实现Raft持久化。持久化是指将Raft的部分状态存储到非易失的存储介质中，这样即便节点崩溃，也不至于丢失数据，当服务恢复后，可以从之前持久化的状态处开始工作。在开始实验前，先阅读以下材料：</p>
+<ul>
+<li>阅读论文：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">In Search of an Understandable Consensus Algorithm</a>，以下简称论文。</li>
+<li>阅读实验指导：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2C</a></li>
+</ul>
+<p>Raft持久化本来是属于日志复制的一部分，但上一篇中我们已经看到，日志复制的原理和实现已经比较复杂了，所以课程将持久化单独拆分成了独立的一个子实验。</p>
+<p>Lab2C比想象的简单，不是它本身就简单，而课程设置的比较简单。在实际生产环境中，持久化一般会将日志写入磁盘，涉及到磁盘I/O操作以及对内存状态的序列化与反序列化。在这个实验中不需要进行这样操作，实验中已经实现了一个Persister对象，将Raft状态的持久化封装成接口。它的实现也比较简单，只是模拟了持久化（实际上还是存储在内存）。</p>
+<p>可能这个实验面向的人群主要是学生，主要实验目的是想让学生明白Raft持久化原理和意义，认为持久化到磁盘只是一种实现方式，并不是本实验的重点吧。但对一个软件工程师而言，熟练掌握磁盘I/O操作是一项基本功。</p>
+<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>Raft持久化是指将Raft状态序列化后存储到存储介质，本实验无需关心存储介质的问题，所以我们只需要对Raft状态进行序列化和反序列化。实现中提供了labgob包可能对任意类型的状态进行序列化和反序列化，这里就不展开了，大家看看labgob包的测试用例就会使用。</p>
+<p>那我们需要持久化哪些Raft状态呢？</p>
+<p>再次回顾论文Figure 8（这个图非常非常重要）中的左上图，需要对以下三个状态进行持久化：</p>
+<ul>
+<li>currentTerm：当前任期，在Lab2A中已经介绍过了。</li>
+<li>votedFor：当前任期中，投票给了谁，在Lab2A中已经介绍过了。</li>
+<li>log[]：日志，每一项是一个LogEntry，在上一篇中已经定义过了。</li>
+</ul>
+<p>那我们什么时候持久化Raft状态呢？</p>
+<p>按照论文中的说明，节点在追加日志后，需要将日志持久化。追加日志有两种情况：一种是Leader接受客户端命令，将命令作为一条新的日志记录追加到日志中；另一种是Follower复制Leader的日志记录追加日志。所以我们只需要在这两种追加日志的情况下，持久化Raft状态即可。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/12/14/mit-6-824-lab2c-persistence/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/12/14/mit-6-824-lab2b-log-replication/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -890,181 +1096,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/08/07/macos-terminal-configuration/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/08/07/macos-terminal-configuration/" class="post-title-link" itemprop="url">配置macOS终端环境</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-08-07 23:30:40" itemprop="dateCreated datePublished" datetime="2022-08-07T23:30:40+08:00">2022-08-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-01 11:59:09" itemprop="dateModified" datetime="2022-12-01T11:59:09+08:00">2022-12-01</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" itemprop="url" rel="index"><span itemprop="name">开发环境</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>最近换了一台mac，配置了一下终端（terminal）环境，在此记录一下，以便后续查阅，同时给分享给网友作为参考。本文不会细无具细，只会列举出主要步骤和相关配置参考资料。主要包括以下四个部分：</p>
-<ul>
-<li>安装 <a target="_blank" rel="noopener" href="https://iterm2.com/">iTerm2</a></li>
-<li>安装 <a target="_blank" rel="noopener" href="https://github.com/robbyrussell/oh-my-zsh">oh-my-zsh</a></li>
-<li>配置 <a target="_blank" rel="noopener" href="https://github.com/romkatv/powerlevel10k#extremely-customizable">powerlevel10k</a></li>
-<li>配置插件</li>
-</ul>
-<p>终端效果:<br><img src="/images/macOS-terminal-configuration/terminal.png"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/08/07/macos-terminal-configuration/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/06/26/how-to-read-a-book/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/06/26/how-to-read-a-book/" class="post-title-link" itemprop="url">如何阅读一本书</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-06-26 15:48:45" itemprop="dateCreated datePublished" datetime="2022-06-26T15:48:45+08:00">2022-06-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-01-08 14:36:06" itemprop="dateModified" datetime="2023-01-08T14:36:06+08:00">2023-01-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>最近读了<a target="_blank" rel="noopener" href="https://item.jd.com/13199090.html">《如何阅读一本书》</a>，很遗憾自己没有早点读到这本书，同时也庆幸自己现在读到这本书。<strong>阅读的目标有两种，一种是为了获取资讯，另一种是为了增进理解</strong>。《如何阅读一本书》便是一本教你如何通常阅读以增进理解的实用书籍。</p>
-<p>打开你的手机，看看你一周的花在各大手机APP上的时间。抖音、快手、知乎、B站、微信公众号…，这些time killer是不是占用了大量的时间？看起来你每天（被）输入了大量信息，但这些信息是否真能增进我们对自己世界的了解呢。很遗憾，并没有。发生这一现象的原因主要有两点：</p>
-<ul>
-<li><strong>这些媒体经过精心的设计，对资讯进行精美的包装，让受众根本用不着自己做结论。他们直接将包装后的观点装进自己的脑海中，缺乏对事物的思考。</strong></li>
-<li><strong>这些媒体提供的绝大部分是资讯类信息，而且比较零碎，缺乏逻辑性。太多的资讯如同太少的资讯一样，都是对理解力的阻碍。现代媒体正以压倒性的泛滥资讯阻碍了我们的理解力。</strong></li>
-</ul>
-<p>诚然，互联网上的确有很多非常不错的知识。但书籍（也包括电子书）仍然是获取知识最重要的信息来源。如何通过阅读以增进理解力本身是一种艺术，《如何阅读一本书》提供了很多值得参考的规则，值得花时间投入学习。但诚如作者所说，对于一本实用性的书，当你读完并赞同作为的观点后，作者的任务就完成了，但作为读者，你的任务才刚刚开始。作者在书中所建议的方法对你是不是有效，需要你在实践中寻找答案。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/06/26/how-to-read-a-book/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1135,7 +1166,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">57</span>
+          <span class="site-state-item-count">59</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1146,7 +1177,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-count">80</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

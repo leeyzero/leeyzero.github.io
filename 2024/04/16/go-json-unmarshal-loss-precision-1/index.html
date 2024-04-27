@@ -31,7 +31,7 @@
 <meta property="og:description" content="缘起最近出现一例json.Unmarshal导致的精度丢失引发的线上问题，虽然这个问题在被及时发现，未对业务造成损失，但细挖这个问题的原因仍然比较有意思。这篇文章会从技术层面深入分析json.Unmarshal精度丢失的原因以及处理建议，以避免后续开发过程中再次踩坑。 在分析这个问题的过程中，发现涉及Go对浮点数数值的处理，又涉及IEEE-745标准中的一些细节，放在一篇文章中会增大文章的阅读难度">
 <meta property="og:locale">
 <meta property="article:published_time" content="2024-04-16T15:37:26.000Z">
-<meta property="article:modified_time" content="2024-04-27T08:22:20.578Z">
+<meta property="article:modified_time" content="2024-04-27T08:36:35.789Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="Go">
 <meta property="article:tag" content="JSON">
@@ -202,7 +202,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-04-27 16:22:20" itemprop="dateModified" datetime="2024-04-27T16:22:20+08:00">2024-04-27</time>
+                <time title="Modified: 2024-04-27 16:36:35" itemprop="dateModified" datetime="2024-04-27T16:36:35+08:00">2024-04-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -241,6 +241,8 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;id&quot;:16505201442738640000&#125;</span><br></pre></td></tr></table></figure>
 
 <p>原始json string中，id的值是16505201442738640729，经过json.Unmarshal和json.Marshal后，id的值变成了16505201442738640000，看起来出现了精度有丢失。</p>
+<span id="more"></span>
+
 <h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>在上面代码片断中，如果<strong>使用any类型接受整型时，json.Unmarshal会默认使用float64存储整型</strong>：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">str := <span class="string">`&#123;&quot;id&quot;:16505201442738640729&#125;`</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> m <span class="keyword">map</span>[<span class="keyword">string</span>]any</span><br><span class="line">json.Unmarshal([]<span class="keyword">byte</span>(str), &amp;m)</span><br><span class="line">fmt.Println(m[<span class="string">&quot;id&quot;</span>], reflect.TypeOf(m[<span class="string">&quot;id&quot;</span>]))</span><br></pre></td></tr></table></figure>
 

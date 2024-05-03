@@ -166,6 +166,97 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2024/04/27/vscode-go-debugging/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/04/27/vscode-go-debugging/" class="post-title-link" itemprop="url">vscode-go调试工具</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2024-04-27 16:44:07" itemprop="dateCreated datePublished" datetime="2024-04-27T16:44:07+08:00">2024-04-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-05-03 21:02:36" itemprop="dateModified" datetime="2024-05-03T21:02:36+08:00">2024-05-03</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">开发工具</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>工欲善其事，必先利其器。作为一个曾经的资深vim党，在使用过<a target="_blank" rel="noopener" href="https://github.com/cdr/code-server">CodeServer</a>后，基本上不再使用vim了。CodeServer作为vscode的云端IDE，再也不用搭建本地开发环境了。之前介绍了 <a href="/2022/05/08/deploy-codeserver-on-centos/" title="CentOS搭建CodeServer环境">CentOS搭建CodeServer环境</a>，只需要几步，就可以搭建自己的云端IDE，非常方便。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/golang/vscode-go">vscode-go</a>是vscode中针对Go语言的扩展，提供了丰富的<a target="_blank" rel="noopener" href="https://github.com/golang/vscode-go/wiki/features">特性</a>，包括：</p>
+<ul>
+<li>智能感知（IntelliSense）</li>
+<li>代码导航（Code navigation）</li>
+<li>代码编辑（Code editing）</li>
+<li>诊断（Diagnostics）</li>
+<li>增强的测试和调试支持（Enhanced support for testing and debugging）</li>
+</ul>
+<p>vscode提供了语言无关的调试适配协议 <a target="_blank" rel="noopener" href="https://microsoft.github.io/debug-adapter-protocol/">Debug Adapter Protocol</a>，使用各语言可以基于vscode的扩展实现各自的调试器。对于Go语言，其实现为<a target="_blank" rel="noopener" href="https://github.com/go-delve/delve/tree/master/service/dap">dlv-dap</a>。</p>
+<p>本文主要介绍在vscode如何使用vscode-go提供的debugging能力对go代码进行调试。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/04/27/vscode-go-debugging/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2024/04/17/go-json-unmarshal-loss-precision-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1013,92 +1104,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/12/25/go-data-structure-slice/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/12/25/go-data-structure-slice/" class="post-title-link" itemprop="url">Go数据结构之slice</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-12-25 18:01:54" itemprop="dateCreated datePublished" datetime="2022-12-25T18:01:54+08:00">2022-12-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-01-08 11:02:08" itemprop="dateModified" datetime="2023-01-08T11:02:08+08:00">2023-01-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>在Go语言中，<strong>slice是一种非常重要的数据结构，用于描述数组存储的连续部分，它本质上是对数组的引用</strong>。slice是建立在数组基础上，是对数组的一种封装，它屏蔽了数组底层细节，但使用起来更方便、灵活，再配合内建函数append和copy使得slice具有更强的表现力。</p>
-<p>如果不了解slice的内部实现原理，可能会写出低效的代码，甚至会写出一些让你意想不到的BUG。本文先介绍slice的实现原理，再介绍slice一些经验和需要避免的问题。</p>
-<p>在开始之前，先来看下面示例输出的结果是什么呢？如果你知道答案，说明你已经完全明白slice的实现原理，可以跳过原理部分介绍，后面的经验之谈可能会对你有帮助。</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;</span><br><span class="line">s1, s2 := a[:<span class="number">3</span>], a[:<span class="number">3</span>:<span class="number">3</span>]</span><br><span class="line">s1, s2 = <span class="built_in">append</span>(s1, <span class="number">100</span>), <span class="built_in">append</span>(s2, <span class="number">101</span>)</span><br><span class="line">fmt.Println(a, s1, s2)</span><br></pre></td></tr></table></figure>
-
-<h2 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h2><p>由于slice是建立在数组的基础上，需要先了解Go中数组的一些概念，然后介绍slice的内部结构和分片操作，最后介绍内建append和copy函数在slice中的应用。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/12/25/go-data-structure-slice/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1169,7 +1174,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">59</span>
+          <span class="site-state-item-count">60</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1180,7 +1185,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">80</span>
+        <span class="site-state-item-count">81</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

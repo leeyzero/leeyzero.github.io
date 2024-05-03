@@ -166,6 +166,92 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/12/25/go-data-structure-slice/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/12/25/go-data-structure-slice/" class="post-title-link" itemprop="url">Go数据结构之slice</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-12-25 18:01:54" itemprop="dateCreated datePublished" datetime="2022-12-25T18:01:54+08:00">2022-12-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-01-08 11:02:08" itemprop="dateModified" datetime="2023-01-08T11:02:08+08:00">2023-01-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>在Go语言中，<strong>slice是一种非常重要的数据结构，用于描述数组存储的连续部分，它本质上是对数组的引用</strong>。slice是建立在数组基础上，是对数组的一种封装，它屏蔽了数组底层细节，但使用起来更方便、灵活，再配合内建函数append和copy使得slice具有更强的表现力。</p>
+<p>如果不了解slice的内部实现原理，可能会写出低效的代码，甚至会写出一些让你意想不到的BUG。本文先介绍slice的实现原理，再介绍slice一些经验和需要避免的问题。</p>
+<p>在开始之前，先来看下面示例输出的结果是什么呢？如果你知道答案，说明你已经完全明白slice的实现原理，可以跳过原理部分介绍，后面的经验之谈可能会对你有帮助。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;</span><br><span class="line">s1, s2 := a[:<span class="number">3</span>], a[:<span class="number">3</span>:<span class="number">3</span>]</span><br><span class="line">s1, s2 = <span class="built_in">append</span>(s1, <span class="number">100</span>), <span class="built_in">append</span>(s2, <span class="number">101</span>)</span><br><span class="line">fmt.Println(a, s1, s2)</span><br></pre></td></tr></table></figure>
+
+<h2 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h2><p>由于slice是建立在数组的基础上，需要先了解Go中数组的一些概念，然后介绍slice的内部结构和分片操作，最后介绍内建append和copy函数在slice中的应用。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/12/25/go-data-structure-slice/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/12/14/mit-6-824-lab2d-log-compaction/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1014,94 +1100,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/11/01/a-brief-logging-specification/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/11/01/a-brief-logging-specification/" class="post-title-link" itemprop="url">极简日志打印规范</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-11-01 20:14:16" itemprop="dateCreated datePublished" datetime="2022-11-01T20:14:16+08:00">2022-11-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-11-28 11:00:41" itemprop="dateModified" datetime="2022-11-28T11:00:41+08:00">2022-11-28</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">开发工具</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>最近由于组织架构调整，团队引入不少新成员。这些成员来自不同的团队和背景，每个人的日志打印风格难免也有所差异，十分有必要制定一个统一的日志打印规范。</p>
-<p>规范日志打印主要有以下作用：</p>
-<ul>
-<li>让系统运行状态更透明，提高线上故障排查效率。</li>
-<li>减少代码风格差异，利于代码阅读和维护。</li>
-<li>统一日志格式，利于外围工具（日志监控报警工具等）处理。</li>
-</ul>
-<p>团队成员在研发过程中应该遵守该规范，文档内容可能会与你的喜好冲突，请尽量用包容的心态接受。如果有不合理之处，请先在组内提出建议，组内一致表决通过后修改规范。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/11/01/a-brief-logging-specification/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1172,7 +1170,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">59</span>
+          <span class="site-state-item-count">60</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1183,7 +1181,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">80</span>
+        <span class="site-state-item-count">81</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

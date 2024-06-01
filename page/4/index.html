@@ -166,6 +166,92 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/11/28/upload-multi-files-with-go/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/11/28/upload-multi-files-with-go/" class="post-title-link" itemprop="url">使用Go实现批量文件上传</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-11-28 12:20:24" itemprop="dateCreated datePublished" datetime="2021-11-28T12:20:24+08:00">2021-11-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-01-08 14:39:23" itemprop="dateModified" datetime="2023-01-08T14:39:23+08:00">2023-01-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">Web开发</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>在现在生活中，我们经常在使用文件上传功能，但我们很少会自己去做一个文件上传的服务，了解文件的上传原理有助于我们开发出更健壮的程序。利用Go语言以及其标准库的能力，用很少的代码量就可以实现一个文件上传服务器。本文以小工具的方式讲解如何实现一个简单的文件上传服务器，并假设读者对Go、HTTP、HTML有一定了解。</p>
+<p>完整代码参考：<a target="_blank" rel="noopener" href="https://github.com/leeyzero/go-tools/blob/main/uploadserver.go">github.com/leeyzero/go-tools/uploadserver.go</a></p>
+<h2 id="Server端"><a href="#Server端" class="headerlink" title="Server端"></a>Server端</h2><p>文件上传一般使用multipart/form-data上传上传，Go语言标准库其进行了良好的封装，感兴趣的可以直接查询其原码实现。对于文件上传服务器，需要搭建一个简单的服务端框架，幸运的是Go语言http包已经为我们实现了，我们只需要实现一个handler即可，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">func uploadHandler(w http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">    http.HandleFunc(&quot;&#x2F;upload&quot;, uploadHandler)</span><br><span class="line">    http.ListenAndServe(&quot;:8080&quot;, nil)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在uploadHandler中，只需要进行以下三个步骤：<br>1、解析multiform data<br>2、遍历multiform data中的文件<br>3、将文件保存至指定位置</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/11/28/upload-multi-files-with-go/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/09/21/oauth2-intro/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -942,95 +1028,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/04/18/trouble-shooting-for-request-cost-incr/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/04/18/trouble-shooting-for-request-cost-incr/" class="post-title-link" itemprop="url">记一次接口耗时上涨故障排查</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-04-18 23:02:00" itemprop="dateCreated datePublished" datetime="2021-04-18T23:02:00+08:00">2021-04-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-01-08 14:30:37" itemprop="dateModified" datetime="2023-01-08T14:30:37+08:00">2023-01-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/" itemprop="url" rel="index"><span itemprop="name">故障排查</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>最近排查一个线上接口耗时上涨的问题，其中用到排查思路和相关工具有一定借鉴作用，在此做个记录,同时供网友参考。由于涉及到一些敏感信息，所以本文会对一些名称进行模糊化。</p>
-<h2 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h2><p>监控发现对外接口的整体耗时上涨了近100ms，涨了近50%，甚至有少部分接口出现超时现象，已经影响到部分业务的用户体验。</p>
-<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><h3 id="宏观分析"><a href="#宏观分析" class="headerlink" title="宏观分析"></a>宏观分析</h3><p>对比故障发生的时候点，检查对应时间结点是否内部服务有上线，通常情况下，90%以上的故障都是由上线引起的。但排查后，业务侧并未上过线，排除是业务上线引入的故障。</p>
-<p>对比不同机房，服务部署在三个机房，记为机房A，机房B和机房C，发现耗时主要发生在机房A，机房B和机房C并不存在这个问题，怀疑是机房的网络链路问题。</p>
-<p>联系负责机房的同学一起排查，未发现网络链路问题。将某个接口所有的流量从机房A切到机房B，发该接口的耗时恢复到之前的水平，看起来的确像是出现机房A网络存在问题。但OP同学再三确认，未发现异常。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/04/18/trouble-shooting-for-request-cost-incr/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1097,7 +1098,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-count">61</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1108,7 +1109,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">81</span>
+        <span class="site-state-item-count">84</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

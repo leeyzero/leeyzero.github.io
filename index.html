@@ -166,6 +166,99 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2024/05/26/regex-tutorial/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/05/26/regex-tutorial/" class="post-title-link" itemprop="url">正则表达式简明教程</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2024-05-26 23:16:20" itemprop="dateCreated datePublished" datetime="2024-05-26T23:16:20+08:00">2024-05-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-06-01 21:10:21" itemprop="dateModified" datetime="2024-06-01T21:10:21+08:00">2024-06-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">开发工具</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>有些人在碰到问题时，就想：“我知道，我可以使用正则表达式。”现在，他们就有了两个问题。<br>– by Jamie “jwz” Zawinski， 1997年 8月</p>
+</blockquote>
+<h2 id="什么是正则表达式"><a href="#什么是正则表达式" class="headerlink" title="什么是正则表达式"></a>什么是正则表达式</h2><p>正则表达式（Regular Expression），通常缩写为regex或regexp，是一种在文本中进行搜索和替换的模式描述语言。它使用单个字符串来描述、匹配一系列符合某个句法规则的字符串。正则表达式是由<strong>普通字符</strong>（例如：字母和数字）以及<strong>元字符</strong>组成的。</p>
+<p>这篇<a target="_blank" rel="noopener" href="https://www.tiki-toki.com/timeline/entry/264740/The-Bloody-History-of-Regex">slide</a> 描述正则表达式的发展历史。<br><a target="_blank" rel="noopener" href="https://www.regular-expressions.info/">regular-expressions</a>是学习正则表达式的一个非常好的网站。</p>
+<h2 id="初识正则表达式"><a href="#初识正则表达式" class="headerlink" title="初识正则表达式"></a>初识正则表达式</h2><p>我们在日常中可能已经使用过正则表达式，比如我们在电脑中查找所有doc文档时，会使用<code>*.doc</code>搜索，这个就是正则表达式。其中<code>*</code>为元字符，表示可以匹配任意字符。<code>.doc</code>是普通字符，表示后续为.doc的文档。</p>
+<p>当然这是一个比较简单的例子，正则表达式的功能非常强大，它提供了很多的特性，非常灵活。</p>
+<p>在自己的日常开发过程中，有两种场景使用正常表达式比较多：</p>
+<ul>
+<li>使用Linux命令，如<code>grep</code>、<code>sed</code>、<code>awk</code>中的提供的正则表达式能力查询日志。</li>
+<li>使用各语言，如<code>Python</code>、<code>PHP</code>、<code>Go</code>中提供的正则表达式库在大文本中查找目标字符串。</li>
+</ul>
+<p>熟练掌握正则表达式，在处理字符匹配的问题上可以事半功倍。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/05/26/regex-tutorial/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2024/04/27/vscode-go-debugging/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1021,93 +1114,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2023/01/08/go-data-structure-string/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/01/08/go-data-structure-string/" class="post-title-link" itemprop="url">Go数据结构之string</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-01-08 20:35:14 / Modified: 10:56:57" itemprop="dateCreated datePublished" datetime="2023-01-08T20:35:14+08:00">2023-01-08</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>在Go语言中，string是一种非常重要的数据结构。了解string的内部实现原理，有利于我们写出更高效的代码。本篇文章首先介绍string的实现原理，然后介绍string、bytes、runes和characters之间的关系，同时引出字符篇码Unicode和UTF-8，最后介绍使用string应该注意的一些问题。</p>
-<p>先来看下面两个例子。</p>
-<p>示例一</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">str := <span class="string">&quot;中文abc&quot;</span></span><br><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(str); i++ &#123;</span><br><span class="line">    fmt.Printf(<span class="string">&quot;%d: %x\n&quot;</span>, i, str[i])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>示例二</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">str := <span class="string">&quot;中文abc&quot;</span></span><br><span class="line"><span class="keyword">for</span> index, runeValue := <span class="keyword">range</span> str &#123;</span><br><span class="line">    fmt.Printf(<span class="string">&quot;%d: %#U\n&quot;</span>, index, runeValue)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>上面例子中，<code>%x</code> 表示以16进行输出，<code>%#U</code> 表示输出Unicode字符的码点（code point）和其表现。你知道上面例子输出的结果是什么吗？如果理解了上面例子的输出，那基本了解了Go语言内部是如何实现的string，先来看string的内部数据结构。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/01/08/go-data-structure-string/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1174,7 +1184,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-count">61</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1185,7 +1195,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">81</span>
+        <span class="site-state-item-count">84</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

@@ -166,6 +166,98 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2023/01/20/go-data-structure-interface/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/01/20/go-data-structure-interface/" class="post-title-link" itemprop="url">Go数据结构之interface</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-01-20 15:59:00" itemprop="dateCreated datePublished" datetime="2023-01-20T15:59:00+08:00">2023-01-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-01-23 23:15:40" itemprop="dateModified" datetime="2023-01-23T23:15:40+08:00">2023-01-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>今年最后一天上班，下午没啥事，总结下Go语言的接口。接口是Go语言区别与其它语言的重要语言特性，也是我最喜欢的Go语言特性之一。Go的接口除了提供多态的能力外，它还是Go反射的基础。Go是一门静态语言，Go接口能够在编译期检查语法规则，同时具备像动态语言那样使用 <a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Duck_typing">ducking typing</a> 实现接口。</p>
+<p>我一直比较好奇Go的接口内部是如何实现。看了几篇文章，也看了runtime包中的部分实现。发现大部分文章都是从汇编的角度去分析，对我来说，我对汇编了解的不多，也不需要深入那么细节，我最终的目的是想通过了解Go接口的内部实现，让自己避免一些语言上的坑，同时能够写出更高效的代码。最终发现还是 <a target="_blank" rel="noopener" href="https://swtch.com/~rsc/">Russ Cox</a> 的文章 <a target="_blank" rel="noopener" href="https://research.swtch.com/interfaces">Go Data Structures: Interfaces</a> 在一个相对高的层次介绍了Go的接口特性，但又没有深入汇编细节，比较容易理解，也达到了我的目的。</p>
+<p>本文通过示例介绍接口的基本用法，然后引出接口的内部数据结构，再介绍接口的动态类型转换和接口派发原理以及效率，最后介绍一些需要注意的问题。</p>
+<h2 id="接口初识"><a href="#接口初识" class="headerlink" title="接口初识"></a>接口初识</h2><p><strong>接口是对实现的抽象</strong>。在Go语言中，接口是一组方法签名，使用interface关键字表示，Go中接口具有如下特点：</p>
+<ul>
+<li><strong>接口实现是隐式的。</strong></li>
+<li><strong>interface{}是一种静态类型。</strong></li>
+<li><strong>接口类型可以动态检查和转换</strong>。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/01/20/go-data-structure-interface/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+
+  
+  
+  
+
+
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2023/01/08/go-data-structure-string/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -241,9 +333,12 @@
         <div class="post-eof"></div>
       </footer>
   </article>
+
   
   
   
+
+
 
       
   
@@ -327,9 +422,12 @@
         <div class="post-eof"></div>
       </footer>
   </article>
+
   
   
   
+
+
 
       
   
@@ -426,9 +524,12 @@
         <div class="post-eof"></div>
       </footer>
   </article>
+
   
   
   
+
+
 
       
   
@@ -533,9 +634,12 @@
         <div class="post-eof"></div>
       </footer>
   </article>
+
   
   
   
+
+
 
       
   
@@ -639,9 +743,12 @@
         <div class="post-eof"></div>
       </footer>
   </article>
+
   
   
   
+
+
 
       
   
@@ -745,9 +852,12 @@
         <div class="post-eof"></div>
       </footer>
   </article>
+
   
   
   
+
+
 
       
   
@@ -839,9 +949,12 @@
         <div class="post-eof"></div>
       </footer>
   </article>
+
   
   
   
+
+
 
       
   
@@ -878,7 +991,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-11-30 22:36:46" itemprop="dateModified" datetime="2022-11-30T22:36:46+08:00">2022-11-30</time>
+                <time title="Modified: 2024-07-17 19:09:25" itemprop="dateModified" datetime="2024-07-17T19:09:25+08:00">2024-07-17</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -927,9 +1040,12 @@
         <div class="post-eof"></div>
       </footer>
   </article>
+
   
   
   
+
+
 
       
   
@@ -1015,91 +1131,12 @@
         <div class="post-eof"></div>
       </footer>
   </article>
+
   
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/11/24/understanding-skip-list/">
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/11/24/understanding-skip-list/" class="post-title-link" itemprop="url">[论文解读] Skip Lists: A Probabilistic Alternative to Balanced Trees</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-11-24 10:41:50" itemprop="dateCreated datePublished" datetime="2022-11-24T10:41:50+08:00">2022-11-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-04-27 16:30:22" itemprop="dateModified" datetime="2024-04-27T16:30:22+08:00">2024-04-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">算法&数据结构</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>跳跃表是一种可以替代平衡树的数据结构。跳跃表采用概率上的平衡而不是强制要求节点的平衡，使得其在插入和删除时更容易实现，而且具有更好的效率。由于跳跃表具有良好的性能和算法实现的简单性，被广泛应用于工程实践中，如<a target="_blank" rel="noopener" href="https://redis.io/">redis</a>、<a target="_blank" rel="noopener" href="https://github.com/google/leveldb">leveldb</a>等。</p>
-<p>本文是对<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/William_Pugh_(computer_scientist)">William Pugh</a>的论文<a href="ftp://ftp.cs.umd.edu/pub/skipLists/skiplists.pdf">Skip Lists: A Probabilistic Alternative to Balanced Trees</a>的解读，主要介绍算法核心思想和算法实现，对于算法的时间和空间复杂度分析并不是本文的重点，这部分内容在论文中有详细介绍。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/11/24/understanding-skip-list/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
 
   
@@ -1171,7 +1208,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-count">62</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1182,7 +1219,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-count">87</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -1344,6 +1381,7 @@
   
 
   
+
 
 </body>
 </html>

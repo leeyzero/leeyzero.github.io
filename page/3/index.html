@@ -166,6 +166,91 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/11/24/understanding-skip-list/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/11/24/understanding-skip-list/" class="post-title-link" itemprop="url">[论文解读] Skip Lists: A Probabilistic Alternative to Balanced Trees</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-11-24 10:41:50" itemprop="dateCreated datePublished" datetime="2022-11-24T10:41:50+08:00">2022-11-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-04-27 16:30:22" itemprop="dateModified" datetime="2024-04-27T16:30:22+08:00">2024-04-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">算法&数据结构</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>跳跃表是一种可以替代平衡树的数据结构。跳跃表采用概率上的平衡而不是强制要求节点的平衡，使得其在插入和删除时更容易实现，而且具有更好的效率。由于跳跃表具有良好的性能和算法实现的简单性，被广泛应用于工程实践中，如<a target="_blank" rel="noopener" href="https://redis.io/">redis</a>、<a target="_blank" rel="noopener" href="https://github.com/google/leveldb">leveldb</a>等。</p>
+<p>本文是对<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/William_Pugh_(computer_scientist)">William Pugh</a>的论文<a href="ftp://ftp.cs.umd.edu/pub/skipLists/skiplists.pdf">Skip Lists: A Probabilistic Alternative to Balanced Trees</a>的解读，主要介绍算法核心思想和算法实现，对于算法的时间和空间复杂度分析并不是本文的重点，这部分内容在论文中有详细介绍。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/11/24/understanding-skip-list/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+
+  
+  
+  
+
+
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/11/20/principal-of-mysql-indexes/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -240,9 +325,12 @@
         <div class="post-eof"></div>
       </footer>
   </article>
+
   
   
   
+
+
 
       
   
@@ -328,9 +416,12 @@
         <div class="post-eof"></div>
       </footer>
   </article>
+
   
   
   
+
+
 
       
   
@@ -416,9 +507,12 @@
         <div class="post-eof"></div>
       </footer>
   </article>
+
   
   
   
+
+
 
       
   
@@ -503,9 +597,12 @@
         <div class="post-eof"></div>
       </footer>
   </article>
+
   
   
   
+
+
 
       
   
@@ -590,9 +687,12 @@
         <div class="post-eof"></div>
       </footer>
   </article>
+
   
   
   
+
+
 
       
   
@@ -677,9 +777,12 @@
         <div class="post-eof"></div>
       </footer>
   </article>
+
   
   
   
+
+
 
       
   
@@ -764,9 +867,12 @@
         <div class="post-eof"></div>
       </footer>
   </article>
+
   
   
   
+
+
 
       
   
@@ -850,9 +956,12 @@
         <div class="post-eof"></div>
       </footer>
   </article>
+
   
   
   
+
+
 
       
   
@@ -950,97 +1059,12 @@
         <div class="post-eof"></div>
       </footer>
   </article>
+
   
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/02/20/mit-6-824-lab1-mapreduce/">
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/02/20/mit-6-824-lab1-mapreduce/" class="post-title-link" itemprop="url">MIT 6.824 Lab1: MapReduce</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-02-20 10:14:05" itemprop="dateCreated datePublished" datetime="2022-02-20T10:14:05+08:00">2022-02-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-14 13:31:47" itemprop="dateModified" datetime="2022-12-14T13:31:47+08:00">2022-12-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式系统</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>之前虽然看过很多分布式系统相关的书籍、论文和一些开源项目，但很少自己动手去实现。理论跟工程实现通常有非常大的差别，一个看似很简单的协议，在工程实现上可能非常困难。<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/schedule.html">6.824</a>是MIT开设的分布式系统课程，非常系统的讲解了分布式系统的主流技术，同时将理论和实践相结合，是一个非常好的课程。</p>
-<p>本文是笔者在学习<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/notes/l01.txt">6.824 lec1</a>课程的一些总结和思考，算是一个学习笔记。在看这篇文章之前，我希望读者先提前阅读以下资料：</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/mapreduce.pdf">MapReduce: Simplified Data Processing on Large Clusters</a></li>
-<li>6.824 2022 Lecture 1: <a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/notes/l01.txt">Introduction</a> and <a target="_blank" rel="noopener" href="https://youtu.be/WtZ7pcRSkOA">video</a></li>
-<li>6.824 Lab 1: MapReduce <a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-mr.html">Guidance</a></li>
-</ul>
-<p>本文主要分三个部分，第一部分概述性的介绍mapreduce的原理；第二部分概述性的介绍mapreduce的实现；第三部分介绍工程实现上需要注意的一些问题，完整代码实现参考<a target="_blank" rel="noopener" href="https://github.com/leeyzero/6.824/tree/main/src/mr">github</a>。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/02/20/mit-6-824-lab1-mapreduce/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
 
   
@@ -1112,7 +1136,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-count">62</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1123,7 +1147,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-count">87</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -1285,6 +1309,7 @@
   
 
   
+
 
 </body>
 </html>

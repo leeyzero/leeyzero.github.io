@@ -25,7 +25,7 @@
 
   <meta name="description" content="开放授权（OAuth, Open Authorization）是一个开放标准，允许用户让第三方应用访问该用户在某一网站上存储的私密的资源（如照片，视频，联系人列表等），而无需将用户名的密码提供给第三方应用。OAuth2.0是OAuth的2.0版本。本文主要介绍OAuth2的授权流程。 名词解释 Resource Owner：资源拥有者 Resource Server：资源服务器 Client：客户">
 <meta property="og:type" content="article">
-<meta property="og:title" content="OAuth2简介">
+<meta property="og:title" content="OAuth2简明教程">
 <meta property="og:url" content="https://leeyzero.github.io/2021/09/21/oauth2-intro/index.html">
 <meta property="og:site_name" content="LeeYzero的博客">
 <meta property="og:description" content="开放授权（OAuth, Open Authorization）是一个开放标准，允许用户让第三方应用访问该用户在某一网站上存储的私密的资源（如照片，视频，联系人列表等），而无需将用户名的密码提供给第三方应用。OAuth2.0是OAuth的2.0版本。本文主要介绍OAuth2的授权流程。 名词解释 Resource Owner：资源拥有者 Resource Server：资源服务器 Client：客户">
@@ -36,7 +36,7 @@
 <meta property="og:image" content="https://leeyzero.github.io/images/oauth2-intro/4.png">
 <meta property="og:image" content="https://leeyzero.github.io/images/oauth2-intro/5.png">
 <meta property="article:published_time" content="2021-09-21T15:15:52.000Z">
-<meta property="article:modified_time" content="2023-01-08T06:27:11.000Z">
+<meta property="article:modified_time" content="2024-07-17T11:02:59.146Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="OAuth2">
 <meta name="twitter:card" content="summary">
@@ -55,7 +55,7 @@
   };
 </script>
 
-  <title>OAuth2简介 | LeeYzero的博客</title>
+  <title>OAuth2简明教程 | LeeYzero的博客</title>
   
 
 
@@ -189,7 +189,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          OAuth2简介
+          OAuth2简明教程
         </h1>
 
         <div class="post-meta">
@@ -206,7 +206,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-01-08 14:27:11" itemprop="dateModified" datetime="2023-01-08T14:27:11+08:00">2023-01-08</time>
+                <time title="Modified: 2024-07-17 19:02:59" itemprop="dateModified" datetime="2024-07-17T19:02:59+08:00">2024-07-17</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -308,8 +308,8 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/08/29/gin-tutorial/" rel="prev" title="Gin简介">
-      <i class="fa fa-chevron-left"></i> Gin简介
+    <a href="/2021/08/29/gin-tutorial/" rel="prev" title="Gin简明教程">
+      <i class="fa fa-chevron-left"></i> Gin简明教程
     </a></div>
       <div class="post-nav-item">
     <a href="/2021/11/28/upload-multi-files-with-go/" rel="next" title="使用Go实现批量文件上传">
@@ -319,14 +319,18 @@
       </footer>
     
   </article>
+
   
   
   
+
+
 
 
 
           </div>
           
+    <div class="comments" id="gitalk-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -388,7 +392,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-count">62</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -399,7 +403,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-count">87</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -561,6 +565,26 @@
   
 
   
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'Ov23ct4UMzsGEgXj6SRY',
+      clientSecret: '7c4323a8657a12efa8c3c529e2e76d0975c2ed6b',
+      repo        : 'leeyzero.github.io',
+      owner       : 'leeyzero',
+      admin       : ['leeyzero'],
+      id          : '204d68083b700a0581a0f0e53f334d6a',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
 
 </body>
 </html>

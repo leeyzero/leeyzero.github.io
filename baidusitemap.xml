@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://leeyzero.github.io/2024/10/06/software-design-philosophy/</loc>
+    <lastmod>2024-10-06</lastmod>
+  </url>
+  <url>
     <loc>https://leeyzero.github.io/2024/09/13/time-clock-ordering-events-in-distributed-system/</loc>
     <lastmod>2024-09-13</lastmod>
   </url>

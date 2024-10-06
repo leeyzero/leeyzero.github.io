@@ -2,6 +2,17 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://leeyzero.github.io/2024/10/06/software-design-philosophy/</loc>
+    
+    <lastmod>2024-10-06T12:09:25.160Z</lastmod>
+    
+    <date>1728210873000</date>
+    <title>[读书笔记] 软件设计哲学 | LeeYzero的博客</title>
+    
+    <desc>最近本来想写一篇如何应对复杂系统的文章，偶然读到John Ousterhout的软件设计哲学，读完后，发现我没有必要再写了。这篇文章对原文做一个概要性总结并谈谈自己的理解和思考。 对于一个软件系统，需求可以粗略的分为两类： 功能性需求 非功能性需求 功能性需求是面向用户的，非功能性需求是面向系统的，但非功能性需求最终是服务于功能性需求。我们通常会用非功能性需求去评估一个系统的质量，比如扩展性、维护</desc>
+  </url>
+  
+  <url>
     <loc>https://leeyzero.github.io/2024/09/13/time-clock-ordering-events-in-distributed-system/</loc>
     
     <lastmod>2024-09-13T05:48:34.387Z</lastmod>

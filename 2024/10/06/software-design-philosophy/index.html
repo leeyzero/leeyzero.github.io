@@ -30,14 +30,17 @@
 <meta property="og:site_name" content="LeeYzero的博客">
 <meta property="og:description" content="最近本来想写一篇如何应对复杂系统的文章，偶然读到John Ousterhout的软件设计哲学，读完后，发现我没有必要再写了。这篇文章对原文做一个概要性总结并谈谈自己的理解和思考。 对于一个软件系统，需求可以粗略的分为两类：  功能性需求 非功能性需求  功能性需求是面向用户的，非功能性需求是面向系统的，但非功能性需求最终是服务于功能性需求。我们通常会用非功能性需求去评估一个系统的质量，比如扩展性、">
 <meta property="og:locale">
+<meta property="og:image" content="https://leeyzero.github.io/images/software-design-philosophy/1.png">
+<meta property="og:image" content="https://leeyzero.github.io/images/software-design-philosophy/2.png">
 <meta property="article:published_time" content="2024-10-06T10:34:33.000Z">
-<meta property="article:modified_time" content="2024-10-06T12:23:15.006Z">
+<meta property="article:modified_time" content="2024-10-07T06:45:25.095Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="系统设计">
 <meta property="article:tag" content="复杂性">
 <meta property="article:tag" content="依赖关系">
 <meta property="article:tag" content="模糊性">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leeyzero.github.io/images/software-design-philosophy/1.png">
 
 <link rel="canonical" href="https://leeyzero.github.io/2024/10/06/software-design-philosophy/">
 
@@ -195,10 +198,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2024-10-06 18:34:33 / Modified: 20:23:15" itemprop="dateCreated datePublished" datetime="2024-10-06T18:34:33+08:00">2024-10-06</time>
+              <time title="Created: 2024-10-06 18:34:33" itemprop="dateCreated datePublished" datetime="2024-10-06T18:34:33+08:00">2024-10-06</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-07 14:45:25" itemprop="dateModified" datetime="2024-10-07T14:45:25+08:00">2024-10-07</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -289,10 +298,14 @@
 <p><strong>分层设计</strong><br>分层设计是一种分治方法，它是降低系统复杂性的有效有段。通过对不同层次，提供不同的抽象，让每个层次完成特定的职责。各个层通过接口进行交互，而不用了解其实现细节，降低了理解复杂度。通常分层设计要求严格的依赖关系，比如只能上层依赖于下层，而不能反向依赖，这种依赖关系限制了系统中的数据流向，也就是约束了状态变更的有序性，也是为了让开发人员能够更容易维护系统。</p>
 <p><strong>模块化设计</strong><br>模块化设计也是一种分治方法，它是对分层设计细化，本质上没有太大区别。最主要还是模块的职责定义与接口抽象。关于模块的设计，一个核心设计原则是深模块设计，即<strong>简单接口，深度实现</strong></p>
 <p><em>注: 这里指的模块并不仅仅是指一个独立部署的功能集合，它可以是一个类，也可以是一个函数。</em></p>
+<img src="/images/software-design-philosophy/1.png"/>
+
 <p><strong>接口是对实现的抽象，简单接口更容易让人理解，深度实现，是对高内聚的一种具体做法。</strong>它通过对信息的有效封装，让复杂性封装在模块内部。你可以能会质疑，那这样模块会不会太复杂了，这需要我们递归地运用其它原则降低模块的复杂度。</p>
 <h3 id="模块的拆分与合并"><a href="#模块的拆分与合并" class="headerlink" title="模块的拆分与合并"></a>模块的拆分与合并</h3><p>我们在做系统设计时，经常会面临一个问题：一个功能和另一个功能是拆分还是合并呢？</p>
 <p>模块是拆分还是合并，根本的判断原则还是哪种方式能让系统复杂度更低。在实现时选择适合的数据结构对信息进行最好的隐藏，尽量少的依赖关系以及深接口设计。</p>
 <p>关于合并，如果合并后，模块内出现不在一个抽象层面的事物，而且这些事物应对需求变更的频率出现较大差异时，那这是一个信号，它提示我们应该拆分。<br>关于拆分，如果拆分后，发现需要在父级和子级之间来回切换才能了解它们如何协同工作，那这是一个信号，它提示我们拆分不合理，或是否需要合并。</p>
+<img src="/images/software-design-philosophy/2.png"/>
+
 <p>模块拆分原则：<strong>总体目标是让系统复杂度更低，模块内所有代码都应该在同一抽象层级上。</strong></p>
 <h2 id="通过实现细节简化系统"><a href="#通过实现细节简化系统" class="headerlink" title="通过实现细节简化系统"></a>通过实现细节简化系统</h2><p>对于实现细节，这本书中也提出了很多具体的设计原则，主要包括：</p>
 <h3 id="信息隐藏"><a href="#信息隐藏" class="headerlink" title="信息隐藏"></a>信息隐藏</h3><p>这是实现深度模块最重要的技术。<strong>基本思想是每个模块应该封装一些知识，这些知识代表设计决策。这些知识嵌入在模块的实现中，但不会出现在其接口​​中，因此对其他模块不可见。</strong><br>作为软件设计师，你的目标是尽量对外隐藏信息，但对于软件的透明性（可观察性），你需要暴露必要的信息给外部使用者，所以关键是要识别出哪些信息应该隐藏，哪些信息应该暴露，这是一种权衡（Trade Offs）。</p>

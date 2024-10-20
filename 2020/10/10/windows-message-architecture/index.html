@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="U2Ny7FrEq1ignn4lLolgeVjRTn4pkY-QddMt4bC6OWA">
+  <meta name="msvalidate.01" content="CBB1C3BC69BAC424DBCDE69CDC69A845">
+  <meta name="baidu-site-verification" content="code-mfJglD7D92">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeyzero.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="原文出自：Windows Messaging Architecture  Most of the fresh software engineers and .NET developers may not know what really happens inside the Windows operating system when they implement and run a Windows">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译] Windows消息体系">
+<meta property="og:url" content="https://leeyzero.github.io/2020/10/10/windows-message-architecture/index.html">
+<meta property="og:site_name" content="LeeYzero的博客">
+<meta property="og:description" content="原文出自：Windows Messaging Architecture  Most of the fresh software engineers and .NET developers may not know what really happens inside the Windows operating system when they implement and run a Windows">
+<meta property="og:locale">
+<meta property="og:image" content="https://leeyzero.github.io/images/windows-message-architecture/1.png">
+<meta property="article:published_time" content="2020-10-10T14:57:21.000Z">
+<meta property="article:modified_time" content="2024-10-20T15:48:28.262Z">
+<meta property="article:author" content="LeeYzero">
+<meta property="article:tag" content="Windows">
+<meta property="article:tag" content="消息循环">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leeyzero.github.io/images/windows-message-architecture/1.png">
+
+<link rel="canonical" href="https://leeyzero.github.io/2020/10/10/windows-message-architecture/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>[译] Windows消息体系 | LeeYzero的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LeeYzero的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">自强不息，厚德载物</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2020/10/10/windows-message-architecture/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [译] Windows消息体系
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-10-10 22:57:21" itemprop="dateCreated datePublished" datetime="2020-10-10T22:57:21+08:00">2020-10-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-20 23:48:28" itemprop="dateModified" datetime="2024-10-20T23:48:28+08:00">2024-10-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E5%8C%A0%E8%89%BA/" itemprop="url" rel="index"><span itemprop="name">编程匠艺</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>原文出自：<a target="_blank" rel="noopener" href="https://xavierantony.wordpress.com/2010/08/24/windows-messaging-architecture/">Windows Messaging Architecture</a></p>
+<blockquote>
+<p><em>Most of the fresh software engineers and .NET developers may not know what really happens inside the Windows operating system when they implement and run a Windows application. This article explains the Windows Messaging Architecture of the Windows operating system.</em></p>
+</blockquote>
+<p>很多新手软件工程师和.NET开发者在编写并运行一个Windows应用时，他们并不清楚其在操作系统中的运作原理。这篇文件将阐述Windows操作系统的消息体系。</p>
+<p><img src="/images/windows-message-architecture/1.png" alt="Windows消息体系结构图"></p>
+<span id="more"></span>
+
+<h2 id="窗口和窗口类-Window-and-Window-Class"><a href="#窗口和窗口类-Window-and-Window-Class" class="headerlink" title="窗口和窗口类(Window and Window Class)"></a>窗口和窗口类(<em>Window and Window Class</em>)</h2><blockquote>
+<p><em>The Windows UI application (e) has one main thread (g), one or more &gt; windows (a) and one or more child threads (k) [worker threads or UI threads].</em></p>
+</blockquote>
+<p>Windows应用程序(<strong>e</strong>)包含一个主线程(<strong>g</strong>)、多个窗口(<strong>a</strong>)和一个或多个子线程(<strong>k</strong>)[工作线程或UI线程]。</p>
+<blockquote>
+<p><em>An application must specify a window class and register with Windows (d) before it creates a window (a) and displays. A window class is a structure which contains the attributes of a window such as window styles, Icon, Cursor, Background color, menu resource name and window class name etc. Registering a window class associates a window procedure, class styles, and other class attributes with a class name. Each window class has an associated window procedure (c) shared by all windows (a) of the same class in an application. The window procedure processes messages for all windows of that class.</em></p>
+</blockquote>
+<p>在创建并展示一个窗口(<strong>a</strong>)之前，应用程序必须指定一个窗口类并将其注册到Windows系统中(<strong>d</strong>)。窗口类只是一个数据结构，包含窗口的一些属性，如窗口风格、Icon、Cursor、窗口背景颜色、菜单资源名和窗口类名等。注册的窗口类需要关联一个窗口过程、类风格、其它类属性和一个窗口类名。在应用程序中，和每个窗口类关联和窗口过程(<strong>c</strong>)是所有拥有相同窗口类名的窗口(<strong>a</strong>)共享的。窗口过程处理所有拥有相同窗口类名窗口的窗口消息。</p>
+<h2 id="窗口过程-Window-Procedure"><a href="#窗口过程-Window-Procedure" class="headerlink" title="窗口过程(Window Procedure)"></a>窗口过程(<em>Window Procedure</em>)</h2><blockquote>
+<p><em>A window procedure (c) is a function that receives and processes all messages sent to the window (a). Every window class (b) has a window procedure (c), and every window (a) created with that class uses that same window procedure to respond to messages. The system sends a message to a window procedure by passing the message data as arguments to the procedure. The window procedure then performs an appropriate action for the message; it checks the message identifier and, while processing the message, uses the information specified by the message parameters.</em></p>
+</blockquote>
+<p>窗口过程(<strong>c</strong>)是一个函数，用于接收所有发往该窗口(<strong>a</strong>)的消息。每个窗口类(<strong>b</strong>)都有一个窗口过程(<strong>c</strong>)，每个用该窗口类创建的窗口(<strong>a</strong>)使用相同的窗口过程响应消息。系统给窗口过程发送消息是将消息作为一些函数参数传递给窗口过程，然后窗口过程再对具体的消息做响应；窗口过程会检查消息标识，并通过消息标识使用跟该消息相对应的消息参数。</p>
+<blockquote>
+<p><em>A window procedure does not usually ignore a message. If it does not process a message, it must send the message back to the system for default processing. The window procedure does this by calling the DefWindowProc function (f), which performs a default action and returns a message result. The default window procedure function, DefWindowProc defines certain fundamental behavior shared by all windows. The default window procedure provides the minimal functionality for a window.</em></p>
+</blockquote>
+<p>窗口过程通常不忽略消息。如果应用不处理某个消息，应用必须将该消息发送回系统，交由系统处理。窗口过程通过一个叫<em>DefWindowPrc</em>函数来处理这些发送回系统的消息，该函数会作默认的响应并返回消息处理结果。<em>DefWindowProc</em>定义了一些适用于所有窗口的基本的行为，并提供了一个窗口的最小功能集。</p>
+<h2 id="窗口消息-Windows-Message"><a href="#窗口消息-Windows-Message" class="headerlink" title="窗口消息(Windows Message)"></a>窗口消息(<em>Windows Message</em>)</h2><blockquote>
+<p><em>A Windows message (m) is nothing but a set of parameters such as a window handle, a message identifier and two values called message parameters (WPARAM and LPARAM). The window handle identifies the window for which the message is intended. The message identifier is a constant that identifies the purpose of a message. For example, the message identifier WM_PAINT tells the window procedure that the window’s client area has changed and must be repainted.</em></p>
+</blockquote>
+<p>窗口消息(<strong>m</strong>)只是一个参数集合，包括窗口句柄、消息标识和两个被称为消息参数(<em>WPARAM和LPARAM</em>)的值。窗口句柄标识一个消息即将发往的窗口。消息标识是一个常量，用于认别一个消息的具体含义。例如，对于消息WM_PAINT用于告诉窗口过程窗口的客户区发生了改变需要重新绘制。</p>
+<blockquote>
+<p><em>There are two types of Windows messages such as System defined messages and Application defined messages. The system sends or posts a system-defined message when it communicates with an application. An application can also send or post system-defined messages. For example, the WM_PAINT message identifier is used in system defined message which requests that a window paint its contents.</em></p>
+</blockquote>
+<p>有两种类型的消息，分别是系统定义消息和应用定义消息。当和应用程序通信时，系统通过发送(sends)或投递(posts)一个系统定义消息给应用程序。一个应用程序也可以发送或投递系统消息。例如，WM_PAINT消息是一个系统定义消息，该消息请求一个窗口绘制其窗口内容。</p>
+<blockquote>
+<p><em>An application can create messages to be used by its own windows or to communicate with windows in other processes. If an application creates its own messages, the window procedure that receives them must interpret the messages and provide appropriate processing.</em></p>
+</blockquote>
+<p>应用程序可以创建为自身使用或用于和其它进程通信的消息。如果一个应用程序创建一个自定义的消息，窗口过程接收到后必须解析并适当处理该消息。</p>
+<h2 id="消息队列-Message-Queues"><a href="#消息队列-Message-Queues" class="headerlink" title="消息队列(Message Queues)"></a>消息队列(<em>Message Queues</em>)</h2><blockquote>
+<p><em>The Windows operating system uses two methods to route messages to a window procedure : posting messages to a first-in, first-out queue called a message queue (l), a system-defined memory (q) object that temporarily stores messages, and sending messages directly to a window procedure.</em></p>
+</blockquote>
+<p>Windows操作系统使用两个方法来发送消息给窗口过程：投递消息到一个先进先出的队列，该队列被称为消息队列(<strong>l</strong>)，系统定义了一块内存对象(<strong>q</strong>)会临时存储直接发往某个窗口过程的消息。</p>
+<blockquote>
+<p><em>The Windows operating system maintains only one System wide message queue (l) for the all applications. And, another message queue (j) is created for each graphical user interface (UI) thread. Whenever a user creates an UI thread, the message queue is also created for the UI thread.</em></p>
+</blockquote>
+<p>Windows操作系统维护了一个供所有应用程序服务的系统级别的消息队列(<strong>l</strong>)。而另一个消息队列(<strong>j</strong>)是被UI线程创建的。当用户创建一个UI线程的同时，系统会为该UI线程创建一个消息队列。</p>
+<h2 id="消息流-Message-Flow"><a href="#消息流-Message-Flow" class="headerlink" title="消息流(Message Flow)"></a>消息流(<em>Message Flow</em>)</h2><blockquote>
+<p><em>DOS based applications make C-Runtime function calls to obtain input from the system. For example, it calls gets() C-Runtime function to get input from the keyboard. But, Windows based applications do not make explicit function calls to obtain input. Instead, they wait for the system to pass input to them. This is why Windows-based applications are event-driven.</em></p>
+</blockquote>
+<p>基于DOS的应用程序使用C运行时库函数从系统获取输入。例如，应用程序调用C运行时库函数gets()从键盘获取输入。但是，基于窗口的应用程序并不需要显示的函数调用以获取输入，相反，应用程序是等待系统将输入传递给他们。这就是为什么基于窗口的应用是事件驱动的。</p>
+<blockquote>
+<p><em>Whenever the user moves the mouse, clicks [1] the mouse buttons or types on the keyboard, the device driver (p) for the mouse or keyboard handovers [2] the details to User32.dll (n), which in turn converts the input into Windows messages and places[3] them in the system message queue (l).</em></p>
+</blockquote>
+<p>用户无论是移动鼠标、点击鼠标按钮[<strong>1</strong>]或敲击键盘，鼠标或键盘设备驱动(<strong>p</strong>)会将这些处理交给[<strong>2</strong>]User32.dll(<strong>n</strong>)，而User32.dll又会将这些输入转化[<strong>3</strong>]成Windows消息并将这些消息存到系统消息队列中(<strong>l</strong>)。</p>
+<blockquote>
+<p><em>The Windows operating system removes the messages, one at a time, from the system message queue, examines them to determine the destination window, and then posts [4] them to the message queue of the thread that created the destination window. A thread’s message queue receives all mouse and keyboard messages for the windows created by the thread. The thread removes [5] messages from its queue and directs the system to send [6 &amp; 7] them to the appropriate window procedure for processing. How does a thread remove a message from thread’s message queue and process? Let’s discuss now.</em></p>
+</blockquote>
+<p>操作系统在某一时刻从系统消息队列中移除消息，检查并决定其目标窗口程序，然后将这些消息投递[<strong>4</strong>]给目标窗口程序创建的线程消息队列 。窗口应用程序通过线程创建的线程消息队列接收所有鼠标和键盘消息。该线程从消息队列中移除[<strong>5</strong>]消息，并将其通过系统发送[<strong>6 &amp; 7</strong>]给相应的窗口过程处理。线程如何从线程消息队列中移除一条消息呢？我们马上就会讨论。</p>
+<h2 id="消息循环或消息泵-Message-Loop-or-Message-Pump"><a href="#消息循环或消息泵-Message-Loop-or-Message-Pump" class="headerlink" title="消息循环或消息泵(Message Loop or Message Pump)"></a>消息循环或消息泵(<em>Message Loop or Message Pump</em>)</h2><blockquote>
+<p><em>A Windows application has a WinMain() function which is the entry point for that application, like main()function in ‘C‘ language program. The WinMain()function acts as application’s main thread function. The following three lines of code in the WinMain() function is referred as Message Loop or Message pump.</em></p>
+</blockquote>
+<p>就像C语言程序有一个main函数一样，每一个Windows应用都有一个WinMain的入口函数。WinMain函数扮演着应用程序主线程函数角色。下面这三行在WinMain函数中的代码被称作消息循环或消息泵。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">while (GetMessage(&amp;Msg, NULL, 0, 0)) </span><br><span class="line">&#123; </span><br><span class="line">    TranslateMessage(&amp;Msg); </span><br><span class="line">    DispatchMessage(&amp;Msg); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><em>The message loop’s GetMessage() call checks the message queue for windows messages. If it finds a valid message, it removes a message from its queue. After removing a message from its queue, an application can use the DispatchMessage() function to direct the system to send the message to a window procedure for processing. If there are no messages in the message queue, the GetMessage() call will be blocked till a valid message comes to the message queue.</em></p>
+</blockquote>
+<p>消息循环中的GetMessage调用会检查消息队列中的windows消息。如果发现一个合法的消息，该函数会从消息队列中移除一条消息。当从消息队列中移除一条消息后，应用程序使用DispatchMessage函数将该消息通过系统发送给一个窗口过程处理。如果消息队列中没有消息，GetMessage调用会被阻塞直到有一个合法的消息进入消息队列中。</p>
+<blockquote>
+<p><em>In between these two calls, the TranslateMessage() method call does nothing, but simply translating virtual key messages into character messages. Your application still works, if you comment this line. Only thing is, your test team will file 50 keyboard related bugs.</em></p>
+</blockquote>
+<p>在GetMessage和DispatchMessage中，TranslateMessage函数调用只是简单地做了虚拟键消息和字符消息的转换。如果你注释该行代码，你的应用程序仍然能够工作，只是你的测试小组会给报50键盘事件相关的bug。</p>
+<h2 id="旅行到此结束-Journey-Ends-Here"><a href="#旅行到此结束-Journey-Ends-Here" class="headerlink" title="旅行到此结束(Journey Ends Here)"></a>旅行到此结束(<em>Journey Ends Here</em>)</h2><blockquote>
+<p><em>The message loop (while loop) breaks when the GetMessage() retrieves a WM_QUIT message from the message queue and subsequently application’s main thread quits. That’s all, the application’s life comes to an end.</em></p>
+</blockquote>
+<p>当GetMessage从消息队列中接收到WM_QUIT消息时，消息循环(while循环)会中止，随后应用程序主线程退出。因此，应用程序的整个生命周期就结束了。</p>
+<h2 id="最后-Finally"><a href="#最后-Finally" class="headerlink" title="最后(Finally)"></a>最后(<em>Finally</em>)</h2><blockquote>
+<p><em>Enjoy .NET application programming by knowing the messaging internals. This article is an another flavor of MSDN article about <a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms632590(v=vs.85).aspx">Messages and Message Queues</a>.</em></p>
+</blockquote>
+<p>了解Windows消息的内幕更容易享受.NET编程的乐趣。本文是MSDN上一篇关于<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms632590(v=vs.85).aspx">消息和消息队列</a>文章的另一种解说。</p>
+<blockquote>
+<p><em>I wrote and published this article in Aditi’s Mindscape magazine in 2008. Even now, it may be useful to many developers who don’t know the internals of Windows messaging architecture.</em></p>
+</blockquote>
+<p>我在2008年写了该文章并将其发表到<em>Aditi’s Mindscape</em>杂志上。至今，该文或许会对那些并不清楚Windows消息体系的开发者有帮助。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Windows/" rel="tag"><i class="fa fa-tag"></i> Windows</a>
+              <a href="/tags/%E6%B6%88%E6%81%AF%E5%BE%AA%E7%8E%AF/" rel="tag"><i class="fa fa-tag"></i> 消息循环</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/10/10/use-manifest-manage-deps/" rel="prev" title="使用manifest管理应用程序的依赖文件">
+      <i class="fa fa-chevron-left"></i> 使用manifest管理应用程序的依赖文件
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/10/10/every-programmer-should-know-about-encoding/" rel="next" title="每个程序员都应该知道的字符编码">
+      每个程序员都应该知道的字符编码 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AA%97%E5%8F%A3%E5%92%8C%E7%AA%97%E5%8F%A3%E7%B1%BB-Window-and-Window-Class"><span class="nav-number">1.</span> <span class="nav-text">窗口和窗口类(Window and Window Class)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AA%97%E5%8F%A3%E8%BF%87%E7%A8%8B-Window-Procedure"><span class="nav-number">2.</span> <span class="nav-text">窗口过程(Window Procedure)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AA%97%E5%8F%A3%E6%B6%88%E6%81%AF-Windows-Message"><span class="nav-number">3.</span> <span class="nav-text">窗口消息(Windows Message)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97-Message-Queues"><span class="nav-number">4.</span> <span class="nav-text">消息队列(Message Queues)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E6%B5%81-Message-Flow"><span class="nav-number">5.</span> <span class="nav-text">消息流(Message Flow)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E5%BE%AA%E7%8E%AF%E6%88%96%E6%B6%88%E6%81%AF%E6%B3%B5-Message-Loop-or-Message-Pump"><span class="nav-number">6.</span> <span class="nav-text">消息循环或消息泵(Message Loop or Message Pump)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%85%E8%A1%8C%E5%88%B0%E6%AD%A4%E7%BB%93%E6%9D%9F-Journey-Ends-Here"><span class="nav-number">7.</span> <span class="nav-text">旅行到此结束(Journey Ends Here)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%90%8E-Finally"><span class="nav-number">8.</span> <span class="nav-text">最后(Finally)</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LeeYzero"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">LeeYzero</p>
+  <div class="site-description" itemprop="description">众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/leeyzero" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;leeyzero" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:leeyzero@163.com" title="E-Mail → mailto:leeyzero@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://lamport.azurewebsites.net/pubs/pubs.html" title="http:&#x2F;&#x2F;lamport.azurewebsites.net&#x2F;pubs&#x2F;pubs.html" rel="noopener" target="_blank">Leslie Lamport</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://martinfowler.com/" title="https:&#x2F;&#x2F;martinfowler.com&#x2F;" rel="noopener" target="_blank">Martin Fowler</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.codinghorror.com/" title="https:&#x2F;&#x2F;blog.codinghorror.com&#x2F;" rel="noopener" target="_blank">Coding Horror</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.joelonsoftware.com/" title="https:&#x2F;&#x2F;www.joelonsoftware.com&#x2F;" rel="noopener" target="_blank">Joel on Software</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://steve-yegge.blogspot.com/" title="http:&#x2F;&#x2F;steve-yegge.blogspot.com&#x2F;" rel="noopener" target="_blank">Steve Yegge</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://highscalability.com/" title="http:&#x2F;&#x2F;highscalability.com&#x2F;" rel="noopener" target="_blank">High Scalability</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://coolshell.cn/" title="https:&#x2F;&#x2F;coolshell.cn&#x2F;" rel="noopener" target="_blank">coolshell</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ruanyifeng.com/blog/" title="http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;blog&#x2F;" rel="noopener" target="_blank">阮一峰的网络日志</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LeeYzero</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'Ov23ct4UMzsGEgXj6SRY',
+      clientSecret: '7c4323a8657a12efa8c3c529e2e76d0975c2ed6b',
+      repo        : 'leeyzero.github.io',
+      owner       : 'leeyzero',
+      admin       : ['leeyzero'],
+      id          : '0c038ebd02d3895320909deddc7f5842',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

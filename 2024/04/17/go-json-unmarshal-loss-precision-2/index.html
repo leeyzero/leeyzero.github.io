@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="U2Ny7FrEq1ignn4lLolgeVjRTn4pkY-QddMt4bC6OWA">
+  <meta name="msvalidate.01" content="CBB1C3BC69BAC424DBCDE69CDC69A845">
+  <meta name="baidu-site-verification" content="code-mfJglD7D92">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeyzero.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="缘起最近出现一例json.Unmarshal导致的精度丢失引发的线上问题，虽然这个问题在被及时发现，未对业务造成损失，但细挖这个问题的原因仍然比较有意思。这篇文章会从技术层面深入分析json.Unmarshal精度丢失的原因以及处理建议，以避免后续开发过程中再次踩坑。 在 Part1 中，我们着重说明了json.Unmarshal处理大整数可能出现精度丢失的问题，但遗留了一个问题，即大整数置换成浮">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go json.Unmarshal 精度丢失问题分析（2&#x2F;2）">
+<meta property="og:url" content="https://leeyzero.github.io/2024/04/17/go-json-unmarshal-loss-precision-2/index.html">
+<meta property="og:site_name" content="LeeYzero的博客">
+<meta property="og:description" content="缘起最近出现一例json.Unmarshal导致的精度丢失引发的线上问题，虽然这个问题在被及时发现，未对业务造成损失，但细挖这个问题的原因仍然比较有意思。这篇文章会从技术层面深入分析json.Unmarshal精度丢失的原因以及处理建议，以避免后续开发过程中再次踩坑。 在 Part1 中，我们着重说明了json.Unmarshal处理大整数可能出现精度丢失的问题，但遗留了一个问题，即大整数置换成浮">
+<meta property="og:locale">
+<meta property="og:image" content="https://leeyzero.github.io/images/go-json-unmarshal-loss-precision/1.png">
+<meta property="og:image" content="https://leeyzero.github.io/images/go-json-unmarshal-loss-precision/2.png">
+<meta property="article:published_time" content="2024-04-17T15:37:26.000Z">
+<meta property="article:modified_time" content="2024-10-20T06:04:37.599Z">
+<meta property="article:author" content="LeeYzero">
+<meta property="article:tag" content="Go">
+<meta property="article:tag" content="JSON">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leeyzero.github.io/images/go-json-unmarshal-loss-precision/1.png">
+
+<link rel="canonical" href="https://leeyzero.github.io/2024/04/17/go-json-unmarshal-loss-precision-2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>Go json.Unmarshal 精度丢失问题分析（2/2） | LeeYzero的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LeeYzero的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">自强不息，厚德载物</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2024/04/17/go-json-unmarshal-loss-precision-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Go json.Unmarshal 精度丢失问题分析（2/2）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2024-04-17 23:37:26" itemprop="dateCreated datePublished" datetime="2024-04-17T23:37:26+08:00">2024-04-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-20 14:04:37" itemprop="dateModified" datetime="2024-10-20T14:04:37+08:00">2024-10-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="缘起"><a href="#缘起" class="headerlink" title="缘起"></a>缘起</h2><p>最近出现一例json.Unmarshal导致的精度丢失引发的线上问题，虽然这个问题在被及时发现，未对业务造成损失，但细挖这个问题的原因仍然比较有意思。这篇文章会从技术层面深入分析json.Unmarshal精度丢失的原因以及处理建议，以避免后续开发过程中再次踩坑。</p>
+<p>在 <a href="/2024/04/16/go-json-unmarshal-loss-precision-1/" title="Part1">Part1</a> 中，我们着重说明了json.Unmarshal处理大整数可能出现精度丢失的问题，但遗留了一个问题，即大整数置换成浮点数时，为什么会造成精度丢失，在这篇文章中我会详细解释原因。</p>
+<p>Go语言对浮点数的处理遵循<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/IEEE_754">IEEE-745</a>标准，该标准规定了浮点数在计算机中的二进制表示以及舍入方式，下面先补充一些基础知识，然后再结合 <a href="/2024/04/16/go-json-unmarshal-loss-precision-1/" title="Part1">Part1</a> 中的case，分析精度丢失的原因。</p>
+<h2 id="十进制与二进制"><a href="#十进制与二进制" class="headerlink" title="十进制与二进制"></a>十进制与二进制</h2><p>十进制用0-9表示，逢十进一，同时二进制用0和1表示，逢二进一。而每个位可以使用位的值乘以位的权重表示，直接看例子：</p>
+<p>十进制12.34可以表示为：<br>12.34 = 1×10<sup>1</sup> + 2×10<sup>0</sup> + 3×10<sup>−1</sup> + 4×10<sup>−2</sup> = 12.34</p>
+<p>同理二进制101.11也可以表示为：</p>
+<p>101.11 = 1×2<sup>2</sup> + 0×2<sup>1</sup> + 1×2<sup>0</sup> + 1×2<sup>−1</sup> + 1×2<sup>−2</sup> = 4 + 0 + 1 + 1/2 + 1/4 = 5.75</p>
+<p><strong>十进制小数点向左移动1位相当于将该数除以10，向右移动1位相当于将该数乘以10。</strong><br>例如：123/10 = 12.3，12.3×10 = 123。</p>
+<p>同理，<strong>二进制小数点向左移动1位相当于将该数除以2，向右移动1位相当于将该数乘以2。</strong></p>
+<p>例如：11/2 = 1.1，1.1x2 = 11</p>
+<span id="more"></span>
+
+<h2 id="科学记数法"><a href="#科学记数法" class="headerlink" title="科学记数法"></a>科学记数法</h2><p>科学记数法，是一种数字的表示法，用于表示极大或极小的数。例如：</p>
+<p>0.00000000000000000000000167262158 = 1.67262158×10<sup>−24</sup><br>1898130000000000000000000000 = 1.89813×10<sup>27</sup></p>
+<p>等号右边就是科学记数法的表示格式，即：a×10<sup>n</sup></p>
+<p>其中：</p>
+<ul>
+<li>|a|&gt;=1 且 |a|&lt;10</li>
+<li>n为整数</li>
+</ul>
+<p>二进制的科学记数法同理，即：ax2<sup>n</sup><br>其中：</p>
+<ul>
+<li>|a|&gt;=1 且 |a|&lt;2</li>
+<li>n为整数</li>
+</ul>
+<p>举个例子，看看如何将二进制数表示为科学记数法的格式。</p>
+<p>5.75<sub>10</sub> = 101.11<sub>2</sub> = 1.0111<sub>2</sub>×2<sup>2</sup>（小数点向右移动1位相当于将该数乘以2）</p>
+<h2 id="IEEE-745"><a href="#IEEE-745" class="headerlink" title="IEEE-745"></a>IEEE-745</h2><p>在计算机中，浮点是一种对于实数的近似值数值表示法，由一个有效数字（即尾数）加上幂数来表示，通常是乘以某个基数的整数次指数得到。以这种表示法表示的数值，称为浮点数。可以简单理解为：<strong>浮点数是十进制科学记数法在计算机中的二进制表示，即二进制的科学记数法。</strong></p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/IEEE_754">IEEE-745</a>标准化了计算机中浮点数的表示方法，内容比较多，这里主要讲解<strong>浮点数的表示</strong>和<strong>浮点数的舍入</strong>。</p>
+<h3 id="浮点数的表示"><a href="#浮点数的表示" class="headerlink" title="浮点数的表示"></a>浮点数的表示</h3><p>IEEE-745标准用 V = (-1)<sup>s</sup> x M x 2<sup>E</sup> 的形式来表示，其中：</p>
+<ul>
+<li>符号（sign）：s决定这个数是正数（s=0）还是负数（s=1）</li>
+<li>阶码（exponent）：E的作用是对浮点数加权，这个权重是2的E次幂（可能是负数）</li>
+<li>尾数（signifcand）：M是一个二进制小数，用于存储“有效数字”的小数部分。</li>
+</ul>
+<p>将浮点数的位表示划分为三个域，分别对这些域进行二进制编码：</p>
+<ul>
+<li>1位符号域，直接编码符号s，0表示正数，1表示负数。</li>
+<li>k位阶码域，exp = e<sub>k-1</sub> … e<sub>1</sub>e<sub>0</sub> 编码阶码E，规定为实际指数值加上一个偏移值，偏移值为2<sup>k-1</sup> - 1，k为存储指数的比特位长度。</li>
+<li>m位小数域, frac = f<sub>m-1</sub> … f<sub>1</sub>f<sub>0</sub> 编码尾数M，使用原码表示。</li>
+</ul>
+<p>IEEE745 规定了四种表示浮点数值的方式，但常用的是单精度（32位）和双精度（64位）。它们的二进制bit位，s、exp和frac字段位分别为：</p>
+<ul>
+<li>单精度浮点格式：n=32位、s=1位、k=8位、m=23位。</li>
+<li>双精度浮点格式，n=64位，s=1位，k=11位，m=52位。</li>
+</ul>
+<img src="/images/go-json-unmarshal-loss-precision/1.png" alt="image" style="zoom:45%;" /> 
+
+<p>举个例子，我们将整数78转换成64位浮点数表示应该是多少呢？</p>
+<ol>
+<li>将78表示成二进制数：1001110，浮点数表示为1.001110 x 2<sup>6</sup></li>
+<li>分别对三个字段进行二进制编码</li>
+</ol>
+<ul>
+<li>符号位（1位）：78为正数，符号位编码为0</li>
+<li>阶码位（11位）：指数为6，阶码值为：实际指数 + 偏移量 = 6 + 2<sup>11-1</sup> - 1 = 6 + 1023 = 1029 = 10000000101</li>
+<li>小数位（52位）：1.001110中整数部分始终为1，不显示表示，小数部分001110直接使用52位原码表示为：0000000000000000000000000000000000000000000000001110</li>
+</ul>
+<p>所以78的浮点数二进制表示为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 - 10000000101 - 0000000000000000000000000000000000000000000000001110</span><br></pre></td></tr></table></figure>
+
+<p>你可以有些疑问，为什么阶码需要加一个偏移量？偏移量为什么是2<sup>k-1</sup> - 1而不是2<sup>k-1</sup>。这些问题会引入更多问题，仅对分析这个case来讲没有太大帮助，在此只做简单解释，不展开。</p>
+<p><strong>为什么阶码需要加一个偏移量？</strong><br>阶码的定义是有符号的，加上一个偏移可以将负值平移至正整数空间，这样阶码的计算就不用关心符号了，这有利于计算机做比较运算。</p>
+<p><strong>偏移量为什么是2<sup>k-1</sup> - 1而不是2<sup>k-1</sup>？</strong><br>上面例子中浮点数的表示只是浮点数的规格化表示，标准中对于k位的阶码为全0或全1时，用于表示非规格化和特殊值。规则如下：</p>
+<table>
+<thead>
+<tr>
+<th>形式</th>
+<th>指数</th>
+<th>小数部分</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>零</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>规格化形式</td>
+<td>[1, 2<sup>k</sup> - 2]</td>
+<td>[1, 2)</td>
+</tr>
+<tr>
+<td>非规格化形式</td>
+<td>0</td>
+<td>(0, 1)</td>
+</tr>
+<tr>
+<td>无穷</td>
+<td>2<sup>k</sup> - 1（全1）</td>
+<td>0</td>
+</tr>
+<tr>
+<td>NaN</td>
+<td>2<sup>k</sup> - 1（全1）</td>
+<td>非0</td>
+</tr>
+</tbody></table>
+<h3 id="浮点数的舍入"><a href="#浮点数的舍入" class="headerlink" title="浮点数的舍入"></a>浮点数的舍入</h3><p>浮点数的表示限制了浮点数的范围和精度，浮点数运算只能近似地表示实数运算。比如0.2可以用实数精确表示，但不能用二进制精确表示，它的二进制为0.001100110011……（0011循环）。</p>
+<p>因此对于一个数值，如果不能精确表示时，需要找到最接近的值进行表示，这就是舍入(rounding）。IEEE 745规定了四种舍入方式。默认方式是偶数舍入（round-to-even)，也称为向最接近的值舍入（round-to-nearest）。</p>
+<p>比如将金额舍入到最接近的整数元时，将1.40元舍入为1元，1.60舍入成2元，而1.50距离1和2都一样，此是向偶数合入，所以1.50和2.50都舍入为2元。</p>
+<p>其它舍入方式如下：</p>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>1.40</th>
+<th>1.60</th>
+<th>1.50</th>
+<th>2.50</th>
+<th>-1.50</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>向偶数舍入</td>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+<td>-2</td>
+</tr>
+<tr>
+<td>向零舍入</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>-1</td>
+</tr>
+<tr>
+<td>向下舍入</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>-2</td>
+</tr>
+<tr>
+<td>向上舍入</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+<td>3</td>
+<td>-1</td>
+</tr>
+</tbody></table>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>有了上面的背景知识，我们再回到这个case。分析为什么大整数16505201442738640729不能用float64精确表示。</p>
+<p>这篇<a target="_blank" rel="noopener" href="https://www.51cto.com/article/697019.html">文章</a>中提到“float64可存储的最大整数是小于int64”的结论其实是错误的，float64能表示的范围非常大（可以看下math.MaxFloat64有多大）。这里的主要问题在于float64并不能精确的表示所有int64的值，下面我们来看看为什么会是这样。</p>
+<p>大整数16505201442738640729的二进制表示为：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fmt.Printf(<span class="string">&quot;%.064b\n&quot;</span>, <span class="keyword">uint64</span>(<span class="number">16505201442738640729</span>))</span><br></pre></td></tr></table></figure>
+
+<p>上述代码输出：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1110010100001110010000010100001110001100101100111001011101011001</span><br></pre></td></tr></table></figure>
+
+<p>使用浮点数表示为：<br>1.110010100001110010000010100001110001100101100111001011101011001 x 2<sup>63</sup></p>
+<p>下面来看它在内存中的二进制如何表示：</p>
+<ul>
+<li>符号位（1位）：正数，0</li>
+<li>阶码位（11位）：指数为63，阶码值为：实际指数 + 偏移量 = 63 + 2<sup>11-1</sup> - 1 = 63 + 1023 = 1086 = 10000111110</li>
+<li>小数位（52）：小数中一共有63位，但小数位只有有52位，需要进行截断，如下（空格后是需要截断的小数位）</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1100101000011100100000101000011100011001011001110010 11101011001</span><br></pre></td></tr></table></figure>
+
+<p>发生截断会导致精确丢失，需要进行舍入，上述小数位向下舍入为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1100101000011100100000101000011100011001011001110010 (对应的十进制值为：16505201442738638848）</span><br></pre></td></tr></table></figure>
+
+<p>向上舍入为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1100101000011100100000101000011100011001011001110011（对应的十进制值为：16505201442738640896）</span><br></pre></td></tr></table></figure>
+
+<p>注：Go标准库math包中提供了一个函数<a target="_blank" rel="noopener" href="https://pkg.go.dev/math#Float64frombits">Float64frombits</a>，可以计算出向下舍入和向上舍入后的float64值：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">MakeFloat64FromBits</span><span class="params">(sign1 <span class="keyword">uint32</span>, exp11 <span class="keyword">uint32</span>, frac52 <span class="keyword">uint64</span>)</span> <span class="title">float64</span></span> &#123;</span><br><span class="line">    sign := (<span class="keyword">uint64</span>(sign1) &amp; <span class="number">0x1</span>) &lt;&lt; <span class="number">63</span></span><br><span class="line">    exp := (<span class="keyword">uint64</span>(exp11) &amp; <span class="number">0x7ff</span>) &lt;&lt; <span class="number">52</span></span><br><span class="line">    frac := frac52 &amp; <span class="number">0xfffffffffffff</span></span><br><span class="line">    bit := sign | exp | frac</span><br><span class="line">    <span class="keyword">return</span> math.Float64frombits(bit)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    f1 := MakeFloat64FromBits(<span class="number">0</span>, <span class="number">1086</span>, <span class="number">0xca1c828719672</span>)</span><br><span class="line">    fmt.Printf(<span class="string">&quot;向下舍入: %f\n&quot;</span>, f1)</span><br><span class="line"></span><br><span class="line">    f2 := MakeFloat64FromBits(<span class="number">0</span>, <span class="number">1086</span>, <span class="number">0xca1c828719673</span>)</span><br><span class="line">    fmt.Printf(<span class="string">&quot;向上舍入: %f\n&quot;</span>, f2)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">向下舍入: 16505201442738638848.000000</span><br><span class="line">向上舍入: 16505201442738640896.000000</span><br></pre></td></tr></table></figure>
+
+<p>根据向偶数舍入规则，大整数16505201442738640729离16505201442738640896更近，所以小数位的二进制最终表示为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1100101000011100100000101000011100011001011001110011。</span><br></pre></td></tr></table></figure>
+
+<p>最终我们得到16505201442738640729使用浮点数表示后，在内存中的二进制布局为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 - 10000111110 - 1100101000011100100000101000011100011001011001110011</span><br></pre></td></tr></table></figure>
+
+<p>至此，我们已经清楚，为什么16505201442738640729转换成浮点数会丢失精度了。但在Go语言中，大整数16505201442738640729的浮点表示，在内存中的布局是不是这样呢？我们可以使用math包中提供了一个函数Float64bits，可以将float64的浮点数转换成uint64的二进制数。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">PrintFloat64Bit</span><span class="params">(f <span class="keyword">float64</span>)</span></span> &#123;</span><br><span class="line">    bits := math.Float64bits(f)</span><br><span class="line">    binary := fmt.Sprintf(<span class="string">&quot;%.64b&quot;</span>, bits)</span><br><span class="line">    <span class="comment">// 符号位、指数位、小数位</span></span><br><span class="line">    fmt.Printf(<span class="string">&quot;%s | %s | %s\n&quot;</span>, binary[<span class="number">0</span>:<span class="number">1</span>], binary[<span class="number">1</span>:<span class="number">12</span>], binary[<span class="number">12</span>:<span class="number">64</span>])</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    f := <span class="keyword">float64</span>(<span class="keyword">uint64</span>(<span class="number">16505201442738640729</span>))</span><br><span class="line">    PrintFloat64Bit(f)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 | 10000111110 | 1100101000011100100000101000011100011001011001110011</span><br></pre></td></tr></table></figure>
+
+<p>可以看出，大整数16505201442738640729的浮点表示在内存中的布局跟上面计算的结果是一致的。如果再进一步分析，可以看到，Go中strconv.ParseFloat的实现采用了<a target="_blank" rel="noopener" href="https://nigeltao.github.io/blog/2020/eisel-lemire.html">The Eisel-Lemire ParseNumberF64 Algorithm</a>，该算法将字面量转成双精度浮点数，其主要目标是为了速度，但算法实现比较复杂，感兴趣的可以深入学习。</p>
+<h2 id="分析工具"><a href="#分析工具" class="headerlink" title="分析工具"></a>分析工具</h2><p>上面例子中我们通过人工或代码实现进行分析，主要是为了加深理解，其实已经有现成的工具<a target="_blank" rel="noopener" href="https://christophervickery.com/babbage/IEEE-754/">IEEE-754 Analysis</a>帮助我们分析。</p>
+<img src="/images/go-json-unmarshal-loss-precision/2.png" alt="image" style="zoom:70%;" /> 
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/IEEE_754">IEEE-745 Wiki</a></li>
+<li><a target="_blank" rel="noopener" href="https://item.jd.com/12006637.html#crumb-wrap">深入理解计算机系统</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/mf1mH-aGWgcC6v2R8ijE8A">从科学记数法到浮点数标准IEEE 754</a></li>
+<li><a target="_blank" rel="noopener" href="https://nigeltao.github.io/blog/2020/eisel-lemire.html">The Eisel-Lemire ParseNumberF64 Algorithm</a></li>
+<li><a target="_blank" rel="noopener" href="https://christophervickery.com/babbage/IEEE-754/">IEEE-754 Analysis</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"><i class="fa fa-tag"></i> Go</a>
+              <a href="/tags/JSON/" rel="tag"><i class="fa fa-tag"></i> JSON</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/04/16/go-json-unmarshal-loss-precision-1/" rel="prev" title="Go json.Unmarshal 精度丢失问题分析（1/2）">
+      <i class="fa fa-chevron-left"></i> Go json.Unmarshal 精度丢失问题分析（1/2）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/04/27/vscode-go-debugging/" rel="next" title="vscode-go调试工具">
+      vscode-go调试工具 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%98%E8%B5%B7"><span class="nav-number">1.</span> <span class="nav-text">缘起</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E8%BF%9B%E5%88%B6%E4%B8%8E%E4%BA%8C%E8%BF%9B%E5%88%B6"><span class="nav-number">2.</span> <span class="nav-text">十进制与二进制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A7%91%E5%AD%A6%E8%AE%B0%E6%95%B0%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">科学记数法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IEEE-745"><span class="nav-number">4.</span> <span class="nav-text">IEEE-745</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E8%A1%A8%E7%A4%BA"><span class="nav-number">4.1.</span> <span class="nav-text">浮点数的表示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E8%88%8D%E5%85%A5"><span class="nav-number">4.2.</span> <span class="nav-text">浮点数的舍入</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%9E%90"><span class="nav-number">5.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7"><span class="nav-number">6.</span> <span class="nav-text">分析工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">7.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LeeYzero"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">LeeYzero</p>
+  <div class="site-description" itemprop="description">众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/leeyzero" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;leeyzero" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:leeyzero@163.com" title="E-Mail → mailto:leeyzero@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://lamport.azurewebsites.net/pubs/pubs.html" title="http:&#x2F;&#x2F;lamport.azurewebsites.net&#x2F;pubs&#x2F;pubs.html" rel="noopener" target="_blank">Leslie Lamport</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://martinfowler.com/" title="https:&#x2F;&#x2F;martinfowler.com&#x2F;" rel="noopener" target="_blank">Martin Fowler</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.codinghorror.com/" title="https:&#x2F;&#x2F;blog.codinghorror.com&#x2F;" rel="noopener" target="_blank">Coding Horror</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.joelonsoftware.com/" title="https:&#x2F;&#x2F;www.joelonsoftware.com&#x2F;" rel="noopener" target="_blank">Joel on Software</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://steve-yegge.blogspot.com/" title="http:&#x2F;&#x2F;steve-yegge.blogspot.com&#x2F;" rel="noopener" target="_blank">Steve Yegge</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://highscalability.com/" title="http:&#x2F;&#x2F;highscalability.com&#x2F;" rel="noopener" target="_blank">High Scalability</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://coolshell.cn/" title="https:&#x2F;&#x2F;coolshell.cn&#x2F;" rel="noopener" target="_blank">coolshell</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ruanyifeng.com/blog/" title="http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;blog&#x2F;" rel="noopener" target="_blank">阮一峰的网络日志</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LeeYzero</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'Ov23ct4UMzsGEgXj6SRY',
+      clientSecret: '7c4323a8657a12efa8c3c529e2e76d0975c2ed6b',
+      repo        : 'leeyzero.github.io',
+      owner       : 'leeyzero',
+      admin       : ['leeyzero'],
+      id          : 'ec6a9906925290b3e4cf50bf3e66b24f',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

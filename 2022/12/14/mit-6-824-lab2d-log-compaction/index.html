@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="U2Ny7FrEq1ignn4lLolgeVjRTn4pkY-QddMt4bC6OWA">
+  <meta name="msvalidate.01" content="CBB1C3BC69BAC424DBCDE69CDC69A845">
+  <meta name="baidu-site-verification" content="code-mfJglD7D92">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeyzero.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="上一篇 Lab2C: 持久化 中介绍了Raft持久化的实现，本篇介绍Raft日志压缩原理和实现。实验二共包含四个子实验：  Lab2A: 选主 Lab2B: 日志复制 Lab2C: 持久化 Lab2D: 日志压缩    本文是第四个子实验，需要实现Raft日志压缩，在开始实验前，先阅读以下材料：  阅读论文：In Search of an Understandable Consensus Algo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT 6.824 Lab2C: 日志压缩">
+<meta property="og:url" content="https://leeyzero.github.io/2022/12/14/mit-6-824-lab2d-log-compaction/index.html">
+<meta property="og:site_name" content="LeeYzero的博客">
+<meta property="og:description" content="上一篇 Lab2C: 持久化 中介绍了Raft持久化的实现，本篇介绍Raft日志压缩原理和实现。实验二共包含四个子实验：  Lab2A: 选主 Lab2B: 日志复制 Lab2C: 持久化 Lab2D: 日志压缩    本文是第四个子实验，需要实现Raft日志压缩，在开始实验前，先阅读以下材料：  阅读论文：In Search of an Understandable Consensus Algo">
+<meta property="og:locale">
+<meta property="og:image" content="https://leeyzero.github.io/images/mit-6-824-lab2d/figure12.png">
+<meta property="og:image" content="https://leeyzero.github.io/images/mit-6-824-lab2d/raft_diagram.png">
+<meta property="article:published_time" content="2022-12-14T01:10:09.000Z">
+<meta property="article:modified_time" content="2024-10-20T06:35:56.943Z">
+<meta property="article:author" content="LeeYzero">
+<meta property="article:tag" content="分布式系统">
+<meta property="article:tag" content="MIT6.824">
+<meta property="article:tag" content="Raft">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leeyzero.github.io/images/mit-6-824-lab2d/figure12.png">
+
+<link rel="canonical" href="https://leeyzero.github.io/2022/12/14/mit-6-824-lab2d-log-compaction/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>MIT 6.824 Lab2C: 日志压缩 | LeeYzero的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LeeYzero的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">自强不息，厚德载物</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/12/14/mit-6-824-lab2d-log-compaction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MIT 6.824 Lab2C: 日志压缩
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-12-14 09:10:09" itemprop="dateCreated datePublished" datetime="2022-12-14T09:10:09+08:00">2022-12-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-20 14:35:56" itemprop="dateModified" datetime="2024-10-20T14:35:56+08:00">2024-10-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式系统</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>上一篇 <a href="/2022/12/14/mit-6-824-lab2c-persistence/" title="Lab2C: 持久化">Lab2C: 持久化</a> 中介绍了Raft持久化的实现，本篇介绍Raft日志压缩原理和实现。实验二共包含四个子实验：</p>
+<ul>
+<li><a href="/2022/12/14/mit-6-824-lab2a-leader-election/" title="Lab2A: 选主">Lab2A: 选主</a></li>
+<li><a href="/2022/12/14/mit-6-824-lab2b-log-replication/" title="Lab2B: 日志复制">Lab2B: 日志复制</a></li>
+<li><a href="/2022/12/14/mit-6-824-lab2c-persistence/" title="Lab2C: 持久化">Lab2C: 持久化</a></li>
+<li><a href="/2022/12/14/mit-6-824-lab2d-log-compaction/" title="Lab2D: 日志压缩">Lab2D: 日志压缩</a>
+
+</li>
+</ul>
+<p>本文是第四个子实验，需要实现Raft日志压缩，在开始实验前，先阅读以下材料：</p>
+<ul>
+<li>阅读论文：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">In Search of an Understandable Consensus Algorithm</a>，以下简称论文。</li>
+<li>阅读实验指导：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2D</a></li>
+</ul>
+<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>Raft的日志会随着接收客户端的请求数而不断增长，对实际生产环境中的系统而言，内存是有限的，较大的日志，在服务崩溃重启时需要较长时间加载恢复，这会造成服务的可用性问题。日志压缩主要解决这些问题。</p>
+<p>Raft采用快照（Snapshot)来实现日志压缩。主要原理时，将当前整个系统的状态作为一个快照（可以理解为一个复本，相当于保证了当前的系统状态）持久化到稳定存储中，然后就可以丢弃这个快照点之前的所有日志了。论文中给出了一个快照示例如下：</p>
+<img src="/images/mit-6-824-lab2d/figure12.png" width=500 />
+
+<p>上图中，在快照上，日志长度为7。在index=5处生成了一个快照（snaphot），快照中除记录了状态机的状态：<code>x &lt;- 0, y &lt;- 9</code>外，还记录了本次快照包含的最后一个日志记录的index和term（下面会解释为什么需要存储这两个信息）。快照成功后，我们就可以丢弃index=5之前（包括index=5）的所有日志了，日志压缩后长度为2，内存得以释放。</p>
+<span id="more"></span>
+
+<p>那快照中为什么需要保存last included index和last included term呢？</p>
+<p>因为快照操作并不是只能在Leader上进行。虽然Raft是强领导人，但作者认为，日志复制在各节点上已经达成一致，快照只是对日志的重新组织，并不违背Raft的强领导人特性。另一方面，因为各个节点本地已经拥有快照的所有信息，所有要求Leader来控制各节点的快照，将会导致节点之前大量数据传输，会占用带宽，同时也会增加领导人的实现复杂度。所以快照是可以在Leader和Follower中进行。</p>
+<p>但有个问题是，Leader和Follower虽然在大多数情况下日志是同步的，但当新节点加入或节点日志滞后的情况下，如果我们对Leader做了快照，移除了快照部分的日志记录。如果快照部分的日志还没有同步给Follower，Follower怎么复制日志呢？这就是为什么需要保存快照最后一个日志记录的index和term的原因。有了这两个信息还需要配合一个InstallSnapshot RPC操作，才能让Follower也在相同的位置执行快照。论文中Figure 13介绍了InstallSnapshot RPC的实现细节，在此就不展示了。</p>
+<p>需要注意的是，<strong>只能对已经提交的日志才能做快照</strong>。快照除了涉及Raft本身提供的能力外，还涉及到状态机的概念，Raft中提供的对外API Install，入参中的snapshot参数就是由状态机生成的。可以结合测试用例一起看，测试用例是Raft的调用者，相当于Raft的用户，在实际系统中，它就是上层server。Lab2D引导中给了一个Raft和上层应用（比如K/V store service）的一个完整交互：</p>
+<img src="/images/mit-6-824-lab2d/raft_diagram.png" width=800 />
+
+<p>上层服务决定什么时候需要进行快照（通常是日志大小到达一定阈值）。Raft提供对外API Snapshot，Raft做快照时，会保存状态机的全部状态和快照中的最后一个日志记录的index和term，并进行持久化。对于快照后的Leader，在发送AppendEntries RPC之前，会先判断要同步给Follower的日志是否已经在快照中了，如果已经在快照中了，则发送InstallSnapshot RPC请求。</p>
+<p>Follower在接收到InstallSnapshot RPC请求后，如果满足快照条件，会将快照应用到状态机，状态机应用快照成功后，会调用CondInstallSnapshot，此时Follower才真正开始在本地做快照。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>Lab2D的实现需要增加一些Raft状态，这些状态需要在InstallSnapshot RPC中发送给Follower。实现主要包括三个部分：</p>
+<ul>
+<li>Snapshot</li>
+<li>CondInstallSnashpot</li>
+<li>InstallSnapshot RPC</li>
+</ul>
+<p>在实现之前，先看下我们需要增加哪些Raft状态。</p>
+<h3 id="Raft状态"><a href="#Raft状态" class="headerlink" title="Raft状态"></a>Raft状态</h3><p>本实验中，我们需要新增以下Raft状态：</p>
+<ul>
+<li>lastIncludedIndex：最近一次快照的最后一个日记记录的index，需要持久化，初始化为0。</li>
+<li>lastIncludedTerm：lastIncludedIndex对应的任期，需要持久化，初始化为0。</li>
+<li>snapshot[]：最近一次快照时状态机的状态。</li>
+</ul>
+<p>相应的我们需要修改persit和readPersist，同时新增persistStateAndSnapshot用于快照时持久化Raft状态和Snapshot。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">persist</span><span class="params">()</span></span> &#123;</span><br><span class="line">    state := r.dumpState()</span><br><span class="line">    r.persister.SaveRaftState(state)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">persistStateAndSnapshot</span><span class="params">()</span></span> &#123;</span><br><span class="line">    state := r.dumpState()</span><br><span class="line">    r.persister.SaveStateAndSnapshot(state, r.snapshot)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">readPersist</span><span class="params">(data []<span class="keyword">byte</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> data == <span class="literal">nil</span> || <span class="built_in">len</span>(data) &lt; <span class="number">1</span> &#123; <span class="comment">// bootstrap without any state?</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> currentTerm <span class="keyword">int</span></span><br><span class="line">    <span class="keyword">var</span> voteFor <span class="keyword">int</span></span><br><span class="line">    <span class="keyword">var</span> lastIncludedIndex <span class="keyword">int</span></span><br><span class="line">    <span class="keyword">var</span> lastIncludedTerm <span class="keyword">int</span></span><br><span class="line">    <span class="keyword">var</span> log []*LogEntry</span><br><span class="line">    buf := bytes.NewBuffer(data)</span><br><span class="line">    d := labgob.NewDecoder(buf)</span><br><span class="line">    <span class="keyword">if</span> d.Decode(&amp;currentTerm) != <span class="literal">nil</span> ||</span><br><span class="line">        d.Decode(&amp;voteFor) != <span class="literal">nil</span> ||</span><br><span class="line">        d.Decode(&amp;lastIncludedIndex) != <span class="literal">nil</span> ||</span><br><span class="line">        d.Decode(&amp;lastIncludedTerm) != <span class="literal">nil</span> ||</span><br><span class="line">        d.Decode(&amp;log) != <span class="literal">nil</span> &#123;</span><br><span class="line">        Warning(<span class="string">&quot;raft.readPersist: server[%v] at term[%v] read persist state failed&quot;</span>, r.me, r.currentTerm)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        r.currentTerm = currentTerm</span><br><span class="line">        r.votedFor = voteFor</span><br><span class="line">        r.lastIncludedIndex = lastIncludedIndex</span><br><span class="line">        r.lastIncludedTerm = lastIncludedTerm</span><br><span class="line">        r.log = log</span><br><span class="line">        r.commitIndex = r.lastIncludedIndex</span><br><span class="line">        r.lastApplied = r.lastIncludedIndex</span><br><span class="line">        r.snapshot = r.persister.ReadSnapshot()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">dumpState</span><span class="params">()</span> []<span class="title">byte</span></span> &#123;</span><br><span class="line">    w := <span class="built_in">new</span>(bytes.Buffer)</span><br><span class="line">    e := labgob.NewEncoder(w)</span><br><span class="line">    e.Encode(r.CurrentTerm())</span><br><span class="line">    e.Encode(r.votedFor)</span><br><span class="line">    e.Encode(r.lastIncludedIndex)</span><br><span class="line">    e.Encode(r.lastIncludedTerm)</span><br><span class="line">    e.Encode(r.log)</span><br><span class="line">    <span class="keyword">return</span> w.Bytes()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Snapshot"><a href="#Snapshot" class="headerlink" title="Snapshot"></a>Snapshot</h3><p>Leader和Follower无可以进行Snapshot操作，所以Leader循环和Follower循环进行对Snapshot事件进行处理。只能对已经提交的index进行Snapshot，如果满足快照条件，需要对日志进行压缩，然后更新Raft状态和状态机状态，并持久化。</p>
+<p>有一点需要注意，日志压缩时，为了让垃圾回收收到已经压缩的日志，我们不能再使用同一个slice。快照逻辑实现如下：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">processSnapshot</span><span class="params">(req *SnapshotArgs)</span> *<span class="title">SnapshotReply</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> req.Index &lt;= r.lastIncludedIndex || req.Index &gt; r.commitIndex &#123;</span><br><span class="line">        <span class="keyword">return</span> newSnapshotReply(<span class="literal">false</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    entry := r.getLogEntry(req.Index)</span><br><span class="line">    <span class="keyword">if</span> entry == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> newSnapshotReply(<span class="literal">false</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    r.compactLog(req.Index)</span><br><span class="line"></span><br><span class="line">    r.lastIncludedIndex = entry.Index</span><br><span class="line">    r.lastIncludedTerm = entry.Term</span><br><span class="line">    r.snapshot = req.Snapshot</span><br><span class="line"></span><br><span class="line">    <span class="comment">// save raft state and snapshot to persist</span></span><br><span class="line">    r.persistStateAndSnapshot()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> newSnapshotReply(<span class="literal">true</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">compactLog</span><span class="params">(index <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// Usually the snapshot will contain new information not already in the recipient’s log.</span></span><br><span class="line">    <span class="comment">// In this case, the follower discards its entire log;</span></span><br><span class="line">    entry := r.getLogEntry(index)</span><br><span class="line">    <span class="keyword">if</span> entry == <span class="literal">nil</span> &#123;</span><br><span class="line">        r.log = []*LogEntry&#123;&#125;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    afterEntries := r.log[r.getInternalLogIndex(index)+<span class="number">1</span>:]</span><br><span class="line">    newLog := <span class="built_in">make</span>([]*LogEntry, <span class="built_in">len</span>(afterEntries))</span><br><span class="line">    <span class="built_in">copy</span>(newLog, afterEntries)</span><br><span class="line">    r.log = newLog</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="CondInstallSnapshot"><a href="#CondInstallSnapshot" class="headerlink" title="CondInstallSnapshot"></a>CondInstallSnapshot</h3><p>CondInstallSnapshot的调用时机是Follower接收到InstallSnapshot RPC请求后，将快照应用到状态机时，由状态机调用的。需要注意的是，为了保证Follower快照时的原子性，也就是说提交快照时不能再提交新的请求。我们需要在CondInstallSnapshot中先校验是否在快照提交给状态机期间有新的请求被提交。实现如下：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">processCondInstallSnapshotRequest</span><span class="params">(req *CondInstallSnapshotArgs)</span> *<span class="title">CondInstallSnapshotReply</span></span> &#123;</span><br><span class="line">    <span class="comment">// 说明从快照提交到状态机到状态机调用CondInstallSnapshot期间，有新的日志提交到状态机中</span></span><br><span class="line">    <span class="keyword">if</span> req.LastIncludedIndex &lt;= r.commitIndex &#123;</span><br><span class="line">        <span class="keyword">return</span> newCondInstallSnapshotReply(<span class="literal">false</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    r.compactLog(req.LastIncludedIndex)</span><br><span class="line"></span><br><span class="line">    r.lastIncludedIndex = req.LastIncludedIndex</span><br><span class="line">    r.lastIncludedTerm = req.LastIncludedTerm</span><br><span class="line">    r.commitIndex = req.LastIncludedIndex</span><br><span class="line">    r.lastApplied = req.LastIncludedIndex</span><br><span class="line">    r.snapshot = req.Snapshot</span><br><span class="line"></span><br><span class="line">    r.persistStateAndSnapshot()</span><br><span class="line">    <span class="keyword">return</span> newCondInstallSnapshotReply(<span class="literal">true</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="InstallSnapshot-RPC"><a href="#InstallSnapshot-RPC" class="headerlink" title="InstallSnapshot RPC"></a>InstallSnapshot RPC</h3><p>发送端Leader在AppendEntries需要先判断待发送的日志是否已经做过快照，如果是，说明Follower中还没有这些日志记录，而这些日志记录已经做了快照，需要发送InstallSnapshot RPC。</p>
+<p>处理InstallSnapshot RPC的返回跟AppendEntries RPC类似，但更简单，除了同步term之外，需要更新nextIndex和matchIndex。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">broadcastAppendEntries</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> peer := <span class="keyword">range</span> r.peers &#123;</span><br><span class="line">        <span class="keyword">if</span> peer == r.me &#123;</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> r.killed() &#123;</span><br><span class="line">            Debug(<span class="string">&quot;raft.broadcastAppendEntries: server[%v] state[%v] at term[%v] killed&quot;</span>, r.me, r.State(), r.CurrentTerm())</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        prevLogIndex := r.getPrevLogIndex(peer)</span><br><span class="line">        <span class="keyword">if</span> prevLogIndex &gt;= r.lastIncludedIndex &#123;</span><br><span class="line">            entries, prevLogTerm := r.getLogEntriesAfter(prevLogIndex, MaxLogEntriesPerRequest)</span><br><span class="line">            req := newAppendEntriesArgs(r.CurrentTerm(), r.leader, prevLogIndex, prevLogTerm, r.commitIndex, entries)</span><br><span class="line">            r.asyncSendAppendEntries(r.me, peer, req)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            req := newInstallSnapshotArgs(r.CurrentTerm(), r.leader, r.lastIncludedIndex, r.lastIncludedTerm, r.snapshot)</span><br><span class="line">            r.asyncInstallSnapshot(r.me, peer, req)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">asyncInstallSnapshot</span><span class="params">(server <span class="keyword">int</span>, peer <span class="keyword">int</span>, req *InstallSnapshotArgs)</span></span> &#123;</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(server <span class="keyword">int</span>, peer <span class="keyword">int</span>, req *InstallSnapshotArgs)</span></span> &#123;</span><br><span class="line">        <span class="keyword">var</span> reply InstallSnapshotReply</span><br><span class="line">        <span class="keyword">if</span> ok := r.sendInstallSnapshot(peer, req, &amp;reply); !ok &#123;</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        target := &amp;InstallSnapshotReplyEvent&#123;</span><br><span class="line">            Peer:  peer,</span><br><span class="line">            Req:   req,</span><br><span class="line">            Reply: &amp;reply,</span><br><span class="line">        &#125;</span><br><span class="line">        r.sendAsync(target)</span><br><span class="line">    &#125;(r.me, peer, req)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">processInstallSnapshotReply</span><span class="params">(peer <span class="keyword">int</span>, req *InstallSnapshotArgs, reply *InstallSnapshotReply)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> reply.Term &lt; r.CurrentTerm() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> reply.Term &gt; r.CurrentTerm() &#123;</span><br><span class="line">        r.updateCurrentTerm(reply.Term, LEADER_NONE)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    r.nextIndex[peer] = req.LastIncludedIndex + <span class="number">1</span></span><br><span class="line">    r.matchIndex[peer] = req.LastIncludedIndex</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接收端（Follower）实现除了同步term之外（通过规则），需要做一个幂等操作，即：如果接收到lastIncludedIndex已经是旧的快照，不需要再应用到状态机。需要注意的是，Follower在处理InstallSnapshot RPC时，只是将快照提交到状态机，并没有进行日志压缩，因为我们不能保证应该状态机一定成功，所以需要状态机应用成功后再次调用CondInstallSnapshot，然后Raft在进行实际的快照操作。</p>
+<p>另外，我对待Apply的消息做了一个队列，由一个单独的线程进行处理，这样就不会因为状态机而阻塞事件循环了。实现如下：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">processInstallSnapshotRequest</span><span class="params">(req *InstallSnapshotArgs)</span> <span class="params">(*InstallSnapshotReply, <span class="keyword">bool</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> req.Term &gt; r.CurrentTerm() &#123;</span><br><span class="line">        r.updateCurrentTerm(req.Term, req.LeaderId)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    reply := newInstallSnapshotReply(r.CurrentTerm())</span><br><span class="line">    <span class="keyword">if</span> req.Term &lt; r.CurrentTerm() || req.LastIncludedIndex &lt;= r.lastIncludedIndex &#123;</span><br><span class="line">        <span class="keyword">return</span> reply, <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// apply snapshot to state machine</span></span><br><span class="line">    msg := ApplyMsg&#123;</span><br><span class="line">        SnapshotValid: <span class="literal">true</span>,</span><br><span class="line">        Snapshot:      req.Snapshot,</span><br><span class="line">        SnapshotTerm:  req.LastIncludedTerm,</span><br><span class="line">        SnapshotIndex: req.LastIncludedIndex,</span><br><span class="line">    &#125;</span><br><span class="line">    r.applyQueue &lt;- msg</span><br><span class="line">    <span class="keyword">return</span> reply, <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">startLoop</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    r.wg.Add(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> r.wg.Done()</span><br><span class="line">        r.applyLoop()</span><br><span class="line">    &#125;()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">applyLoop</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> msg := <span class="keyword">range</span> r.applyQueue &#123;</span><br><span class="line">        r.applyCh &lt;- msg</span><br><span class="line">        r.sendAsync(msg) </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">processApplyMsg</span><span class="params">(applyMsg *ApplyMsg)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> !applyMsg.CommandValid &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    r.lastApplied = applyMsg.CommandIndex</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><h3 id="Follower接收到InstallSnapshot时为什么不进行日志压缩？"><a href="#Follower接收到InstallSnapshot时为什么不进行日志压缩？" class="headerlink" title="Follower接收到InstallSnapshot时为什么不进行日志压缩？"></a>Follower接收到InstallSnapshot时为什么不进行日志压缩？</h3><p>因为Raft和状态机是属于两个不同层次的服务，为了不让状态机应用操作阻塞事件循环，应用操作是一个异步操作，在一个单独的线程中执行。我们有两种实现方式：</p>
+<p>一种是在Raft中进行同步处理，即先在应用线程中等待状态进执行完成后在processApplyMsg中进行日志压缩操作。但如果在提交快照和状态机应用快照完成期间，Raft又提交了新的请求，此时我们不能不能再把commitIndex回退到lastIncludedIndex，但在processApplyMsg中我们也法通过状态机，所以这样实现是存在问题的。</p>
+<p>另一种方式是让状态机应用快照完成后，再次通过ConInstallSnapshot告诉Raft，如果Raft在这个期间没有新的日志提交，则Raft才真正开始做快照，成功后告诉状态机，状态机再真正应用快照操作。如果Raft失败，则Raft和状态机均没有应用快照成功。这样就保证了Raft和状态机在应用快照时的一致性。</p>
+<h3 id="日志压缩中如果index未找到，为什么要移除全部日志？"><a href="#日志压缩中如果index未找到，为什么要移除全部日志？" class="headerlink" title="日志压缩中如果index未找到，为什么要移除全部日志？"></a>日志压缩中如果index未找到，为什么要移除全部日志？</h3><p>论文日志压缩有这样一句话：</p>
+<blockquote>
+<p>Usually the snapshot will contain new information not already in the recipient’s log. In this case, the follower discards its entire log; it is all superseded by the snapshot and may possibly have uncommitted entries that conflict with the snapshot.</p>
+</blockquote>
+<p>大概意思是说，接收者的日志中可能并没有包含快照中的一些日志记录，在这种情况下，Follower需要丢弃全部日志，即便是这些日志跟快照有冲突，仍然以快照为准。这也是可以理解的，因为最终我们是要复制Leader的日志，现在收到Leader的快照必定是已经提交过的，根据Raft的安全性保证，在Follower中丢弃日志是安全。</p>
+<p>需要注意的是，只能是Follower在做日志压缩时才能这么做，而Leader不行（想想Raft安全行保证的第2条）。所以上面processSnapshot的实现中，在日志压缩前先校验了index的存在性。</p>
+<h3 id="事件循环线程和应用线程同步如何同步？"><a href="#事件循环线程和应用线程同步如何同步？" class="headerlink" title="事件循环线程和应用线程同步如何同步？"></a>事件循环线程和应用线程同步如何同步？</h3><p>事件循环线程在应用命令/快照时，是先将命令/快照消息发送到应用消息channel中，由应用线程消费该channel再应用到状态机。退出时，需要先让事件循环退出，再关闭应用线程。应用线程只是循环读取applyQueue中的消息，我们只需要在事件循环结束后，关闭applyQueue channel即可。如下：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">startLoop</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> r.wg.Done()</span><br><span class="line">        r.loop()</span><br><span class="line"></span><br><span class="line">        <span class="comment">// only loop exit, we can close applyQueue channel</span></span><br><span class="line">        <span class="built_in">close</span>(r.applyQueue)</span><br><span class="line">    &#125;()</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h2><p>最后附上Lab2C的测试结果</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> go <span class="built_in">test</span> -v -race --run 2D</span></span><br><span class="line">=== RUN   TestSnapshotBasic2D</span><br><span class="line">Test (2D): snapshots basic ...</span><br><span class="line">  ... Passed --   3.9  3  148   56846  251</span><br><span class="line">--- PASS: TestSnapshotBasic2D (3.90s)</span><br><span class="line">=== RUN   TestSnapshotInstall2D</span><br><span class="line">Test (2D): install snapshots (disconnect) ...</span><br><span class="line">  ... Passed --  37.8  3 1640  479895  377</span><br><span class="line">--- PASS: TestSnapshotInstall2D (37.84s)</span><br><span class="line">=== RUN   TestSnapshotInstallUnreliable2D</span><br><span class="line">Test (2D): install snapshots (disconnect+unreliable) ...</span><br><span class="line">  ... Passed --  46.8  3 2020  546698  345</span><br><span class="line">--- PASS: TestSnapshotInstallUnreliable2D (46.77s)</span><br><span class="line">=== RUN   TestSnapshotInstallCrash2D</span><br><span class="line">Test (2D): install snapshots (crash) ...</span><br><span class="line">  ... Passed --  28.1  3 1014  308631  366</span><br><span class="line">--- PASS: TestSnapshotInstallCrash2D (28.08s)</span><br><span class="line">=== RUN   TestSnapshotInstallUnCrash2D</span><br><span class="line">Test (2D): install snapshots (unreliable+crash) ...</span><br><span class="line">  ... Passed --  31.5  3 1128  325411  388</span><br><span class="line">--- PASS: TestSnapshotInstallUnCrash2D (31.46s)</span><br><span class="line">PASS</span><br><span class="line">ok  	6.824/raft	148.084s</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1] <a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">In Search of an Understandable Consensus Algorithm</a><br>[2] <a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2D</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" rel="tag"><i class="fa fa-tag"></i> 分布式系统</a>
+              <a href="/tags/MIT6-824/" rel="tag"><i class="fa fa-tag"></i> MIT6.824</a>
+              <a href="/tags/Raft/" rel="tag"><i class="fa fa-tag"></i> Raft</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/12/14/mit-6-824-lab2c-persistence/" rel="prev" title="MIT 6.824 Lab2C: 持久化">
+      <i class="fa fa-chevron-left"></i> MIT 6.824 Lab2C: 持久化
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/12/25/go-data-structure-slice/" rel="next" title="Go数据结构之slice">
+      Go数据结构之slice <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">基本原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Raft%E7%8A%B6%E6%80%81"><span class="nav-number">2.1.</span> <span class="nav-text">Raft状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Snapshot"><span class="nav-number">2.2.</span> <span class="nav-text">Snapshot</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CondInstallSnapshot"><span class="nav-number">2.3.</span> <span class="nav-text">CondInstallSnapshot</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InstallSnapshot-RPC"><span class="nav-number">2.4.</span> <span class="nav-text">InstallSnapshot RPC</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Q-amp-A"><span class="nav-number">3.</span> <span class="nav-text">Q&amp;A</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Follower%E6%8E%A5%E6%94%B6%E5%88%B0InstallSnapshot%E6%97%B6%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E8%BF%9B%E8%A1%8C%E6%97%A5%E5%BF%97%E5%8E%8B%E7%BC%A9%EF%BC%9F"><span class="nav-number">3.1.</span> <span class="nav-text">Follower接收到InstallSnapshot时为什么不进行日志压缩？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E5%8E%8B%E7%BC%A9%E4%B8%AD%E5%A6%82%E6%9E%9Cindex%E6%9C%AA%E6%89%BE%E5%88%B0%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%A7%BB%E9%99%A4%E5%85%A8%E9%83%A8%E6%97%A5%E5%BF%97%EF%BC%9F"><span class="nav-number">3.2.</span> <span class="nav-text">日志压缩中如果index未找到，为什么要移除全部日志？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF%E7%BA%BF%E7%A8%8B%E5%92%8C%E5%BA%94%E7%94%A8%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E5%A6%82%E4%BD%95%E5%90%8C%E6%AD%A5%EF%BC%9F"><span class="nav-number">3.3.</span> <span class="nav-text">事件循环线程和应用线程同步如何同步？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-number">4.</span> <span class="nav-text">测试结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LeeYzero"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">LeeYzero</p>
+  <div class="site-description" itemprop="description">众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/leeyzero" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;leeyzero" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:leeyzero@163.com" title="E-Mail → mailto:leeyzero@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://lamport.azurewebsites.net/pubs/pubs.html" title="http:&#x2F;&#x2F;lamport.azurewebsites.net&#x2F;pubs&#x2F;pubs.html" rel="noopener" target="_blank">Leslie Lamport</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://martinfowler.com/" title="https:&#x2F;&#x2F;martinfowler.com&#x2F;" rel="noopener" target="_blank">Martin Fowler</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.codinghorror.com/" title="https:&#x2F;&#x2F;blog.codinghorror.com&#x2F;" rel="noopener" target="_blank">Coding Horror</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.joelonsoftware.com/" title="https:&#x2F;&#x2F;www.joelonsoftware.com&#x2F;" rel="noopener" target="_blank">Joel on Software</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://steve-yegge.blogspot.com/" title="http:&#x2F;&#x2F;steve-yegge.blogspot.com&#x2F;" rel="noopener" target="_blank">Steve Yegge</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://highscalability.com/" title="http:&#x2F;&#x2F;highscalability.com&#x2F;" rel="noopener" target="_blank">High Scalability</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://coolshell.cn/" title="https:&#x2F;&#x2F;coolshell.cn&#x2F;" rel="noopener" target="_blank">coolshell</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ruanyifeng.com/blog/" title="http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;blog&#x2F;" rel="noopener" target="_blank">阮一峰的网络日志</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LeeYzero</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'Ov23ct4UMzsGEgXj6SRY',
+      clientSecret: '7c4323a8657a12efa8c3c529e2e76d0975c2ed6b',
+      repo        : 'leeyzero.github.io',
+      owner       : 'leeyzero',
+      admin       : ['leeyzero'],
+      id          : '75260e104b6c12d56187a64044a435a5',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

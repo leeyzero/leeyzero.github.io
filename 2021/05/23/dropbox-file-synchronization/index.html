@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="U2Ny7FrEq1ignn4lLolgeVjRTn4pkY-QddMt4bC6OWA">
+  <meta name="msvalidate.01" content="CBB1C3BC69BAC424DBCDE69CDC69A845">
+  <meta name="baidu-site-verification" content="code-mfJglD7D92">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeyzero.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="文件同步是利用网络将多个电脑或移动设备之间的文件进行同步的网络服务。文件同步的本质是对比网络上两台设备之间的文件变更，然后将文件的不同部分通过网络进行传输，以达到文件同步的目的。本文介绍dropbox的文件同步实现原理。 基本概念文件系统在本地电脑上，一个文件可以用文件路径来标识。但对于dropbox需要支持共享目录，定义了名字空间（namespace）的概念，用于对传统文件系统的抽象。每一个共享">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dropbox同步原理">
+<meta property="og:url" content="https://leeyzero.github.io/2021/05/23/dropbox-file-synchronization/index.html">
+<meta property="og:site_name" content="LeeYzero的博客">
+<meta property="og:description" content="文件同步是利用网络将多个电脑或移动设备之间的文件进行同步的网络服务。文件同步的本质是对比网络上两台设备之间的文件变更，然后将文件的不同部分通过网络进行传输，以达到文件同步的目的。本文介绍dropbox的文件同步实现原理。 基本概念文件系统在本地电脑上，一个文件可以用文件路径来标识。但对于dropbox需要支持共享目录，定义了名字空间（namespace）的概念，用于对传统文件系统的抽象。每一个共享">
+<meta property="og:locale">
+<meta property="og:image" content="https://leeyzero.github.io/images/dropbox-file-synchronization/dropboxfileformat1.png">
+<meta property="og:image" content="https://leeyzero.github.io/images/dropbox-file-synchronization/protocol11.png">
+<meta property="og:image" content="https://leeyzero.github.io/images/dropbox-file-synchronization/protocol21.png">
+<meta property="og:image" content="https://leeyzero.github.io/images/dropbox-file-synchronization/protocol31.png">
+<meta property="og:image" content="https://leeyzero.github.io/images/dropbox-file-synchronization/protocol41.png">
+<meta property="og:image" content="https://leeyzero.github.io/images/dropbox-file-synchronization/protocol52.png">
+<meta property="article:published_time" content="2021-05-23T14:44:23.000Z">
+<meta property="article:modified_time" content="2024-10-20T15:58:15.513Z">
+<meta property="article:author" content="LeeYzero">
+<meta property="article:tag" content="系统设计">
+<meta property="article:tag" content="文件同步">
+<meta property="article:tag" content="Dropbox">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leeyzero.github.io/images/dropbox-file-synchronization/dropboxfileformat1.png">
+
+<link rel="canonical" href="https://leeyzero.github.io/2021/05/23/dropbox-file-synchronization/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>Dropbox同步原理 | LeeYzero的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LeeYzero的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">自强不息，厚德载物</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/05/23/dropbox-file-synchronization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Dropbox同步原理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-05-23 22:44:23" itemprop="dateCreated datePublished" datetime="2021-05-23T22:44:23+08:00">2021-05-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-20 23:58:15" itemprop="dateModified" datetime="2024-10-20T23:58:15+08:00">2024-10-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E5%8C%A0%E8%89%BA/" itemprop="url" rel="index"><span itemprop="name">编程匠艺</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>文件同步是利用网络将多个电脑或移动设备之间的文件进行同步的网络服务。文件同步的本质是对比网络上两台设备之间的文件变更，然后将文件的不同部分通过网络进行传输，以达到文件同步的目的。本文介绍dropbox的文件同步实现原理。</p>
+<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><h3 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h3><p>在本地电脑上，一个文件可以用文件路径来标识。但对于dropbox需要支持共享目录，定义了名字空间（namespace）的概念，用于对传统文件系统的抽象。每一个共享目录有一个惟一的名字空间，每个用户有一个根名字空间，每个共享目录可以挂载（mount）到不同的用户根名字空间下。即对于dropbox的文件可以通过名字空间和相对路径&lt;namespace，relative path&gt;惟一标识。</p>
+<h3 id="文件格式"><a href="#文件格式" class="headerlink" title="文件格式"></a>文件格式</h3><p>受<a target="_blank" rel="noopener" href="https://rsync.samba.org/tech_report/tech_report.html">rsync算法</a>的启发，dropbox把每个文件被分割成4MB的块（最后一个块小于等于4MB）。每个块通过计算出的SHA-256进行标识，对于每个文件内容，可以通过一个块列表blocklist引用。比如，文件video.avi大小了14MB，可以分割成4个块h1, h2, h3, h4，我们说文件video.avi的块列表blocklist是[h1, h2, h3, h4]，如下图：</p>
+<p><img src="/images/dropbox-file-synchronization/dropboxfileformat1.png" alt="image"></p>
+<span id="more"></span>
+
+<h2 id="服务器文件日志"><a href="#服务器文件日志" class="headerlink" title="服务器文件日志"></a>服务器文件日志</h2><p>服务器文件日志（The Server File Journal，SFJ）是一个大的文件元信息数据库，注意元信息中不包含文件内容，文件内容通过blocklist引用。服务器文件日志是一个不断追加的记录行，每一行代表文件的一个版本。每一行主要包含以下关键字段：</p>
+<ul>
+<li>名字空间ID（Namespace ID，NSID）</li>
+<li>名字空间下的相对路径（Namespace Relative Path）</li>
+<li>块列表（Blocklist）</li>
+<li>日志ID（Journal ID，JID），在名字空间下单调递增</li>
+</ul>
+<p>Dropbox主要有两种服务类型：</p>
+<p><strong>块数据服务</strong>（block-server）：维护一个key-value存储，key可以理解为每个块的hash值，数据是加密的。<br><strong>元数据服务</strong>（meta-server）：维护用户、名字空间、和SFJ数据库。</p>
+<h2 id="文件同步"><a href="#文件同步" class="headerlink" title="文件同步"></a>文件同步</h2><p>dropbox的文件同步需要客户端和服务器共同完成。如果记本地文件集合为S1，上次已同步的文件集合为S2，服务器文件集合为S3。通过对比S1、S2，可以找出本地文件变更；通过对比S2、S3，可以找出服务器端文件变更。找到文件变更后，客户端需要与服务器进行上传、下载操作，以完成文件同步。</p>
+<p>这里不讨论如何找出文件变更的实现方式，后面会针对这个主题单独写一篇。这里主要讨论dropbox客户端和服务器上传下载的交互流程。</p>
+<h3 id="上传"><a href="#上传" class="headerlink" title="上传"></a>上传</h3><p>文件变更后，如果重新上传整个文件，无疑会极大增加网络数据传输以及同步效率。上文提到dropbox是将数据按4MB进行分块，且元数据和数据分离，客户端跟服务器交互时主要分成了三个步骤：</p>
+<p>第一步客户端是跟meta-server交互，尝试将文件提交commit至指定的名字空间的路径下&lt;nsid，path&gt;。服务器需要检查：</p>
+<ul>
+<li>用户是否有权限访问这个名字空间</li>
+<li>文件的块列表是否存在</li>
+</ul>
+<p>成功后，服务器返回需要上传的块列表，交互流程如下：</p>
+<p><img src="/images/dropbox-file-synchronization/protocol11.png" alt="image"></p>
+<p>第二步是客户端跟data-server交互，上传第一步中服务器返回的需要上传的块列表数据，可以进行批量上传。流程如下：</p>
+<p><img src="/images/dropbox-file-synchronization/protocol21.png" alt="image"></p>
+<p>第三步其实跟第一步一样，再次将文件提交至指定名字空间的路径下，但这次必定会成功，因为所有文件块已经存在了。如果对于一个已经上传过的文件，由于之前这个文件已经上传过，所以第一步就会成功，这便是我们所说的“秒传”。</p>
+<p><img src="/images/dropbox-file-synchronization/protocol31.png" alt="image"></p>
+<p>经过上面三个步骤（秒传只需要一步），用户的文件就已经存储到了dropbox中。</p>
+<h3 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h3><p>下载是要将服务器侧的文件变更同步至本地，主要包括两个步骤，第一步是将服务器侧的文件meta变更同步至本地，第二步是将文件的数据下载至本地，在本地重新构造出变更后的文件。</p>
+<p>客户端首先跟meta-server交互，通过指定名字空间和该名字空间下的cursor，发起一个list调用以增量获取指定名字空间下的文件变更。每次获取到文件变更后，服务器同时还会返回一个新的cursor，客户端会缓存这个cursor以便下次调用时使用，具体流程如下：</p>
+<p><img src="/images/dropbox-file-synchronization/protocol41.png" alt="image"></p>
+<p>拿到变更后的文件元信息后，需要通过块列表blocklist重新构造文件数据。客户端首先检查这些块是否在本地已缓存，如果未找到，客户端会向block-server发起一个retrieve调用，下载具体块的数据，retrieve操作支持批量。当所有块都下载到本地后，客户端重新构造文件，并将其将添加到本地文件系统中。流程如下：</p>
+<p><img src="/images/dropbox-file-synchronization/protocol52.png" alt="image"></p>
+<h2 id="一些思考"><a href="#一些思考" class="headerlink" title="一些思考"></a>一些思考</h2><p>云盘属于个人云存储赛道，其核心竞争力在于存储成本、带宽成本、数据安全性以及用户基数（数据迁移成本高）。目前国内云盘C端市场竞争激烈，很难在沿用现有模式下有所突破，可以针对细分人群或场景下做差异化以寻找生存空间。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1] <a target="_blank" rel="noopener" href="https://dropbox.tech/infrastructure/streaming-file-synchronization">Streaming File Synchroniztion</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" rel="tag"><i class="fa fa-tag"></i> 系统设计</a>
+              <a href="/tags/%E6%96%87%E4%BB%B6%E5%90%8C%E6%AD%A5/" rel="tag"><i class="fa fa-tag"></i> 文件同步</a>
+              <a href="/tags/Dropbox/" rel="tag"><i class="fa fa-tag"></i> Dropbox</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/05/talking-about-how-to-intervewing/" rel="prev" title="谈谈如何面试候选人">
+      <i class="fa fa-chevron-left"></i> 谈谈如何面试候选人
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/06/08/end-to-end-principle/" rel="next" title="端到端设计原则">
+      端到端设计原则 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="nav-number">1.1.</span> <span class="nav-text">文件系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.2.</span> <span class="nav-text">文件格式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%96%87%E4%BB%B6%E6%97%A5%E5%BF%97"><span class="nav-number">2.</span> <span class="nav-text">服务器文件日志</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E5%90%8C%E6%AD%A5"><span class="nav-number">3.</span> <span class="nav-text">文件同步</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%BC%A0"><span class="nav-number">3.1.</span> <span class="nav-text">上传</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD"><span class="nav-number">3.2.</span> <span class="nav-text">下载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">一些思考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LeeYzero"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">LeeYzero</p>
+  <div class="site-description" itemprop="description">众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/leeyzero" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;leeyzero" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:leeyzero@163.com" title="E-Mail → mailto:leeyzero@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://lamport.azurewebsites.net/pubs/pubs.html" title="http:&#x2F;&#x2F;lamport.azurewebsites.net&#x2F;pubs&#x2F;pubs.html" rel="noopener" target="_blank">Leslie Lamport</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://martinfowler.com/" title="https:&#x2F;&#x2F;martinfowler.com&#x2F;" rel="noopener" target="_blank">Martin Fowler</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.codinghorror.com/" title="https:&#x2F;&#x2F;blog.codinghorror.com&#x2F;" rel="noopener" target="_blank">Coding Horror</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.joelonsoftware.com/" title="https:&#x2F;&#x2F;www.joelonsoftware.com&#x2F;" rel="noopener" target="_blank">Joel on Software</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://steve-yegge.blogspot.com/" title="http:&#x2F;&#x2F;steve-yegge.blogspot.com&#x2F;" rel="noopener" target="_blank">Steve Yegge</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://highscalability.com/" title="http:&#x2F;&#x2F;highscalability.com&#x2F;" rel="noopener" target="_blank">High Scalability</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://coolshell.cn/" title="https:&#x2F;&#x2F;coolshell.cn&#x2F;" rel="noopener" target="_blank">coolshell</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ruanyifeng.com/blog/" title="http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;blog&#x2F;" rel="noopener" target="_blank">阮一峰的网络日志</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LeeYzero</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'Ov23ct4UMzsGEgXj6SRY',
+      clientSecret: '7c4323a8657a12efa8c3c529e2e76d0975c2ed6b',
+      repo        : 'leeyzero.github.io',
+      owner       : 'leeyzero',
+      admin       : ['leeyzero'],
+      id          : '1b0398dcccea578d3c3c11dd9c25fd6e',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

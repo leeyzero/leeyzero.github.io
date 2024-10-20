@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="U2Ny7FrEq1ignn4lLolgeVjRTn4pkY-QddMt4bC6OWA">
+  <meta name="msvalidate.01" content="CBB1C3BC69BAC424DBCDE69CDC69A845">
+  <meta name="baidu-site-verification" content="code-mfJglD7D92">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeyzero.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="之前排查了一个服务hang死的线上故障，觉得这个问题比较有代表性，本文记录故障排查的经过，并做一些总结和思考。 现象周末线上一个比较核心的服务（以下称为X服务）出现大量5xx报警。从客户端看到的现象是客户端请求X服务时，出现大量的链接被重置（connection reset by peer）的错误。 分析从经验来看，90%以上的问题都是上线引入的。故障出现在周末，按规范来说，非特殊情况下，周末是不">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记一次服务hang死故障排查">
+<meta property="og:url" content="https://leeyzero.github.io/2021/04/24/trouble-shooting-for-serivce-hang/index.html">
+<meta property="og:site_name" content="LeeYzero的博客">
+<meta property="og:description" content="之前排查了一个服务hang死的线上故障，觉得这个问题比较有代表性，本文记录故障排查的经过，并做一些总结和思考。 现象周末线上一个比较核心的服务（以下称为X服务）出现大量5xx报警。从客户端看到的现象是客户端请求X服务时，出现大量的链接被重置（connection reset by peer）的错误。 分析从经验来看，90%以上的问题都是上线引入的。故障出现在周末，按规范来说，非特殊情况下，周末是不">
+<meta property="og:locale">
+<meta property="og:image" content="https://leeyzero.github.io/images/trouble-shooting-for-service-hang/tcpfsm.png">
+<meta property="og:image" content="https://leeyzero.github.io/images/trouble-shooting-for-service-hang/strace.png">
+<meta property="article:published_time" content="2021-04-24T04:13:02.000Z">
+<meta property="article:modified_time" content="2024-10-20T15:47:56.084Z">
+<meta property="article:author" content="LeeYzero">
+<meta property="article:tag" content="故障排查">
+<meta property="article:tag" content="服务hang死">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leeyzero.github.io/images/trouble-shooting-for-service-hang/tcpfsm.png">
+
+<link rel="canonical" href="https://leeyzero.github.io/2021/04/24/trouble-shooting-for-serivce-hang/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>记一次服务hang死故障排查 | LeeYzero的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LeeYzero的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">自强不息，厚德载物</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/04/24/trouble-shooting-for-serivce-hang/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          记一次服务hang死故障排查
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-04-24 12:13:02" itemprop="dateCreated datePublished" datetime="2021-04-24T12:13:02+08:00">2021-04-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-20 23:47:56" itemprop="dateModified" datetime="2024-10-20T23:47:56+08:00">2024-10-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E5%8C%A0%E8%89%BA/" itemprop="url" rel="index"><span itemprop="name">编程匠艺</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>之前排查了一个服务hang死的线上故障，觉得这个问题比较有代表性，本文记录故障排查的经过，并做一些总结和思考。</p>
+<h2 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h2><p>周末线上一个比较核心的服务（以下称为X服务）出现大量5xx报警。从客户端看到的现象是客户端请求X服务时，出现大量的链接被重置（connection reset by peer）的错误。</p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>从经验来看，90%以上的问题都是上线引入的。故障出现在周末，按规范来说，非特殊情况下，周末是不允许上线，跟相关角色确认后，本次故障不是上线引入。</p>
+<p>观察线上流量，在出现故障时间点，流量的确有大幅上涨，从宏观分析来看，有可能流量突然上涨是一个诱因。</p>
+<p>任意找了一台有问题的机器，发现了一个比较有意思的现象：<strong>服务X出现了大量CLOSE_WAIT状态的连接。从TCP的状态转换可知，CLOSE_WAIT是被动关闭一方在收到FIN并返回ACK后进入的状态</strong>。TCP状态机如下：</p>
+<p><img src="/images/trouble-shooting-for-service-hang/tcpfsm.png" alt="img"></p>
+<p>也就是说X服务在收到客户端请求后，客户端关闭连接，还服务端进程并没有关闭连接，分析了web server的框架代码，正常情况下，一个请求处理完后会关闭这个连接，<strong>出现这种情况可能是业务逻辑出现阻塞，导致服务端请求的连接一直不能关闭</strong>。</p>
+<p>查看了一下X服务打开的socket句柄数:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> lsof | grep `ps -ef | grep x-service | grep -v <span class="string">&#x27;grep&#x27;</span> | awk <span class="string">&#x27;&#123;print $2&#125;&#x27;</span>` | grep sock | wc -l</span></span><br><span class="line">10231</span><br></pre></td></tr></table></figure>
+
+<p>发现X服务打开的连接数非常多，达到10231个，看下实例的句柄数上限：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">unlimit</span> -n</span></span><br><span class="line">10240</span><br></pre></td></tr></table></figure>
+
+<p>句柄数像是已经被耗尽了，用strace看了下X服务的系统调用：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> strace -p `ps -ef | grep x-service | grep -v <span class="string">&#x27;grep&#x27;</span> | awk <span class="string">&#x27;&#123;print $2&#125;&#x27;</span>`</span></span><br></pre></td></tr></table></figure>
+
+<p>从系统调用日志中发现了一些关键信息：</p>
+<p><img src="/images/trouble-shooting-for-service-hang/strace.png"></p>
+<p>发现大量accept调用报错，从日志信息可以看出，的确是系统的文件句柄数（FD）耗尽了，导致连接被reset掉，这也能说明为什么客户端侧看到了大量<code>connection reset by peer</code>错误了。</p>
+<p>X服务打开了大量socket文件句柄，且绝大多数连接状态都是CLOSE_WAIT，如果业务逻辑有阻塞的确可能会出现把句柄数数打满。</p>
+<p>分析了一下业务逻辑，业务逻辑本身不复杂，只有一次IO网络请求，是从数据库查询数据，从日志中发现了一些端倪：</p>
+<span id="more"></span>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">....</span><br><span class="line">cost:941.583774ms dbstats:&#123;60 60 60 0 25 1.13992ms 6 0&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中dbstats是mysql 数据库连接当前的一些统计信息，其结构DBStats定义在database/sql/sql.go中，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; DBStats contains database statistics.</span><br><span class="line">type DBStats struct &#123;</span><br><span class="line">    MaxOpenConnections int &#x2F;&#x2F; Maximum number of open connections to the database.</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; Pool Status</span><br><span class="line">    OpenConnections int &#x2F;&#x2F; The number of established connections both in use and idle.</span><br><span class="line">    InUse           int &#x2F;&#x2F; The number of connections currently in use.</span><br><span class="line">    Idle            int &#x2F;&#x2F; The number of idle connections.</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; Counters</span><br><span class="line">    WaitCount         int64         &#x2F;&#x2F; The total number of connections waited for.</span><br><span class="line">    WaitDuration      time.Duration &#x2F;&#x2F; The total time blocked waiting for a new connection.</span><br><span class="line">    MaxIdleClosed     int64         &#x2F;&#x2F; The total number of connections closed due to SetMaxIdleConns.</span><br><span class="line">    MaxIdleTimeClosed int64         &#x2F;&#x2F; The total number of connections closed due to SetConnMaxIdleTime.</span><br><span class="line">    MaxLifetimeClosed int64         &#x2F;&#x2F; The total number of connections closed due to SetConnMaxLifetime.</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种需要强调一下，golang实现的mysql连接驱动实现了连接池，可以设置连接池的大小等信息，Idle连接大小等。从这个日志信息中可以看出，业务逻辑在创建设置了连接池大小限制（MaxOpenConnections=60），处理请求时Idle的连接数为0，InUse的连接数已经达到连接池上限。这个请求耗时近1s，还有25个连接在等待处理。</p>
+<p>初步分析了一下，即便是流量过大，导致mysql连接池中的连接被用完，连接使用完后，也应该得到正常处理。且目前的流量已经下来了，但问题依然存在。仔细分析了一下golang对mysql连接池的实现，找到了连接池用完时的处理逻辑，代码在database/sql/sql.go，DB.conn函数中，如下：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"> <span class="comment">// Out of free connections or we were asked not to use one. If we&#x27;re not</span></span><br><span class="line"> <span class="comment">// allowed to open any more connections, make a request and wait.</span></span><br><span class="line"> <span class="keyword">if</span> db.maxOpen &gt; <span class="number">0</span> &amp;&amp; db.numOpen &gt;= db.maxOpen &#123;</span><br><span class="line">     <span class="comment">// Make the connRequest channel. It&#x27;s buffered so that the</span></span><br><span class="line">     <span class="comment">// connectionOpener doesn&#x27;t block while waiting for the req to be read.</span></span><br><span class="line">     req := <span class="built_in">make</span>(<span class="keyword">chan</span> connRequest, <span class="number">1</span>)</span><br><span class="line">     reqKey := db.nextRequestKeyLocked()</span><br><span class="line">     db.connRequests[reqKey] = req</span><br><span class="line">     db.waitCount++</span><br><span class="line">     db.mu.Unlock()</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>当连接池中已打开的连接数超过设置的连接池上限时，会有一个阻塞操作，等待其它连接用完后放入连接池。这下问题就比较清晰了：</p>
+<p><strong>mysql打开一个连接时也是要占用fd资源的，当TCP服务器打开了大量的FD而没有释放，mysql连接池也在不断处理新的请求，当FD用完的时候，TCP服务器和mysql连接池都在等待对方释放FD资源来处理新的请求，导致双方均在等待对方释放FD，导致死锁。</strong></p>
+<p>问题修复就比较简单了，mysql连接池不设置上限，连接数瓶颈交给数据库代理层去解决。</p>
+<h2 id="复现"><a href="#复现" class="headerlink" title="复现"></a>复现</h2><p>为了在线下复现这种场景，我写一个简单服务端和客户端程序。mysql连接池的最大连接数设置的比较小（10个），在处理请求时打开一个mysql连接，同时sleep比较长的时间（600秒），这样就模拟了一个请求处理耗时比较长，导致TCP连接和数据库连接都得不到释放的情况。简单客户端程序开多线程高并发请该服务。</p>
+<p>一开始出现大量io time，当服务器上的FD打满后，开始出现connection reset by peer。由于客户端本地句柄数也有限制，多次运行客户端程序后开始稳定出现connection reset by peer的情况，服务端开始稳定出现open too many files; retrying in 1s错误。</p>
+<p><strong>注：以下代码只为复现问题，忽略一些错误处理，切勿用到生产环境</strong></p>
+<h3 id="模拟服务端"><a href="#模拟服务端" class="headerlink" title="模拟服务端"></a>模拟服务端</h3><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;database/sql&quot;</span></span><br><span class="line">    <span class="string">&quot;encoding/json&quot;</span></span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">    <span class="string">&quot;log&quot;</span></span><br><span class="line">    <span class="string">&quot;net/http&quot;</span></span><br><span class="line">    <span class="string">&quot;time&quot;</span></span><br><span class="line">    _ <span class="string">&quot;github.com/go-sql-driver/mysql&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> db *sql.DB</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">dbInit</span><span class="params">()</span></span> &#123;</span><br><span class="line">  	db, _ = sql.Open(<span class="string">&quot;mysql&quot;</span>, <span class="string">&quot;&#123;user&#125;:&#123;pass&#125;@tcp(&#123;host&#125;:&#123;port&#125;)/&#123;database&#125;?charset=utf8&quot;</span>)</span><br><span class="line">    db.SetMaxOpenConns(<span class="number">10</span>)</span><br><span class="line">    db.SetMaxIdleConns(<span class="number">2</span>)</span><br><span class="line">    db.Ping()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">dbStatsHandler</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">    s := db.Stats()</span><br><span class="line">    fmt.Fprintf(w, <span class="string">&quot;%+v&quot;</span>, s)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">dbQueryHandler</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">    start := time.Now()</span><br><span class="line">  	rows, err := db.Query(<span class="string">&quot;select &#123;fields&#125; from &#123;table&#125;&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      	log.Printf(<span class="string">&quot;db.Query fail.err:%v&quot;</span>, err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> rows.Close()</span><br><span class="line">    time.Sleep(<span class="number">600</span> * time.Second) <span class="comment">// 模拟请求长时间处理不完</span></span><br><span class="line">    fmt.Fprintf(w, <span class="string">&quot;cost:%s&quot;</span>, time.Since(start).String())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    dbInit()</span><br><span class="line">    http.HandleFunc(<span class="string">&quot;/test/db/query&quot;</span>, dbQueryHandler)</span><br><span class="line">    http.HandleFunc(<span class="string">&quot;/test/db/stats&quot;</span>, dbStatsHandler)</span><br><span class="line">    log.Fatal(http.ListenAndServe(<span class="string">&quot;:8000&quot;</span>, <span class="literal">nil</span>))</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="模拟客户端"><a href="#模拟客户端" class="headerlink" title="模拟客户端"></a>模拟客户端</h3><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;net&quot;</span></span><br><span class="line">    <span class="string">&quot;net/http&quot;</span></span><br><span class="line">    <span class="string">&quot;time&quot;</span></span><br><span class="line">    <span class="string">&quot;log&quot;</span></span><br><span class="line">    <span class="string">&quot;sync&quot;</span></span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    ConnectTimeoutMs = <span class="number">500</span></span><br><span class="line">    ReadWriteTimeoutMs = <span class="number">1000</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">dbQuery</span><span class="params">()</span></span> &#123;</span><br><span class="line">    tr := &amp;http.Transport&#123;</span><br><span class="line">        Dial: <span class="function"><span class="keyword">func</span><span class="params">(netw, addr <span class="keyword">string</span>)</span> <span class="params">(net.Conn, error)</span></span> &#123;</span><br><span class="line">            conn, err := net.DialTimeout(netw, addr, ConnectTimeoutMs*time.Millisecond)</span><br><span class="line">            <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">            &#125;</span><br><span class="line">            conn.SetDeadline(time.Now().Add(ReadWriteTimeoutMs * time.Millisecond))</span><br><span class="line">            <span class="keyword">return</span> conn, <span class="literal">nil</span></span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;</span><br><span class="line">    cli := &amp;http.Client&#123;Transport: tr&#125;</span><br><span class="line">    res, err := cli.Get(<span class="string">&quot;http://localhost:8000/test/db/query&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Printf(<span class="string">&quot;http GET fail.err:%v&quot;</span>, err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> res.Body.Close()</span><br><span class="line">    log.Println(<span class="string">&quot;http GET succ.&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">100</span>; i++ &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123; <span class="comment">// 开协程高并发请求</span></span><br><span class="line">            <span class="keyword">defer</span> wg.Done()</span><br><span class="line">            <span class="keyword">for</span> j := <span class="number">0</span>; j &lt; <span class="number">10000</span>; j++ &#123;</span><br><span class="line">                dbQuery()</span><br><span class="line">                time.Sleep(<span class="number">10</span> * time.Millisecond)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;()</span><br><span class="line">    &#125;</span><br><span class="line">    wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>database/sql实现了mysql连接池，如果设置了最大连接数。需要注意当前正在使用的连接数大于最大连接数时，新的连接请求只有等待连接池中的连接被释放后才能得到处理。database/sql提供了连接池当前的使用情况的一些计数信息，这些信息非常有参考价值，建议依赖mysql高并发的业务打印到日志，以便用于排查问题和调优。</p>
+<p>生产环境中的网络问题十分复杂，但如果你知道网络的一些基本原理，至少在主线上不会走偏。FD也是一种系统资源，同样会造成资源竞争问题。</p>
+<p>线上故障排查充分体现了基础知识的重要性。每年都有很多新技术出来，但计算机基础技术却很少有重大变革。很多新技术都是在现有技术基础上搭建起来的，身处在技术的海洋中，要把握住主线，不要舍本逐末，捡了芝麻丢了西瓜。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/" rel="tag"><i class="fa fa-tag"></i> 故障排查</a>
+              <a href="/tags/%E6%9C%8D%E5%8A%A1hang%E6%AD%BB/" rel="tag"><i class="fa fa-tag"></i> 服务hang死</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/04/18/trouble-shooting-for-request-cost-incr/" rel="prev" title="记一次接口耗时上涨故障排查">
+      <i class="fa fa-chevron-left"></i> 记一次接口耗时上涨故障排查
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/05/05/talking-about-how-to-intervewing/" rel="next" title="谈谈如何面试候选人">
+      谈谈如何面试候选人 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%B0%E8%B1%A1"><span class="nav-number">1.</span> <span class="nav-text">现象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E7%8E%B0"><span class="nav-number">3.</span> <span class="nav-text">复现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E6%8B%9F%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="nav-number">3.1.</span> <span class="nav-text">模拟服务端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E6%8B%9F%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">3.2.</span> <span class="nav-text">模拟客户端</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LeeYzero"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">LeeYzero</p>
+  <div class="site-description" itemprop="description">众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/leeyzero" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;leeyzero" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:leeyzero@163.com" title="E-Mail → mailto:leeyzero@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://lamport.azurewebsites.net/pubs/pubs.html" title="http:&#x2F;&#x2F;lamport.azurewebsites.net&#x2F;pubs&#x2F;pubs.html" rel="noopener" target="_blank">Leslie Lamport</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://martinfowler.com/" title="https:&#x2F;&#x2F;martinfowler.com&#x2F;" rel="noopener" target="_blank">Martin Fowler</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.codinghorror.com/" title="https:&#x2F;&#x2F;blog.codinghorror.com&#x2F;" rel="noopener" target="_blank">Coding Horror</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.joelonsoftware.com/" title="https:&#x2F;&#x2F;www.joelonsoftware.com&#x2F;" rel="noopener" target="_blank">Joel on Software</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://steve-yegge.blogspot.com/" title="http:&#x2F;&#x2F;steve-yegge.blogspot.com&#x2F;" rel="noopener" target="_blank">Steve Yegge</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://highscalability.com/" title="http:&#x2F;&#x2F;highscalability.com&#x2F;" rel="noopener" target="_blank">High Scalability</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://coolshell.cn/" title="https:&#x2F;&#x2F;coolshell.cn&#x2F;" rel="noopener" target="_blank">coolshell</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ruanyifeng.com/blog/" title="http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;blog&#x2F;" rel="noopener" target="_blank">阮一峰的网络日志</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LeeYzero</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'Ov23ct4UMzsGEgXj6SRY',
+      clientSecret: '7c4323a8657a12efa8c3c529e2e76d0975c2ed6b',
+      repo        : 'leeyzero.github.io',
+      owner       : 'leeyzero',
+      admin       : ['leeyzero'],
+      id          : '592b0782a31352d6399c7feacec3cdcc',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

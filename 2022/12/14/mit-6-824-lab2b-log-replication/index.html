@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="U2Ny7FrEq1ignn4lLolgeVjRTn4pkY-QddMt4bC6OWA">
+  <meta name="msvalidate.01" content="CBB1C3BC69BAC424DBCDE69CDC69A845">
+  <meta name="baidu-site-verification" content="code-mfJglD7D92">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeyzero.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="上一篇 Lab2A: 选主 中介绍了Raft选主的实现，本篇介绍Raft日志复制的原理和实现。实验二共包含四个子实验：  Lab2A: 选主 Lab2B: 日志复制 Lab2C: 持久化 Lab2D: 日志压缩    本文是第二个子实验，需要实现Raft日志复制。由于Raft的强领导人特性，命令都是通过Leader顺序追回到日志中，然后通过Leader复制到各Follower中，由于Raft的日志">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT 6.824 Lab2A: 日志复制">
+<meta property="og:url" content="https://leeyzero.github.io/2022/12/14/mit-6-824-lab2b-log-replication/index.html">
+<meta property="og:site_name" content="LeeYzero的博客">
+<meta property="og:description" content="上一篇 Lab2A: 选主 中介绍了Raft选主的实现，本篇介绍Raft日志复制的原理和实现。实验二共包含四个子实验：  Lab2A: 选主 Lab2B: 日志复制 Lab2C: 持久化 Lab2D: 日志压缩    本文是第二个子实验，需要实现Raft日志复制。由于Raft的强领导人特性，命令都是通过Leader顺序追回到日志中，然后通过Leader复制到各Follower中，由于Raft的日志">
+<meta property="og:locale">
+<meta property="og:image" content="https://leeyzero.github.io/images/mit-6-824-lab2b/figure8.png">
+<meta property="article:published_time" content="2022-12-14T01:09:23.000Z">
+<meta property="article:modified_time" content="2024-10-20T06:35:51.461Z">
+<meta property="article:author" content="LeeYzero">
+<meta property="article:tag" content="分布式系统">
+<meta property="article:tag" content="MIT6.824">
+<meta property="article:tag" content="Raft">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leeyzero.github.io/images/mit-6-824-lab2b/figure8.png">
+
+<link rel="canonical" href="https://leeyzero.github.io/2022/12/14/mit-6-824-lab2b-log-replication/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>MIT 6.824 Lab2A: 日志复制 | LeeYzero的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LeeYzero的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">自强不息，厚德载物</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/12/14/mit-6-824-lab2b-log-replication/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MIT 6.824 Lab2A: 日志复制
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-12-14 09:09:23" itemprop="dateCreated datePublished" datetime="2022-12-14T09:09:23+08:00">2022-12-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-20 14:35:51" itemprop="dateModified" datetime="2024-10-20T14:35:51+08:00">2024-10-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式系统</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>上一篇 <a href="/2022/12/14/mit-6-824-lab2a-leader-election/" title="Lab2A: 选主">Lab2A: 选主</a> 中介绍了Raft选主的实现，本篇介绍Raft日志复制的原理和实现。实验二共包含四个子实验：</p>
+<ul>
+<li><a href="/2022/12/14/mit-6-824-lab2a-leader-election/" title="Lab2A: 选主">Lab2A: 选主</a></li>
+<li><a href="/2022/12/14/mit-6-824-lab2b-log-replication/" title="Lab2B: 日志复制">Lab2B: 日志复制</a></li>
+<li><a href="/2022/12/14/mit-6-824-lab2c-persistence/" title="Lab2C: 持久化">Lab2C: 持久化</a></li>
+<li><a href="/2022/12/14/mit-6-824-lab2d-log-compaction/" title="Lab2D: 日志压缩">Lab2D: 日志压缩</a>
+
+</li>
+</ul>
+<p>本文是第二个子实验，需要实现Raft日志复制。由于Raft的强领导人特性，命令都是通过Leader顺序追回到日志中，然后通过Leader复制到各Follower中，由于Raft的日志安全特性，使得集群节点中的日志最终达到一致。在开始实验前，先阅读以下材料：</p>
+<ul>
+<li>阅读论文：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">In Search of an Understandable Consensus Algorithm</a>，以下简称论文。</li>
+<li>阅读实验指导：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2B</a></li>
+<li>阅读<a target="_blank" rel="noopener" href="https://thesquareplanet.com/blog/students-guide-to-raft/#an-aside-on-optimizations">Students’ Guide to Raft</a>，本文中介绍了些论文中没有给出的实现细节。</li>
+</ul>
+<p>Raft日志复制是Raft协议最核心的部分，也是最难的部分。论文中将日志复制和安全性是分开讨论的，实现的时候我们需要将这两部分结合起来。另外论文中对一些实现细节是空白的，如日志冲突的优化，这要求我们要实现的时候要考虑各种边界问题。</p>
+<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>选主成功后，Leader就开始接收客户端的请求。每个请求是能够被复制状态机执行的命令（command）。Leader首先将命令作为一个日志记录（entry）追回到日志中，然后并行地向集群中的其它节点发起AppendEntries RPC请求。当日志记录被安全复制到其它节点后，Leader将该记录应用到状态机中，并将状态机执行的结果返回给客户端。如果Follower崩溃或网络丢包，Leader会不断重试向Follower发送AppendEntries RPC，走到Follower最终全部保存了Leader的日志记录。</p>
+<p>以上就是Raft日志复制的全部流程，它涉及到很多细节，这里我主要说一下日志记录和安全性。</p>
+<p>日志可以理解成是一个包含日志记录(entry)的列表，每个日志记录包含了三个信息：</p>
+<ul>
+<li>Term：Leader生成日志记录时任期号</li>
+<li>Index：日志记录在日志中的索引号</li>
+<li>Command：可以被状态机执行的命令</li>
+</ul>
+<p>Term和Index主要用于日志一致冲突检测（下面会介绍）；Command是上层状态机的一个概念，Raft其实并不理解，只是Raft需要解决Command的一致性问题，所以Raft把Command当成一个上下文参数存储到一个日志记录中，当Raft认为一个日志记录在集群中已经达成一致后，Raft只是将这个Command再较交给状态机去执行。这个地方说的达成一致，就是指日志已经被安全复制。</p>
+<p>在讨论什么叫安全复制之前，先直接抛出Raft给出的安全性保证，这些保证在论文中的详细论述和证明，在此不一一展开</p>
+<span id="more"></span>
+
+<h3 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h3><h4 id="选举安全（Election-Safty）"><a href="#选举安全（Election-Safty）" class="headerlink" title="选举安全（Election Safty）"></a>选举安全（Election Safty）</h4><p><strong>每一届任期最多选举出一个领导人。</strong>根据上一篇中可知，每一届任期要么选举出一个领导人，要么发生投票分裂，选举超时后在下一任期重新选举。</p>
+<p>在Lab2A中，我们RequestVote RPC接收者的实现中，我们遗留以下逻辑：</p>
+<blockquote>
+<p>If votedFor is null or candidateId, and candidate’s log is at least as up-to-date as receiver’s log, grant vote.(§5.2, §5.4)</p>
+</blockquote>
+<p>我们只实现了前半部分，由于Lab2A中没有涉及到日志，所以没有判断后半部分逻辑。接收者之所以要判断竞选者的日志是否至少比自己的日志更新，是因为这样可以保证赢得选举的节点至少包含了最新提交的日志。可以这样，选举要获取半数以上的节点同意，也就是半数以上的节点日志至少没有竞选者新，而提交的日志也是要经过半数以上的节点复制成功才能提交，所以竞选者一定这半数以上节点中的某一个。</p>
+<h4 id="只能领导人追加日志（Leader-Append-Only）"><a href="#只能领导人追加日志（Leader-Append-Only）" class="headerlink" title="只能领导人追加日志（Leader Append-Only）"></a>只能领导人追加日志（Leader Append-Only）</h4><p><strong>领导人不能覆盖或删除日志中的记录，它只能追回新的日志记录。</strong>这是因为只有Leader能才接收客户端请求，接收客户端请求后，只是把请求Command作为日志记录追加到日志中。</p>
+<h4 id="日志匹配（Log-Matching）"><a href="#日志匹配（Log-Matching）" class="headerlink" title="日志匹配（Log Matching）"></a>日志匹配（Log Matching）</h4><p><strong>如果不同日志中的两个日志记录具有相同的日志索引号和任期，那么在这个索引号以及之前的日志记录均是相同的。</strong>在5.3节中，将日志匹配展开成日志匹配属性（Log Matching Property），包含两条：</p>
+<blockquote>
+<ol>
+<li>如果不同日志中的两个日志记录具有相同的Index和Term，那么它们存储了相同的Command。</li>
+<li>如果不同日志中的两个日志记录具有相同的Index和Term，那么它们之前的日志记录都是相同的。</li>
+</ol>
+</blockquote>
+<p>第一个属性比较容易证明，因为每个Leader的任期是惟一的，在同一个任期内，日志记录是追加的，也就是说Leader追加的日志记录都是惟一的。第二个属性涉及到日志一致性检测（log consistency check），日志一致检测是在AppendEntries RPC中完成的。Leader在向Follower发送Append Entries RPC请求时，会包含上一次同步日志的最后一个日志记录的Index和Term，如果Follower中能找到这个Index和Term，则从这个Index的下一个位置开始同步；如果没有找到，则拒绝，直到找到日志的冲突位置再同步，后面会详细日志一致性冲突检测。</p>
+<h4 id="领导人完整性（Leader-Completeness）"><a href="#领导人完整性（Leader-Completeness）" class="headerlink" title="领导人完整性（Leader Completeness）"></a>领导人完整性（Leader Completeness）</h4><p><strong>如果一个日志记录在某个任期被提交，则该日志记录会出现在具有更高任期的领导人日志中。</strong>一旦被提交，那么这条日志记录必定在半数以上节点中，由选举安全性，只能是这半数节点中的某一个才能被选为Leader，成为Leader后，由于只能领导人追加日志，根据日志匹配安全性，Leader的日志会覆盖Follower中有冲突的日志，使得最终Leader和Follower中的日志达成一致。</p>
+<h4 id="状态机安全性（State-Machine-Saftey）"><a href="#状态机安全性（State-Machine-Saftey）" class="headerlink" title="状态机安全性（State Machine Saftey）"></a>状态机安全性（State Machine Saftey）</h4><p><strong>如果一个server将某个日志索引的日志记录应用到了状态机，那么其它server在同一个日志索引处也会应用到相同的日志记录。</strong>这条安全性实际上是由上一条安全性推导出来的。因为在日志中某个索引的日志记录一旦被提交，那么这条日志记录将会出现在后续的任期中，最终会复制到其它节点上，再应用到本地状态机中。</p>
+<h3 id="安全复制"><a href="#安全复制" class="headerlink" title="安全复制"></a>安全复制</h3><p>如何判断日志记录被安全复制呢？<strong>在当前任期，日志记录在半数以上节点复制成功，称为安全复制，也称该日志记录为已提交。</strong>注意，这里说的是当前任期，这个很重要，下面有个case会介绍为什么从之前的任期不能提交日志记录。</p>
+<p>Leader中为每个server维护了一个状态matchIndex，表示server当前已成功复制日志记录的最高日志索引。这个状态在Leader选主成功后初始化为0，每次向其它server发起AppendEntries RPC收到Success返回后，更新matchIndex。那如何判断半数已上节点成功复制了日志记录呢？论文中Figure 2右下图Rules for servers针对Leader的规则中给出了形式化的描述：</p>
+<blockquote>
+<p>If there exists an N such that N &gt; commitIndex, a majority<br>of matchIndex[i] ≥ N, and log[N].term == currentTerm: set commitIndex = N (§5.3, §5.4).</p>
+</blockquote>
+<p>由于matchIndex是表示server当前已复制成功日志记录索引号，我们将matchIndex[]逆序排序，在半数以上节点的位置即为commitIndex，如果半数以上定义为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">quorum = len(servers) / 2 + 1</span><br></pre></td></tr></table></figure>
+
+<p>那么<code>newCommitIndex = sort(matchIndex[])[quorum-1]</code>，注意matchIndex的索引是从0开始的。如果得到的 newCommitIndex 比当前记录的commitIndex大，说明我们有新的日志记录需要提交。</p>
+<h3 id="日志一致性冲突检测"><a href="#日志一致性冲突检测" class="headerlink" title="日志一致性冲突检测"></a>日志一致性冲突检测</h3><p>日志一致性冲突检测目的检查出Leader和Follower发生日志冲突的位置，是在AppendEntries RPC中完成，当检测出日志冲突的位置后，Follower会使用Leader的中日志从冲突位置本地日志。</p>
+<p>Leader为每个Follower都维护了一个nextIndex状态，表示Follower中下一个要追加日志的索引号。这个状态在节点成本Leader时初始化为节点最近一次日志记录的Index。Leader在发起AppendEntries RPC请求时，请求参数中包含了prevLogIndex和prevLogTerm，其中prevLogIndex=nextIndex-1。Follower在接收到AppendEntries RPC请求后，先检测prevLogIndex的索引位置是否找到Term=prevLogTerm相同的日志。</p>
+<ul>
+<li>如果找到，说明Leader和Follower的日志已经匹配，Follower移除prevLogIndex之后的日志，并将entries追加到prevLogIndex之后。如果leaderCommit &gt; commitIndex，设置commitIndex=min(leaderCommit, 最后一个日志记录的Index)</li>
+<li>如果未找到，说明Leader和Follower的日志仍然冲突，返回false，Leader收到返回后将对应Follower的nextIndex减1，重新发起AppendEntries，直到日志匹配。</li>
+</ul>
+<p>可以看出如果某个Follower长期宕机重启后，将会滞后很多日志，每次发现冲突后，Leader只对nextIndex减1，会发生O(N)次Append Entries RPC交互，其中N为滞后的日志数。在实际生产环境中这是可能发生的，论文作者提出了一种优化方案，但很多实现细节没有给出，<a target="_blank" rel="noopener" href="https://thesquareplanet.com/blog/students-guide-to-raft/#an-aside-on-optimizations">Students’ Guide to Raft</a>给出了详细优化方案实现，如下：</p>
+<p>在AppendEntriesReply结构中增加conflictIndex和conflictTerm。</p>
+<blockquote>
+<ol>
+<li>如果Follower在prevLogIndex日志索引处没有日志记录，返回ConflictIndex = len(log)，并且conflictTerm = None。</li>
+<li>如果Follower在prevLogIndex日志索引片有记录，但term和prevLogTerm不匹配，并搜索冲突任期term中的第一日志记录entry，conflictIndex = entry.Index, conflictTerm = entry.Term</li>
+<li>Leader收到返回后，首先在日志中搜索任期为conflictTerm的最后一条日志记录entry，如果找到，另nextIndex=entry.Index，如果没有找到则设置nextIndex=conflictIndex.</li>
+</ol>
+</blockquote>
+<p>需要说明的是，对于步骤1，为后面日志压缩做准备，不要使用log的索引号作为日志记录的索引号，应该将ConflictIndex设置为最后一条日志记录的Index+1。</p>
+<h3 id="从之前的任期提交日志记录"><a href="#从之前的任期提交日志记录" class="headerlink" title="从之前的任期提交日志记录"></a>从之前的任期提交日志记录</h3><p>论文中作者花了比较大的篇幅解释了为什么*<em>不能从之前的任期提交日志记录</em>，即使日志记录已经复制到了半数已上节点上。这个地方翻译一下作者给出的case，如下图：</p>
+<img src="/images/mit-6-824-lab2b/figure8.png" width=500 />
+
+<p>(a)中S1是领导人，并且部分复制索引为2的日志记录。在(b)中，S1崩溃；S5收到来自S3、S4再加上自己的一张选票成为领导人，并且在索引为2的位置接收了一个不一样的日志记录。在(c)中，S5崩溃；S1重启，并被选举为领导人，开始继续复制日志，此时，索引为2日志记录已经复制到了半数以上节点，但它仍然不是已经提交的日志记录。如果S1在(d)中崩溃，S5仍然可能被选举为领导人（S2、S3、和S4投票），然后会将自己term=3的日志记录覆盖其它节点索引为2的位置。但是，如(e)如示，如果S1在崩溃前，在它当前的任期复制日志记录到半数以上节点，那么这个日志记录被称为已提交的（S5不能再赢得选举）。这个时候，当前日志记录以及之前的所有日志记录也都是已经提交的。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>Lab2B实现主要有三个部分，主要是：</p>
+<ul>
+<li>完善RequestVote RPC，使其满足选主安全。</li>
+<li>Leader事件循环实现接收客户端命令逻辑。</li>
+<li>完善AppendEntries RPC。</li>
+</ul>
+<p>前两个都比较简单，第三个会涉及到比较多的细节，比较日志一致性冲突检测，对nextIndex、matchIndex、commitIndex、appliedIndex状态的维护等。在介绍实现之前，需要先理解Lab2B需要关注的Raft状态。</p>
+<h3 id="Raft状态"><a href="#Raft状态" class="headerlink" title="Raft状态"></a>Raft状态</h3><p>请看次回顾一下Figure 2中左上图，Lab2B中我们需要关注以下状态：</p>
+<table>
+<thead>
+<tr>
+<th>Raft状态</th>
+<th>说明</th>
+<th>适用角色</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>log[]</td>
+<td>日志，其中每项称为一个日志记录，每个日志记录包含任期（Term）、日志索引（Index）以及状态机命令（Command）</td>
+<td>全部</td>
+</tr>
+<tr>
+<td>commitIndex</td>
+<td>最近提交的命令所处的日志索引，初始化为0，单调递增</td>
+<td>全部</td>
+</tr>
+<tr>
+<td>lastAppied</td>
+<td>最近应用到状态机的日志记录对应的日志索引，初始化为0，单调递增</td>
+<td>全部</td>
+</tr>
+<tr>
+<td>nextIndex[]</td>
+<td>对每个server维护的下一次复制日志记录的索引位置，初始化为Leader的最近一个日志记录索引+1</td>
+<td>Leader</td>
+</tr>
+<tr>
+<td>matchIndex[]</td>
+<td>对每个server维护的当前已复制日志记录的索引位置，初步化为0，单调递增</td>
+<td>Leader</td>
+</tr>
+</tbody></table>
+<h3 id="LogEntry结构"><a href="#LogEntry结构" class="headerlink" title="LogEntry结构"></a>LogEntry结构</h3><p>为后续日志压缩实验做准备，这里我不使用log数组的索引作为日志的索引，而是单独使用一个Index表示日志记录在日志中的索引。一个日志记录还包括追加日志时的任期和状态机命令，定义如下：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> LogEntry <span class="keyword">struct</span> &#123;</span><br><span class="line">    Index   <span class="keyword">int</span></span><br><span class="line">    Term    <span class="keyword">int</span></span><br><span class="line">    Command <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Start"><a href="#Start" class="headerlink" title="Start"></a>Start</h3><p>Start的实现简单，由于采用事件驱动，只需要将命令包装成一个事件，然后将事件发送到事件循环中处理即可。在Leader的事件循环中添加对命令事件的处理，处理逻辑也比较简单，主要包括：</p>
+<p>1、生成一个新的日志记录<br>2、追回到日志中<br>3、Leader写入日志相当于日志已经复制完成，需要更新nextIndex和matchIndex</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> CommandArgs <span class="keyword">struct</span> &#123;</span><br><span class="line">    Command <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">Start</span><span class="params">(command <span class="keyword">interface</span>&#123;&#125;)</span> <span class="params">(<span class="keyword">int</span>, <span class="keyword">int</span>, <span class="keyword">bool</span>)</span></span> &#123;</span><br><span class="line">    index := <span class="number">-1</span></span><br><span class="line">    term := <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    resp, err := r.send(newCommandArgs(command))</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> index, term, <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line">    cmdReply, ok := resp.(*CommandReply)</span><br><span class="line">    <span class="keyword">if</span> !ok &#123;</span><br><span class="line">        <span class="keyword">return</span> index, term, <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> cmdReply.Index, cmdReply.Term, <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">processCommandRequest</span><span class="params">(req *CommandArgs)</span> <span class="params">(*CommandReply, error)</span></span> &#123;</span><br><span class="line">    entry := r.createLogEntry(req.Command)</span><br><span class="line">    <span class="keyword">if</span> err := r.appendLogEntry(entry); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    r.nextIndex[r.me] = entry.Index + <span class="number">1</span></span><br><span class="line">    r.matchIndex[r.me] = entry.Index</span><br><span class="line">    <span class="keyword">return</span> newCommandReply(entry.Index, entry.Term), <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="RequestVote-RPC"><a href="#RequestVote-RPC" class="headerlink" title="RequestVote RPC"></a>RequestVote RPC</h3><p>上面已经提到，我们只需要在接收端添加一个投票限制条件：判断候选者的日志是否至少比接收方日志新。怎么判断呢？论文中5.4.1给出了明确说明：</p>
+<blockquote>
+<p>If the logs have last entries with different terms, then the log with the later term is more up-to-date. If the logs end with the same term, then whichever log is longer is more up-to-date.</p>
+</blockquote>
+<p>比较好理解，首先判断任期（Term），任期越大的日志越新，任期号相同，比较日志索引大小，索引越大的越新。代码实现就比较简单了：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">processRequestVoteRequest</span><span class="params">(req *RequestVoteArgs)</span> <span class="params">(*RequestVoteReply, <span class="keyword">bool</span>)</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    lastLogIndex, lastLogTerm := r.lastLogInfo()</span><br><span class="line">    <span class="keyword">if</span> lastLogTerm &gt; req.LastLogTerm || (lastLogTerm == req.LastLogTerm &amp;&amp; lastLogIndex &gt; req.LastLogIndex) &#123;</span><br><span class="line">        <span class="keyword">return</span> newRequestVoteReply(r.CurrentTerm(), <span class="literal">false</span>), <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="AppendEntries-RPC"><a href="#AppendEntries-RPC" class="headerlink" title="AppendEntries RPC"></a>AppendEntries RPC</h3><p>为了做日志一致检测优化，AppendEntries RPC返回中增加了两个返回参数ConflictIndex和ConflictTerm，AppendEntriesReply结构定义如下：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> AppendEntriesReply <span class="keyword">struct</span> &#123;</span><br><span class="line">    Term          <span class="keyword">int</span></span><br><span class="line">    Success       <span class="keyword">bool</span></span><br><span class="line">    ConflictIndex <span class="keyword">int</span></span><br><span class="line">    ConflictTerm  <span class="keyword">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在Leader循环开始前，我们需要初始化nextIndex和matchIndex，如下：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">leaderLoop</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    lastLogIndex, _ := r.lastLogInfo()</span><br><span class="line">    <span class="keyword">for</span> peer := <span class="keyword">range</span> r.nextIndex &#123;</span><br><span class="line">        r.nextIndex[peer] = lastLogIndex + <span class="number">1</span></span><br><span class="line">        r.matchIndex[peer] = <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">for</span> r.State() == Leader &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Leader在发起AppendEntries RPC请求时，需要带上上一次同步的index和term，还有最近提交的index以及本次要同步的日志记录。接收端返回后要更新nextIndex和matchIndex。如果越过半数以上的日志复制成功，则提交日志，交应用到本地状态机中。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">getPrevLogIndex</span><span class="params">(peer <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> r.nextIndex[peer] - <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">broadcastAppendEntries</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> peer := <span class="keyword">range</span> r.peers &#123;</span><br><span class="line">        ...</span><br><span class="line">        prevLogIndex := r.getPrevLogIndex(peer)</span><br><span class="line">        entries, prevLogTerm := r.getLogEntriesAfter(prevLogIndex, MaxLogEntriesPerRequest)</span><br><span class="line">        req := newAppendEntriesArgs(r.CurrentTerm(), r.leader, prevLogIndex, prevLogTerm, r.commitIndex, entries)</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(server <span class="keyword">int</span>, peer <span class="keyword">int</span>, req *AppendEntriesArgs)</span></span> &#123;</span><br><span class="line">           ...</span><br><span class="line">        &#125;(r.me, peer, req)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">processAppendEntriesReply</span><span class="params">(peer <span class="keyword">int</span>, req *AppendEntriesArgs, reply *AppendEntriesReply)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> reply.Term &gt; r.CurrentTerm() &#123;</span><br><span class="line">        r.updateCurrentTerm(reply.Term, LEADER_NONE)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> reply.Success &#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(req.Entries) &gt; <span class="number">0</span> &#123;</span><br><span class="line">            r.nextIndex[peer] = req.Entries[<span class="built_in">len</span>(req.Entries)<span class="number">-1</span>].Index + <span class="number">1</span></span><br><span class="line">            r.matchIndex[peer] = req.Entries[<span class="built_in">len</span>(req.Entries)<span class="number">-1</span>].Index</span><br><span class="line"></span><br><span class="line">            <span class="comment">// If there exists an N such that N &gt; commitIndex, a majority of matchIndex[i] &gt;= N</span></span><br><span class="line">            <span class="comment">// and log[N].Term == currentTerm: set commitIndex = N (§5.3, §5.4)</span></span><br><span class="line">            matches := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="built_in">len</span>(r.matchIndex))</span><br><span class="line">            <span class="built_in">copy</span>(matches, r.matchIndex)</span><br><span class="line">            sort.Sort(sort.Reverse(sort.IntSlice(matches)))</span><br><span class="line">            commitIndex := matches[r.QuorumSize()<span class="number">-1</span>]</span><br><span class="line">            <span class="keyword">if</span> commitIndex &gt; r.commitIndex &#123;</span><br><span class="line">                r.setCommitIndex(commitIndex)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> reply.Term == r.CurrentTerm() &#123;</span><br><span class="line">        <span class="keyword">if</span> reply.ConflictTerm &gt; <span class="number">0</span> &#123;</span><br><span class="line">            termLastEntry := r.searchTermLastEntry(reply.ConflictTerm)</span><br><span class="line">            <span class="keyword">if</span> termLastEntry != <span class="literal">nil</span> &#123;</span><br><span class="line">                r.nextIndex[peer] = termLastEntry.Index + <span class="number">1</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                r.nextIndex[peer] = reply.ConflictIndex</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            conflictIndex := reply.ConflictIndex</span><br><span class="line">            <span class="keyword">if</span> conflictIndex &lt;= <span class="number">0</span> &#123;</span><br><span class="line">                <span class="comment">// 发生这种情况估计是接收端出现BUG</span></span><br><span class="line">                conflictIndex = <span class="number">1</span></span><br><span class="line">            &#125;</span><br><span class="line">            r.nextIndex[peer] = conflictIndex</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">setCommitIndex</span><span class="params">(leaderCommit <span class="keyword">int</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="comment">// if leaderCommit &gt; commitIndex, set commitIndex = min(leaderCommit, index of last new entry)</span></span><br><span class="line">    <span class="keyword">if</span> leaderCommit &gt; r.currentLogIndex() &#123;</span><br><span class="line">        leaderCommit = r.currentLogIndex()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> leaderCommit &lt;= r.commitIndex &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> index := r.commitIndex + <span class="number">1</span>; index &lt;= leaderCommit; index++ &#123;</span><br><span class="line">        entry := r.getLogEntry(index)</span><br><span class="line">        r.commitIndex = entry.Index</span><br><span class="line">        msg := ApplyMsg&#123;</span><br><span class="line">            CommandValid: <span class="literal">true</span>,</span><br><span class="line">            Command:      entry.Command,</span><br><span class="line">            CommandIndex: entry.Index,</span><br><span class="line">        &#125;</span><br><span class="line">        r.applyCh &lt;- msg</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>follower、candidate、leader均有可能接收到该RPC请求。接收端先进行冲突检测，如果冲突检测通过，将会截断冲突的日志，然后从冲突索引处追加日志，如果leaderCommit大于本地commitIndex，还需要提交日志，并应用到本地状态机中。实现如下：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">processAppendEntriesRequest</span><span class="params">(req *AppendEntriesArgs)</span> <span class="params">(*AppendEntriesReply, <span class="keyword">bool</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> req.Term &lt; r.CurrentTerm() &#123;</span><br><span class="line">        <span class="keyword">return</span> newAppendEntriesReply(r.CurrentTerm(), <span class="literal">false</span>, <span class="number">0</span>, <span class="number">0</span>), <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> req.Term &gt; r.CurrentTerm() &#123;</span><br><span class="line">        r.updateCurrentTerm(req.Term, req.LeaderId)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        r.leader = req.LeaderId</span><br><span class="line">        <span class="keyword">if</span> r.State() == Candidate &#123;</span><br><span class="line">            r.setState(Follower)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> conflictIndex, conflictTerm, err := r.truncateLog(req.PrevLogIndex, req.PrevLogTerm, <span class="built_in">len</span>(req.Entries)); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> newAppendEntriesReply(r.CurrentTerm(), <span class="literal">false</span>, conflictIndex, conflictTerm), <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> err := r.appendLogEntries(req.Entries); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> newAppendEntriesReply(r.CurrentTerm(), <span class="literal">false</span>, r.currentLogIndex(), <span class="number">0</span>), <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> err := r.setCommitIndex(req.LeaderCommit); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> newAppendEntriesReply(r.CurrentTerm(), <span class="literal">false</span>, r.currentLogIndex(), <span class="number">0</span>), <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> newAppendEntriesReply(r.CurrentTerm(), <span class="literal">true</span>, <span class="number">0</span>, <span class="number">0</span>), <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *Raft)</span> <span class="title">truncateLog</span><span class="params">(index <span class="keyword">int</span>, term <span class="keyword">int</span>, entriesLen <span class="keyword">int</span>)</span> <span class="params">(<span class="keyword">int</span>, <span class="keyword">int</span>, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> index &lt; r.commitIndex &#123;</span><br><span class="line">        <span class="keyword">return</span> r.currentLogIndex() + <span class="number">1</span>, <span class="number">0</span>, fmt.Errorf(<span class="string">&quot;index[%v] less than commmitted index[%v]&quot;</span>, index, r.commitIndex)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> index &lt; r.lastIncludedIndex || index &gt; r.currentLogIndex() &#123;</span><br><span class="line">        <span class="keyword">return</span> r.currentLogIndex() + <span class="number">1</span>, <span class="number">0</span>, fmt.Errorf(<span class="string">&quot;index[%v] with term[%v] out of range[%v...%v]&quot;</span>, index, term,</span><br><span class="line">            r.lastIncludedIndex, r.currentLogIndex())</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> index == r.lastIncludedIndex &#123;</span><br><span class="line">        <span class="keyword">if</span> entriesLen &gt; <span class="number">0</span> &#123;</span><br><span class="line">            r.log = []*LogEntry&#123;&#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>, <span class="number">0</span>, <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line">    entry := r.getLogEntry(index)</span><br><span class="line">    <span class="keyword">if</span> entry.Term != term &#123;</span><br><span class="line">        conflictIndex := r.searchTermFirstIndex(index, entry.Term)</span><br><span class="line">        <span class="keyword">return</span> conflictIndex, entry.Term, fmt.Errorf(<span class="string">&quot;entry[%v %v] not match target term[%v]&quot;</span>, index, term, entry.Term)</span><br><span class="line">    &#125;</span><br><span class="line">    r.log = r.log[:r.getInternalLogIndex(index)+<span class="number">1</span>]</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>, <span class="number">0</span>, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><h3 id="Follower何时提交日志？"><a href="#Follower何时提交日志？" class="headerlink" title="Follower何时提交日志？"></a>Follower何时提交日志？</h3><p>Leader维护了一个最近提交的日志索引状态commitIndex，Leader在接收客户端请求后，会先将命令追加到本地日志，然后发起AppendEntries RPC请求，当收到半数以上的节点完成复制后，Leader提交日志（更新commitIndex），并将命令应用到本地状态机。下次Leader再次发走AppendEntries RPC时，commitIndex已经变更，Follower接收到AppendEntries RPC请求后，会将本地commitIndex和leader的commitIndex对比，当发现commitIndex &lt; leaderCommit时，Follower才会提交日志，并将命令应用到本地状态机中。</p>
+<p>从以上流程可以看出，客户端提交一个请求后，Follower需要至少第二个AppendEntries RPC到来时才有可能提交客户端的请求。为什么这里说至少第二次，因为如果Follower的日志比较滞后，那么可能需要多少AppendEntries RPC才能完成同步。</p>
+<h3 id="truncateLog什么情况下会出现prevLogIndex比commitIndex小？"><a href="#truncateLog什么情况下会出现prevLogIndex比commitIndex小？" class="headerlink" title="truncateLog什么情况下会出现prevLogIndex比commitIndex小？"></a>truncateLog什么情况下会出现prevLogIndex比commitIndex小？</h3><p>由于并发操作，以及网络交互的顺序是无法保证的。这种情况发生在：Leader先后对同个follower发起两次AE RPC，第二次AE RPC的entries大于第一次。Follower先收到第二个AE RPC请求，然后回复，Leader在收到半数以上节点日志复制成功后，提交日志，并发起第三次AE RPC请求，时此的commitIndex已经更新。Follower收到第三次AE RPC请求后，在本地提交了日志。随后Follower才收到第一次AE RPC的请求，此时，prevLogIndex就会比commitIndex小。</p>
+<h3 id="日志一致性冲突检索优化是如何工作的？"><a href="#日志一致性冲突检索优化是如何工作的？" class="headerlink" title="日志一致性冲突检索优化是如何工作的？"></a>日志一致性冲突检索优化是如何工作的？</h3><p>第1步中，如果Follower中根本没有prevLogIndex索引的日志记录，说明当前Follower日志缺失，此时只需要将ConflictIndex设置为Follower最后一条日志记录的Index+1，也就是日志缺失的情况下，我们默认认为Follower中现有的日志跟Leader是不冲突的，这样可以一次将冲突索引回退到Follower最后一个日志索引的下一个位置。</p>
+<p>第2步中，如果Follower中prevLogIndex索引的日志记录存在，但日志记录的term和prevLogTerm不匹配，则说明这个任期之前的所有日志记录均不匹配（回头看看日志匹配属性），这时我们找到冲突任期的第1个日志记录作为冲突位置，下次将会检测冲突位置的前一个位置，也就是前一个任期的最后一个位置是否和Leader匹配，如果不匹配，会再次进行该步骤。</p>
+<p>第3步中，最大的疑问就是Leader为啥先查找冲突任期的最后一个日志记录？这相当于是一个优化，如果在Leader中找到冲突的任期，这种情况只能说明这个冲突任期内Leader的日志数比Follower短（根据日志匹配属性，如果大于等于的话就不会出现冲突了），此时以Leader在该冲突内的任期的最后一个日志记录索引号+1作为Follower的nextIndex即可。相当于下次检测Leader冲突任期内的最后一个日志记录是否匹配。</p>
+<h2 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h2><p>最后附上Lab2B的测试结果</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> go <span class="built_in">test</span> -v -race --run 2B</span></span><br><span class="line">=== RUN   TestBasicAgree2B</span><br><span class="line">Test (2B): basic agreement ...</span><br><span class="line">  ... Passed --   0.6  3   16    4658    3</span><br><span class="line">--- PASS: TestBasicAgree2B (0.59s)</span><br><span class="line">=== RUN   TestRPCBytes2B</span><br><span class="line">Test (2B): RPC byte count ...</span><br><span class="line">  ... Passed --   1.4  3   48  114814   11</span><br><span class="line">--- PASS: TestRPCBytes2B (1.43s)</span><br><span class="line">=== RUN   TestFailAgree2B</span><br><span class="line">Test (2B): agreement despite follower disconnection ...</span><br><span class="line">  ... Passed --   5.5  3  212   60911    8</span><br><span class="line">--- PASS: TestFailAgree2B (5.52s)</span><br><span class="line">=== RUN   TestFailNoAgree2B</span><br><span class="line">Test (2B): no agreement if too many followers disconnect ...</span><br><span class="line">  ... Passed --   3.5  5  324   75720    3</span><br><span class="line">--- PASS: TestFailNoAgree2B (3.51s)</span><br><span class="line">=== RUN   TestConcurrentStarts2B</span><br><span class="line">Test (2B): concurrent Start()s ...</span><br><span class="line">  ... Passed --   0.7  3   16    4698    6</span><br><span class="line">--- PASS: TestConcurrentStarts2B (0.66s)</span><br><span class="line">=== RUN   TestRejoin2B</span><br><span class="line">Test (2B): rejoin of partitioned leader ...</span><br><span class="line">  ... Passed --   4.0  3  254   62603    4</span><br><span class="line">--- PASS: TestRejoin2B (4.00s)</span><br><span class="line">=== RUN   TestBackup2B</span><br><span class="line">Test (2B): leader backs up quickly over incorrect follower logs ...</span><br><span class="line">  ... Passed --  14.9  5 2368 2090480  102</span><br><span class="line">--- PASS: TestBackup2B (14.88s)</span><br><span class="line">=== RUN   TestCount2B</span><br><span class="line">Test (2B): RPC counts aren&#x27;t too high ...</span><br><span class="line">  ... Passed --   2.2  3   76   23066   12</span><br><span class="line">--- PASS: TestCount2B (2.23s)</span><br><span class="line">PASS</span><br><span class="line">ok  	6.824/raft	32.863s</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1] <a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">In Search of an Understandable Consensus Algorithm</a><br>[2] <a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/labs/lab-raft.html">6.824 Lab 2: Raft Part2B</a><br>[3] <a target="_blank" rel="noopener" href="https://thesquareplanet.com/blog/students-guide-to-raft/#an-aside-on-optimizations">Students’ Guide to Raft</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" rel="tag"><i class="fa fa-tag"></i> 分布式系统</a>
+              <a href="/tags/MIT6-824/" rel="tag"><i class="fa fa-tag"></i> MIT6.824</a>
+              <a href="/tags/Raft/" rel="tag"><i class="fa fa-tag"></i> Raft</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/12/14/mit-6-824-lab2a-leader-election/" rel="prev" title="MIT 6.824 Lab2A: 选主">
+      <i class="fa fa-chevron-left"></i> MIT 6.824 Lab2A: 选主
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/12/14/mit-6-824-lab2c-persistence/" rel="next" title="MIT 6.824 Lab2C: 持久化">
+      MIT 6.824 Lab2C: 持久化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">基本原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7"><span class="nav-number">1.1.</span> <span class="nav-text">安全性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%89%E4%B8%BE%E5%AE%89%E5%85%A8%EF%BC%88Election-Safty%EF%BC%89"><span class="nav-number">1.1.1.</span> <span class="nav-text">选举安全（Election Safty）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%AA%E8%83%BD%E9%A2%86%E5%AF%BC%E4%BA%BA%E8%BF%BD%E5%8A%A0%E6%97%A5%E5%BF%97%EF%BC%88Leader-Append-Only%EF%BC%89"><span class="nav-number">1.1.2.</span> <span class="nav-text">只能领导人追加日志（Leader Append-Only）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E5%8C%B9%E9%85%8D%EF%BC%88Log-Matching%EF%BC%89"><span class="nav-number">1.1.3.</span> <span class="nav-text">日志匹配（Log Matching）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A2%86%E5%AF%BC%E4%BA%BA%E5%AE%8C%E6%95%B4%E6%80%A7%EF%BC%88Leader-Completeness%EF%BC%89"><span class="nav-number">1.1.4.</span> <span class="nav-text">领导人完整性（Leader Completeness）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E6%9C%BA%E5%AE%89%E5%85%A8%E6%80%A7%EF%BC%88State-Machine-Saftey%EF%BC%89"><span class="nav-number">1.1.5.</span> <span class="nav-text">状态机安全性（State Machine Saftey）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E5%A4%8D%E5%88%B6"><span class="nav-number">1.2.</span> <span class="nav-text">安全复制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E4%B8%80%E8%87%B4%E6%80%A7%E5%86%B2%E7%AA%81%E6%A3%80%E6%B5%8B"><span class="nav-number">1.3.</span> <span class="nav-text">日志一致性冲突检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E4%B9%8B%E5%89%8D%E7%9A%84%E4%BB%BB%E6%9C%9F%E6%8F%90%E4%BA%A4%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95"><span class="nav-number">1.4.</span> <span class="nav-text">从之前的任期提交日志记录</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Raft%E7%8A%B6%E6%80%81"><span class="nav-number">2.1.</span> <span class="nav-text">Raft状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LogEntry%E7%BB%93%E6%9E%84"><span class="nav-number">2.2.</span> <span class="nav-text">LogEntry结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Start"><span class="nav-number">2.3.</span> <span class="nav-text">Start</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RequestVote-RPC"><span class="nav-number">2.4.</span> <span class="nav-text">RequestVote RPC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AppendEntries-RPC"><span class="nav-number">2.5.</span> <span class="nav-text">AppendEntries RPC</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Q-amp-A"><span class="nav-number">3.</span> <span class="nav-text">Q&amp;A</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Follower%E4%BD%95%E6%97%B6%E6%8F%90%E4%BA%A4%E6%97%A5%E5%BF%97%EF%BC%9F"><span class="nav-number">3.1.</span> <span class="nav-text">Follower何时提交日志？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#truncateLog%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%E4%B8%8B%E4%BC%9A%E5%87%BA%E7%8E%B0prevLogIndex%E6%AF%94commitIndex%E5%B0%8F%EF%BC%9F"><span class="nav-number">3.2.</span> <span class="nav-text">truncateLog什么情况下会出现prevLogIndex比commitIndex小？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E4%B8%80%E8%87%B4%E6%80%A7%E5%86%B2%E7%AA%81%E6%A3%80%E7%B4%A2%E4%BC%98%E5%8C%96%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84%EF%BC%9F"><span class="nav-number">3.3.</span> <span class="nav-text">日志一致性冲突检索优化是如何工作的？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-number">4.</span> <span class="nav-text">测试结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LeeYzero"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">LeeYzero</p>
+  <div class="site-description" itemprop="description">众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/leeyzero" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;leeyzero" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:leeyzero@163.com" title="E-Mail → mailto:leeyzero@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://lamport.azurewebsites.net/pubs/pubs.html" title="http:&#x2F;&#x2F;lamport.azurewebsites.net&#x2F;pubs&#x2F;pubs.html" rel="noopener" target="_blank">Leslie Lamport</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://martinfowler.com/" title="https:&#x2F;&#x2F;martinfowler.com&#x2F;" rel="noopener" target="_blank">Martin Fowler</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.codinghorror.com/" title="https:&#x2F;&#x2F;blog.codinghorror.com&#x2F;" rel="noopener" target="_blank">Coding Horror</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.joelonsoftware.com/" title="https:&#x2F;&#x2F;www.joelonsoftware.com&#x2F;" rel="noopener" target="_blank">Joel on Software</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://steve-yegge.blogspot.com/" title="http:&#x2F;&#x2F;steve-yegge.blogspot.com&#x2F;" rel="noopener" target="_blank">Steve Yegge</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://highscalability.com/" title="http:&#x2F;&#x2F;highscalability.com&#x2F;" rel="noopener" target="_blank">High Scalability</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://coolshell.cn/" title="https:&#x2F;&#x2F;coolshell.cn&#x2F;" rel="noopener" target="_blank">coolshell</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ruanyifeng.com/blog/" title="http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;blog&#x2F;" rel="noopener" target="_blank">阮一峰的网络日志</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LeeYzero</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'Ov23ct4UMzsGEgXj6SRY',
+      clientSecret: '7c4323a8657a12efa8c3c529e2e76d0975c2ed6b',
+      repo        : 'leeyzero.github.io',
+      owner       : 'leeyzero',
+      admin       : ['leeyzero'],
+      id          : 'dab44afd48b66ee951b8e3083769ca88',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

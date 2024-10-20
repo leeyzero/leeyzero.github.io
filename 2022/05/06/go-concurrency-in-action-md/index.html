@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="U2Ny7FrEq1ignn4lLolgeVjRTn4pkY-QddMt4bC6OWA">
+  <meta name="msvalidate.01" content="CBB1C3BC69BAC424DBCDE69CDC69A845">
+  <meta name="baidu-site-verification" content="code-mfJglD7D92">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeyzero.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="写在前面之前写过一篇Go并发编程模式，相对比较片面。最近系统看了下Concurrency in Go, 结合自身的一些实践，形成本文，算是一个读书笔记吧。 为什么需要并发？摩尔定律逐渐失效，数据规模的不断增长需要充分挖掘多核计算机性能，而并发编程是利器：  Concurrency is the next major revolution in how we write software. ——Th">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go并发编程实践">
+<meta property="og:url" content="https://leeyzero.github.io/2022/05/06/go-concurrency-in-action-md/index.html">
+<meta property="og:site_name" content="LeeYzero的博客">
+<meta property="og:description" content="写在前面之前写过一篇Go并发编程模式，相对比较片面。最近系统看了下Concurrency in Go, 结合自身的一些实践，形成本文，算是一个读书笔记吧。 为什么需要并发？摩尔定律逐渐失效，数据规模的不断增长需要充分挖掘多核计算机性能，而并发编程是利器：  Concurrency is the next major revolution in how we write software. ——Th">
+<meta property="og:locale">
+<meta property="og:image" content="https://leeyzero.github.io/images/go-concurrency-in-action/1.png">
+<meta property="og:image" content="https://leeyzero.github.io/images/go-concurrency-in-action/2.png">
+<meta property="og:image" content="https://leeyzero.github.io/images/go-concurrency-in-action/3.png">
+<meta property="article:published_time" content="2022-05-06T12:24:21.000Z">
+<meta property="article:modified_time" content="2024-10-20T15:38:46.414Z">
+<meta property="article:author" content="LeeYzero">
+<meta property="article:tag" content="Go">
+<meta property="article:tag" content="concurrency">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leeyzero.github.io/images/go-concurrency-in-action/1.png">
+
+<link rel="canonical" href="https://leeyzero.github.io/2022/05/06/go-concurrency-in-action-md/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>Go并发编程实践 | LeeYzero的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LeeYzero的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">自强不息，厚德载物</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/05/06/go-concurrency-in-action-md/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Go并发编程实践
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-05-06 20:24:21" itemprop="dateCreated datePublished" datetime="2022-05-06T20:24:21+08:00">2022-05-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-20 23:38:46" itemprop="dateModified" datetime="2024-10-20T23:38:46+08:00">2024-10-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>之前写过一篇<a href="https://leeyzero.github.io/2021/07/02/go-concurrency-pattern/">Go并发编程模式</a>，相对比较片面。最近系统看了下<a target="_blank" rel="noopener" href="https://edu.anarcho-copy.org/Programming%20Languages/Go/Concurrency%20in%20Go.pdf">Concurrency in Go</a>, 结合自身的一些实践，形成本文，算是一个读书笔记吧。</p>
+<h2 id="为什么需要并发？"><a href="#为什么需要并发？" class="headerlink" title="为什么需要并发？"></a>为什么需要并发？</h2><p>摩尔定律逐渐失效，数据规模的不断增长需要充分挖掘多核计算机性能，而并发编程是利器：</p>
+<blockquote>
+<p>Concurrency is the next major revolution in how we write software.</p>
+<p>——The Free Lunch Is Over</p>
+</blockquote>
+<p>更多请参考：<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Herb_Sutter">Herb Sutter</a> 2005年在Dr. Dobb’s 发表的文章：<a target="_blank" rel="noopener" href="http://www.gotw.ca/publications/concurrency-ddj.htm">The Free Lunch Is Over</a>。</p>
+<span id="more"></span>
+
+<h2 id="为什么并发编程是困难的？"><a href="#为什么并发编程是困难的？" class="headerlink" title="为什么并发编程是困难的？"></a>为什么并发编程是困难的？</h2><ul>
+<li>竞争条件（Race Conditions）</li>
+<li>原子性（Atomicity）</li>
+<li>内存访问同步（Memory Access Synchronization）</li>
+<li>死锁、活锁和饿死（Deadlocks、Livelocks and Starvation）</li>
+<li>并发安全性（Determining Concurrency Safety）</li>
+</ul>
+<h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><h2 id="并发与并行"><a href="#并发与并行" class="headerlink" title="并发与并行"></a>并发与并行</h2><p>并发（concurrency）和并行（parallelism）有相关性但却是截然不同的概念。<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Rob_Pike">Rob Pike</a>在<a target="_blank" rel="noopener" href="https://go.dev/blog/waza-talk">Concurrency is not parallelism</a>主题演讲中总结的非常好：</p>
+<blockquote>
+<p>In programming, concurrency is the <strong>composition</strong> of independently executing processes, while parallelism is the simultaneous execution of (possibly related) computations.</p>
+<p>Concurrency is about <strong>dealing with</strong> lots of things at once. Parallelism is about <strong>doing</strong> lots of things at once.</p>
+<p>——Concurrency is not parallelism</p>
+</blockquote>
+<p>并发是指同时<strong>处理（dealing with）</strong>多件事，并行是指同时<strong>去做（doing）</strong>多件事；并发强调在<strong>逻辑上（logically）</strong>同时发生；并行强调在<strong>物理上（physically）</strong>同时发生。</p>
+<p>单核CPU是可以并发的，但不能并行；多核CPU即可以并发，也可以并行。</p>
+<p float="left">
+    <img src="/images/go-concurrency-in-action/1.png" width="400" />
+    <img src="/images/go-concurrency-in-action/2.png" width="400" />
+</p>
+
+
+<h2 id="通信顺序进程CSP"><a href="#通信顺序进程CSP" class="headerlink" title="通信顺序进程CSP"></a>通信顺序进程CSP</h2><p><strong>C</strong>ommunicating <strong>S</strong>equential <strong>P</strong>rocess，通信顺序进程是一种并发编程模型，可以说是复兴的古董，最早是<a target="_blank" rel="noopener" href="http://taggedwiki.zubiaga.org/new_content/9e36a51d3ecb524e685ce5eb5ab8c2e0">C. A. R. Hoare</a>在1978年在论文 <a target="_blank" rel="noopener" href="http://www.usingcsp.com/cspbook.pdf">Communicating Sequential Processes</a>提出。</p>
+<p>CSP模型也是由独立的、并发执行体组成，实体之间是通过发送消息进行通信。CSP模型不关注发送消息的实体，而是关注发送消息时使用的通道（channel）。这便是我们在Go中</p>
+<p>进行并发编程时首先要转变的观念：</p>
+<blockquote>
+<p>Do not communicate by sharing memory; instead, share memory by communicating.</p>
+</blockquote>
+<p>更多请参考：<a target="_blank" rel="noopener" href="https://go.dev/blog/codelab-share">Share Memory By Communicating</a>。</p>
+<h2 id="Go语言对并发的支持"><a href="#Go语言对并发的支持" class="headerlink" title="Go语言对并发的支持"></a>Go语言对并发的支持</h2><p>在Go中，并发和通道变成了一等公民，使用go启动一个协程，使用channel在协程之间通信，使用select进行通信多路复用。</p>
+<h3 id="goroutine"><a href="#goroutine" class="headerlink" title="goroutine"></a>goroutine</h3><blockquote>
+<p>A goroutine is a function executing concurrently with other goroutines in the same address space.</p>
+<p>It is lightweight, costing little more than the allocation of stack space. And the stacks start small, so they are cheap, and grow by allocating (and freeing) heap storage as required.</p>
+<p>—— Effective Go</p>
+</blockquote>
+<p>在Go中，启动一个goroutine十分简单：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go list.Sort()  &#x2F;&#x2F; run list.Sort concurrently; don&#39;t wait for it.</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="channel"><a href="#channel" class="headerlink" title="channel"></a>channel</h3><blockquote>
+<p>A channel provides a mechanism for concurrently executing functions to communicate by sending and receiving values of a specified element type. The value of an uninitialized channel is nil. </p>
+</blockquote>
+<p>注意区分：</p>
+<ul>
+<li>unbuffered channel：c := make(chan T)</li>
+<li>buffered channel：c := make(chan T, size)</li>
+<li>receive only channel：←chan T</li>
+<li>send only channel：chan← T</li>
+</ul>
+<p>更多关于 channel 的使用参考：<a target="_blank" rel="noopener" href="https://go.dev/ref/spec#Channel_types">Language Specification Select statements</a>.</p>
+<h3 id="select"><a href="#select" class="headerlink" title="select"></a>select</h3><p>在类C的语言中，控制结构通常包括：if，for，while，switch，break，continue，在Go中，使用了一种全新的控制结构 select 用于通信多路复用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">select &#123;</span><br><span class="line">case v :&#x3D; &lt;-readChan:</span><br><span class="line">case writeChan &lt;- v:</span><br><span class="line">default:</span><br><span class="line">	fmt.Println(&quot;The default clauses in the select statements execute when no other case is ready, meaning that the selects never block.&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>空的select为永远阻塞：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select &#123;&#125; &#x2F;&#x2F; blocked forever</span><br></pre></td></tr></table></figure>
+
+<p>更多关于 select 使用参考：<a target="_blank" rel="noopener" href="https://go.dev/ref/spec#Select_statements">Language Specification Select statements</a>.</p>
+<h2 id="Go标准库对并发的支持"><a href="#Go标准库对并发的支持" class="headerlink" title="Go标准库对并发的支持"></a>Go标准库对并发的支持</h2><ul>
+<li>sync</li>
+<li>atomic</li>
+<li>context</li>
+<li>errgroup</li>
+</ul>
+<h1 id="Go并发编程模式"><a href="#Go并发编程模式" class="headerlink" title="Go并发编程模式"></a>Go并发编程模式</h1><h2 id="两个原则"><a href="#两个原则" class="headerlink" title="两个原则"></a>两个原则</h2><p><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=5zXAHh5tJqQ">Rethinking classical concurrency pattern</a> 从传统并发编程模式角度出发，总结了两个条Go并发编程的原则以及如何在Go中应用这些模式：</p>
+<ul>
+<li>Start goroutines when you have concurrent work</li>
+<li>Share by communicating</li>
+</ul>
+<p>第一条原则是指：如果需要对所做的工作进行并发，那首先需要将工作拆分成可发并的单元。</p>
+<p>第二条原则是指：并发之间的通信通过消息传递，而不是共享内存。</p>
+<h2 id="限定作用域"><a href="#限定作用域" class="headerlink" title="限定作用域"></a>限定作用域</h2><p>并发编程时，并发安全是一个非常重要的主题，如何保证操作的安全性，通常有以下四种操作：</p>
+<ul>
+<li>使用同步原语对共享内存进行同步，如使用sync.Mutex</li>
+<li>通过通信进行同步，如使用channel</li>
+<li>不可变数据</li>
+<li><strong>在限定作用域下被保护数据</strong></li>
+</ul>
+<p>限定作用域并不是一个新鲜的概念，在面向对象（OO）中的封装，函数式编程中的闭包（Closure）都可以理解为限定作用域，</p>
+<p><strong>其本质是通过语法层面对数据的作用域加以限制，使其更容易被理解，并减少或消除被误用的条件。</strong></p>
+<p>未限定作用域：<a target="_blank" rel="noopener" href="https://go.dev/play/p/4TYhZlPMbds">https://go.dev/play/p/4TYhZlPMbds</a></p>
+<p>限定作用域：<a target="_blank" rel="noopener" href="https://go.dev/play/p/TxgEx047rPl">https://go.dev/play/p/TxgEx047rPl</a></p>
+<p>以下是在给定channel状态后，对其进行read、write和close操作的结果：<br><img src="/images/go-concurrency-in-action/3.png" width="500"/></p>
+<p>注意上表中几个<strong>panic</strong>：</p>
+<ul>
+<li>向已经关闭的channel中写数据会panic</li>
+<li>关闭状态为nil的channel会panic</li>
+<li>关闭已经关闭的channel会panic</li>
+</ul>
+<p>在限定作用域的例子中，我们将创建、写入、和关闭都限定在chanOwner的作用域中，并返回一个receive only的channel，在consumer中</p>
+<p>对receive only进行只读操作，并等待channel关闭。通过限定作用域，可以更明确的表明channel的作用范围，规避一些不正确的用法。</p>
+<h2 id="For-select-loop"><a href="#For-select-loop" class="headerlink" title="For-select loop"></a>For-select loop</h2><p>在Go中，for-loop是一种惯用法，模式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">for &#123; &#x2F;&#x2F; Either loop infinitely or range over something </span><br><span class="line">	select &#123;</span><br><span class="line">        &#x2F;&#x2F; Do some work with channels</span><br><span class="line">	&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通常有以下场景运用：</p>
+<p>将迭代器中的值发送到一个channel中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">for _, s :&#x3D; range []string&#123;&quot;a&quot;, &quot;b&quot;, &quot;c&quot;&#125; &#123; </span><br><span class="line">	select &#123;</span><br><span class="line">	case &lt;-done: </span><br><span class="line">		return</span><br><span class="line">	case stringStream &lt;- s:</span><br><span class="line">	&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从一个channel中读取数据处理后写入到另一个channel中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">for s :&#x3D; range in &#123; </span><br><span class="line">	select &#123;</span><br><span class="line">	case &lt;-done: </span><br><span class="line">		return</span><br><span class="line">	case out &lt;- process(s):</span><br><span class="line">	&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>无限循环并等待退出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">for &#123; </span><br><span class="line">	select &#123;</span><br><span class="line">	case &lt;-done: </span><br><span class="line">		return</span><br><span class="line">	default: </span><br><span class="line">	&#125;        </span><br><span class="line">	&#x2F;&#x2F; Do non-preemptable work</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>另一种写法是将非强占式逻辑写到default中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">for &#123; </span><br><span class="line">	select &#123;</span><br><span class="line">	case &lt;-done: </span><br><span class="line">		return</span><br><span class="line">	default:</span><br><span class="line">		&#x2F;&#x2F; Do non-preemptable work</span><br><span class="line">	&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意，以上每种for-loop的变种，select都加了一个←done操作，是为了防止出现死循环导致goroutine泄露的情况。后面会讨论用更通用的context包解决这个问题。</p>
+<p>接下来将讨论一些关于如何避免goroutine泄露的模式。</p>
+<h2 id="防止goroutine泄露"><a href="#防止goroutine泄露" class="headerlink" title="防止goroutine泄露"></a>防止goroutine泄露</h2><p>对于一个goroutine，通过有以下三种路径结束其生命周期：</p>
+<ul>
+<li>goroutine完成任务自动退出</li>
+<li>goroutine在执行过程中遇到不可恢复的错误而不能继续后续任务</li>
+<li>调用端取消goroutine</li>
+</ul>
+<p>防止goroutine泄露的一条经验法则是：</p>
+<blockquote>
+<p>If a goroutine is responsible for creating a goroutine, it is also responsible for ensuring it can stop the goroutine.</p>
+<p>—— Concurrency in Go</p>
+</blockquote>
+<p>一个可能发生goroutine泄露的例子：<a target="_blank" rel="noopener" href="https://go.dev/play/p/bAx4c6CXm7V">https://go.dev/play/p/bAx4c6CXm7V</a></p>
+<p>防止goroutine泄露：<a target="_blank" rel="noopener" href="https://go.dev/play/p/ZfELCscQCzl">https://go.dev/play/p/ZfELCscQCzl</a></p>
+<p>在这个例子中，main在调用doWork启动一个goroutine后，同时指定了一个done channel，用于超时控制，如果goroutine超过1s未返回，关闭</p>
+<p>done channel让goroutine退出。<strong>也就是说创建goroutine的协程一定要保证被创建的协程能够退出</strong>。后面讲到context时，会采用更通用的方式实现。</p>
+<h2 id="Pipeline"><a href="#Pipeline" class="headerlink" title="Pipeline"></a>Pipeline</h2><p><a target="_blank" rel="noopener" href="https://blog.golang.org/pipelines">Go Concurrency Patterns: Pipelines and cancellation</a> 中关于pipeline在Go中的定义：</p>
+<blockquote>
+<p>a pipeline is a series of stages connected by channels, where each stage is a group of goroutines running the same function.</p>
+<p>—— Go Concurrency Patterns: Pipelines and cancellation</p>
+</blockquote>
+<p>对于每个阶段（stage），goroutines主要包括以下三个部分：</p>
+<ul>
+<li>通过inbound channels从上游接受数据</li>
+<li>处理数据</li>
+<li>将处理后的数据通过outbound channels发送给下游</li>
+</ul>
+<p>除了第一个阶段和最一个阶段外，每个阶段都可以有一个或多个inbound channel和一或多个outbound channel。第一个阶段通常叫<strong>源（source）或生产者（producer）</strong>，</p>
+<p>最后一个阶段通常叫<strong>槽（sink）或消费者（consumer）</strong>。</p>
+<p>一个包含3个阶段的pipeline的例子：<a target="_blank" rel="noopener" href="https://go.dev/play/p/D_iBejB3hgW">https://go.dev/play/p/D_iBejB3hgW</a></p>
+<p>在这个例子中，原始数据[1, 2, 3]经过每个阶段（gen、add、sq）进行处理，阶段与阶段之间通过channel进行连接，最后可以读取pipeline channel输出结果。</p>
+<p>数据通过channel很优雅在每个阶段之间流动，但如果某个阶段处理特别慢的情况下，下游阶段就需要等待上游处理完才能拿到数据。那如何提供各个阶段处理数据的效率呢？</p>
+<p>根据pipleline的定义，如果数据之间没有依赖关系的话，每个阶段可以包含一系列goroutine并发（也可能是并行）地处理数据。这便引出Go的另一种并发编程模式——Fan in Fan out。</p>
+<p>注意使用Fan in Fan out模式的前提是：</p>
+<ul>
+<li>阶段处理数据效率影响整体性能</li>
+<li>数据之间没有依赖</li>
+</ul>
+<h2 id="Fan-out-fan-in"><a href="#Fan-out-fan-in" class="headerlink" title="Fan-out, fan-in"></a>Fan-out, fan-in</h2><p>根据 <a target="_blank" rel="noopener" href="https://edu.anarcho-copy.org/Programming%20Languages/Go/Concurrency%20in%20Go.pdf">Concurrency in Go</a> 中关于Fan-out, fan-in的定义：</p>
+<blockquote>
+<p>Fan-out is a term to describe the process of starting multiple goroutines to handle input（same input) from the pipeline.</p>
+<p>Fan-in is a term to describe the process of combining multiple results into one channel.</p>
+<p>—— Concurrency in Go</p>
+</blockquote>
+<p>Fan-out的例子：<a target="_blank" rel="noopener" href="https://go.dev/play/p/is4YFOJcuIu">https://go.dev/play/p/is4YFOJcuIu</a></p>
+<p>Fan-in的例子：<a target="_blank" rel="noopener" href="https://go.dev/play/p/8rxF_KPZPO6">https://go.dev/play/p/8rxF_KPZPO6</a></p>
+<p>在上述例子中，如果没有，如果某个阶段如现错误，或者想在中途停止pipeline，该如何实现呢？</p>
+<p>标准库context为我们提供了优雅退出协程的接口。</p>
+<h2 id="Context"><a href="#Context" class="headerlink" title="Context"></a>Context</h2><p>Go标准库提供了context包用于处理超时、取消、API边界的上下文数据传递。</p>
+<blockquote>
+<p>package context defines the Context type, which carries deadlines, cancellation signals, and other request-scoped values across API boundaries and between processes.</p>
+</blockquote>
+<p>接口定义也比较简洁：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">type Context interface &#123;</span><br><span class="line">	&#x2F;&#x2F; Deadline returns the time when this Context will be canceled, if any.</span><br><span class="line">	Deadline() (deadline time.Time, ok bool)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; Done returns a channel that is closed when this Context is canceled or times out.</span><br><span class="line">	Done() &lt;-chan struct&#123;&#125;</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F; Err indicates why this context was canceled, after the Done channel is closed.</span><br><span class="line">	Err() error</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F; Value returns the value associated with key or nil if none.</span><br><span class="line">	Value(key any) any</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>标准库context有对接口的完整说明以及example，在此不展开。另外还有一篇关于context非常好的文章：<a target="_blank" rel="noopener" href="https://blog.golang.org/context">Go Concurrency Patterns: Context</a></p>
+<p>关于context的一个惯用法是：</p>
+<blockquote>
+<p>Contexts should not be stored inside a struct type, but instead passed to each function that needs it.</p>
+</blockquote>
+<p>至于为什么要这么做，在文章 <a target="_blank" rel="noopener" href="https://blog.golang.org/context-and-structs">Contexts and structs</a> 中有非常详细的理由解释。最主要的原因是：</p>
+<ul>
+<li>接口维度进行deadline、cancellation以及metadata传递控制；</li>
+<li>更容易理解，作用域更清晰；</li>
+<li>在跨库或跨API调用上可以在调用堆栈中暴露context信息，更容易调试；</li>
+</ul>
+<p>再回头看pipleline的例子，可以通过在每个阶段传递一个context参数，以进行deadline、cancellation以及request-scoped values控制。</p>
+<p>使用context优雅退出的pipeline例子：<a target="_blank" rel="noopener" href="https://go.dev/play/p/q7u1w60LPNv">https://go.dev/play/p/q7u1w60LPNv</a></p>
+<h1 id="综合应用"><a href="#综合应用" class="headerlink" title="综合应用"></a>综合应用</h1><ul>
+<li>串行实现：md5sum-sequential.go</li>
+<li>并发实现：md5sum-concurrency.go</li>
+<li>并发优雅退出实现：md5sum-context.go</li>
+<li>使用errgroup包实现：md5sum-errgroup.go</li>
+</ul>
+<h1 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h1><p>在工程实践中，经常有数据聚合需求，如果各个数据之间没有顺序依赖，可以将获取各个数据子集拆分到不同的并发单元中以提高接口响应效率。以下是伪代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; DataAggregatedAPI ...</span><br><span class="line">func (t *ApiService) DataAggregatedAPI(ctx context.Context, sourceIDs []string) ([]*SourceNode, error) &#123;</span><br><span class="line">	...</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F; 生成CancelContext</span><br><span class="line">	ctx, cancel :&#x3D; context.WithCancel(ctx)</span><br><span class="line">	defer cancel()</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F; 生成输入管道</span><br><span class="line">	in :&#x3D; make(chan []string)</span><br><span class="line">	go func() &#123;</span><br><span class="line">		defer close(in)</span><br><span class="line">		for _, id :&#x3D; range sourceIDs &#123;</span><br><span class="line">			select &#123;</span><br><span class="line">			case in &lt;- id:</span><br><span class="line">			case &lt;-ctx.Done():</span><br><span class="line">				return</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; 2. 并发数据查询</span><br><span class="line">	out :&#x3D; make(chan SourceResp)</span><br><span class="line">	var wg sync.WaitGroup</span><br><span class="line">	for i :&#x3D; 0; i &lt; concurrent; i++ &#123;</span><br><span class="line">		wg.Add(1)</span><br><span class="line">		go func() &#123;</span><br><span class="line">			defer wg.Done()</span><br><span class="line">			for id :&#x3D; range in &#123;</span><br><span class="line">				items, err :&#x3D; t.getSourceBySourceID(id)</span><br><span class="line">				select &#123;</span><br><span class="line">				case out &lt;- SourceResp&#123;items, err&#125;:</span><br><span class="line">				case &lt;-ctx.Done():</span><br><span class="line">					return</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;()</span><br><span class="line">	&#125;</span><br><span class="line">	go func() &#123;</span><br><span class="line">		wg.Wait()</span><br><span class="line">		close(out)</span><br><span class="line">	&#125;()</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F; 3. 接收结果</span><br><span class="line">	for resp :&#x3D; range out &#123;</span><br><span class="line">		&#x2F;&#x2F; 任何一个失败，返回失败</span><br><span class="line">		if resp.err !&#x3D; nil &#123;</span><br><span class="line">			return nil, resp.err</span><br><span class="line">		&#125;</span><br><span class="line">		for _, v :&#x3D; range resp.items &#123;</span><br><span class="line">			&#x2F;&#x2F; 处理结果</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>我们首先介绍了为什么需要并发以及并发编程的困难性。在此前提下基础上介绍了Go对并发编程的支持以及基本构造块。</p>
+<p>然后介绍了Go语言中一些常用的并发编程模式，再通过一个例子md5sum对这些模式进行应用以加深理解。</p>
+<p>最后介绍如何将这些模式应用到实际工作一个场景中。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://go.dev/blog/waza-talk">Concurrency is not parallelism</a></li>
+<li><a target="_blank" rel="noopener" href="https://edu.anarcho-copy.org/Programming%20Languages/Go/Concurrency%20in%20Go.pdf">Concurrency in Go</a></li>
+<li><a target="_blank" rel="noopener" href="https://talks.golang.org/2012/concurrency.slide#1">Go Concurrency Patterns</a></li>
+<li><a target="_blank" rel="noopener" href="https://talks.golang.org/2013/advconc.slide#1">Advanced Go Concurrency Patterns</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.gotw.ca/publications/concurrency-ddj.htm">The Free Lunch Is Over</a></li>
+<li><a target="_blank" rel="noopener" href="https://go.dev/blog/codelab-share">Share Memory By Communicating</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=5zXAHh5tJqQ">Rethinking classical concurrency pattern</a></li>
+<li><a target="_blank" rel="noopener" href="https://go.dev/doc/effective_go">Effective Go</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/lotusirous/go-concurrency-patterns">go-concurrency-patterns all in one</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.golang.org/pipelines">Go Concurrency Patterns: Pipelines and cancellation</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.golang.org/concurrency-timeouts">Go Concurrency Patterns: Timing out, moving on</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.golang.org/context">Go Concurrency Patterns: Context</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.golang.org/context-and-structs">Contexts and structs</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"><i class="fa fa-tag"></i> Go</a>
+              <a href="/tags/concurrency/" rel="tag"><i class="fa fa-tag"></i> concurrency</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/02/20/mit-6-824-lab1-mapreduce/" rel="prev" title="MIT 6.824 Lab1: MapReduce">
+      <i class="fa fa-chevron-left"></i> MIT 6.824 Lab1: MapReduce
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/05/06/go-concurrency-in-action/" rel="next" title="Go并发编程实践">
+      Go并发编程实践 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="nav-number">1.</span> <span class="nav-text">写在前面</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%B9%B6%E5%8F%91%EF%BC%9F"><span class="nav-number">1.1.</span> <span class="nav-text">为什么需要并发？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E6%98%AF%E5%9B%B0%E9%9A%BE%E7%9A%84%EF%BC%9F"><span class="nav-number">1.2.</span> <span class="nav-text">为什么并发编程是困难的？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="nav-number">2.</span> <span class="nav-text">基础知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E4%B8%8E%E5%B9%B6%E8%A1%8C"><span class="nav-number">2.1.</span> <span class="nav-text">并发与并行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E4%BF%A1%E9%A1%BA%E5%BA%8F%E8%BF%9B%E7%A8%8BCSP"><span class="nav-number">2.2.</span> <span class="nav-text">通信顺序进程CSP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E8%AF%AD%E8%A8%80%E5%AF%B9%E5%B9%B6%E5%8F%91%E7%9A%84%E6%94%AF%E6%8C%81"><span class="nav-number">2.3.</span> <span class="nav-text">Go语言对并发的支持</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#goroutine"><span class="nav-number">2.3.1.</span> <span class="nav-text">goroutine</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#channel"><span class="nav-number">2.3.2.</span> <span class="nav-text">channel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#select"><span class="nav-number">2.3.3.</span> <span class="nav-text">select</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%A0%87%E5%87%86%E5%BA%93%E5%AF%B9%E5%B9%B6%E5%8F%91%E7%9A%84%E6%94%AF%E6%8C%81"><span class="nav-number">2.4.</span> <span class="nav-text">Go标准库对并发的支持</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">Go并发编程模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%A4%E4%B8%AA%E5%8E%9F%E5%88%99"><span class="nav-number">3.1.</span> <span class="nav-text">两个原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%90%E5%AE%9A%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="nav-number">3.2.</span> <span class="nav-text">限定作用域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#For-select-loop"><span class="nav-number">3.3.</span> <span class="nav-text">For-select loop</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B2%E6%AD%A2goroutine%E6%B3%84%E9%9C%B2"><span class="nav-number">3.4.</span> <span class="nav-text">防止goroutine泄露</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pipeline"><span class="nav-number">3.5.</span> <span class="nav-text">Pipeline</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fan-out-fan-in"><span class="nav-number">3.6.</span> <span class="nav-text">Fan-out, fan-in</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Context"><span class="nav-number">3.7.</span> <span class="nav-text">Context</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%BC%E5%90%88%E5%BA%94%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">综合应用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E8%B7%B5"><span class="nav-number">5.</span> <span class="nav-text">实践</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">7.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LeeYzero"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">LeeYzero</p>
+  <div class="site-description" itemprop="description">众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/leeyzero" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;leeyzero" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:leeyzero@163.com" title="E-Mail → mailto:leeyzero@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      link
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://lamport.azurewebsites.net/pubs/pubs.html" title="http:&#x2F;&#x2F;lamport.azurewebsites.net&#x2F;pubs&#x2F;pubs.html" rel="noopener" target="_blank">Leslie Lamport</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://martinfowler.com/" title="https:&#x2F;&#x2F;martinfowler.com&#x2F;" rel="noopener" target="_blank">Martin Fowler</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.codinghorror.com/" title="https:&#x2F;&#x2F;blog.codinghorror.com&#x2F;" rel="noopener" target="_blank">Coding Horror</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.joelonsoftware.com/" title="https:&#x2F;&#x2F;www.joelonsoftware.com&#x2F;" rel="noopener" target="_blank">Joel on Software</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://steve-yegge.blogspot.com/" title="http:&#x2F;&#x2F;steve-yegge.blogspot.com&#x2F;" rel="noopener" target="_blank">Steve Yegge</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://highscalability.com/" title="http:&#x2F;&#x2F;highscalability.com&#x2F;" rel="noopener" target="_blank">High Scalability</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://coolshell.cn/" title="https:&#x2F;&#x2F;coolshell.cn&#x2F;" rel="noopener" target="_blank">coolshell</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ruanyifeng.com/blog/" title="http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;blog&#x2F;" rel="noopener" target="_blank">阮一峰的网络日志</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LeeYzero</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'Ov23ct4UMzsGEgXj6SRY',
+      clientSecret: '7c4323a8657a12efa8c3c529e2e76d0975c2ed6b',
+      repo        : 'leeyzero.github.io',
+      owner       : 'leeyzero',
+      admin       : ['leeyzero'],
+      id          : '30cfd6a3f4e38a41dbd85d8fd5d22a93',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

@@ -32,9 +32,10 @@
 <meta property="og:locale">
 <meta property="og:image" content="https://leeyzero.github.io/images/exception-and-crash/1.png">
 <meta property="article:published_time" content="2020-10-10T14:13:02.000Z">
-<meta property="article:modified_time" content="2023-01-08T06:37:17.000Z">
+<meta property="article:modified_time" content="2024-10-20T06:00:24.110Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="Windows">
+<meta property="article:tag" content="系统设计">
 <meta property="article:tag" content="异常处理">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://leeyzero.github.io/images/exception-and-crash/1.png">
@@ -203,7 +204,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-01-08 14:37:17" itemprop="dateModified" datetime="2023-01-08T14:37:17+08:00">2023-01-08</time>
+                <time title="Modified: 2024-10-20 14:00:24" itemprop="dateModified" datetime="2024-10-20T14:00:24+08:00">2024-10-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -211,7 +212,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a>
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E5%8C%A0%E8%89%BA/" itemprop="url" rel="index"><span itemprop="name">编程匠艺</span></a>
                 </span>
             </span>
 
@@ -226,8 +227,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>对于Windows应用, 当应用发布出去之后，如果应用程序在用户机器上发生了崩溃，我们需要这样一种手段，即在程序崩溃的瞬间能够“记录”下崩溃时进程、线程、栈、栈上下文等信息，这些信息对我们分析崩溃原因非常有帮助。另外，由于客户端程序一般是运行在用户的机器上，当生成崩溃信息后，还需要将这些信息上报至服务器，以方便开发者能够快捷地拿到这些崩溃信息进行分析。一般来说客户端程序崩溃的收集与处理流程如下图： </p>
-<p><img src="/images/exception-and-crash/1.png"></p>
+        <p>对于Windows应用, 当应用发布出去之后，如果应用程序在用户机器上发生了崩溃，我们需要这样一种手段，即在程序崩溃的瞬间能够“记录”下崩溃时进程、线程、栈、栈上下文等信息，这些信息对我们分析崩溃原因非常有帮助。另外，由于客户端程序一般是运行在用户的机器上，当生成崩溃信息后，还需要将这些信息上报至服务器，以方便开发者能够快捷地拿到这些崩溃信息进行分析。一般来说客户端程序崩溃的收集与处理流程如下图：</p>
+<p><img src="/images/exception-and-crash/1.png" alt="客户端程序崩溃的收集流程"></p>
 <ol>
 <li>开发者开发好代码后，由编译集群编译后将产出的二进制等文件放入产品库中，产品库会记录每次发布的版本号(version)、安装程序(*.exe)、对应版本的符号表(.pdb)等信息。</li>
 <li>通过各种发布渠道发布最新版本。</li>
@@ -237,20 +238,20 @@
 </ol>
 <span id="more"></span>
 
-<h2 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h2><p>这里的异常处理不同于C++中的异常处理，是指Windows操作系统提供地一种处理应用程序运行时异常（运行时严重错误）的能力。Windows提供了三个函数供应用程序设置回调，当程序出现运行时异常时，可以让应用进行“最后”处理让程序更优雅地退出。 </p>
+<h2 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h2><p>这里的异常处理不同于C++中的异常处理，是指Windows操作系统提供地一种处理应用程序运行时异常（运行时严重错误）的能力。Windows提供了三个函数供应用程序设置回调，当程序出现运行时异常时，可以让应用进行“最后”处理让程序更优雅地退出。</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms680634(v=vs.85).aspx">SetUnhandledExceptionFilter</a>：当出现没有控制的异常时回调</li>
 <li><a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/a9yf33zb.aspx">_set_invalid_parameter_handler</a>：当出现无效参数调用时回调</li>
 <li><a target="_blank" rel="noopener" href="https://technet.microsoft.com/en-us/library/t296ys27(v=vs.120).aspx">_set_purecall_handler</a>：当出现纯虚函数调用时回调</li>
 </ul>
 <p>函数签名为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">LPTOP_LEVEL_EXCEPTION_FILTER WINAPI SetUnhandledExceptionFilter(</span><br><span class="line">    LPTOP_LEVEL_EXCEPTION_FILTER lpTopLevelExceptionFilter</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">_invalid_parameter_handler _set_invalid_parameter_handler(      </span><br><span class="line">    _invalid_parameter_handler pNew  </span><br><span class="line">);  </span><br><span class="line"></span><br><span class="line">_purecall_handler _set_purecall_handler( </span><br><span class="line">    _purecall_handler function</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">LPTOP_LEVEL_EXCEPTION_FILTER WINAPI <span class="title">SetUnhandledExceptionFilter</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    LPTOP_LEVEL_EXCEPTION_FILTER lpTopLevelExceptionFilter</span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br><span class="line"></span><br><span class="line">_invalid_parameter_handler _set_invalid_parameter_handler(      </span><br><span class="line">    _invalid_parameter_handler pNew  </span><br><span class="line">);  </span><br><span class="line"></span><br><span class="line">_purecall_handler _set_purecall_handler( </span><br><span class="line">    _purecall_handler function</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 
 <p>比如对于最常见的空指针引用，可以设置一个UnhandledExceptionFilter回调函数，当出现空指针引用时，系统会回调设置的UnhandledExceptionFilter函数，在该函数就可以记录下异常信息。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">LONG WINAPI MyUnhandledExceptionFilterCb(PEXCEPTION_POINTERS pExceptionInfo)</span><br><span class="line">&#123;</span><br><span class="line">    printf(&quot;Unhandled exception occurred!\n&quot;);</span><br><span class="line">    return EXCEPTION_EXECUTE_HANDLER;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">    ::SetUnhandledExceptionFilter(MyUnhandledExceptionFilterCb);</span><br><span class="line"></span><br><span class="line">    *(int*)0 &#x3D; 100;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">LONG WINAPI <span class="title">MyUnhandledExceptionFilterCb</span><span class="params">(PEXCEPTION_POINTERS pExceptionInfo)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Unhandled exception occurred!\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> EXCEPTION_EXECUTE_HANDLER;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ::<span class="built_in">SetUnhandledExceptionFilter</span>(MyUnhandledExceptionFilterCb);</span><br><span class="line"></span><br><span class="line">    *(<span class="keyword">int</span>*)<span class="number">0</span> = <span class="number">100</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="崩溃收集"><a href="#崩溃收集" class="headerlink" title="崩溃收集"></a>崩溃收集</h2><p>对于那些不可恢复的异常，我们可以在设置的回调函数中记录下相应的异常信息。从Windows XP操作系统开始，微软发布了DbgHelp.dll并提供了API用于创建minidump文件，该文件记录了程序崩溃瞬间进程状态的一个快照，函数签名如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">BOOL MiniDumpWriteDump( </span><br><span class="line">    HANDLE hProcess, </span><br><span class="line">    DWORD ProcessId, </span><br><span class="line">    HANDLE hFile, </span><br><span class="line">    MINIDUMP_TYPE DumpType, </span><br><span class="line">    PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam, </span><br><span class="line">    PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam, </span><br><span class="line">    PMINIDUMP_CALLBACK_INFORMATION CallbackParam</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">MiniDumpWriteDump</span><span class="params">( </span></span></span><br><span class="line"><span class="function"><span class="params">    HANDLE hProcess, </span></span></span><br><span class="line"><span class="function"><span class="params">    DWORD ProcessId, </span></span></span><br><span class="line"><span class="function"><span class="params">    HANDLE hFile, </span></span></span><br><span class="line"><span class="function"><span class="params">    MINIDUMP_TYPE DumpType, </span></span></span><br><span class="line"><span class="function"><span class="params">    PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam, </span></span></span><br><span class="line"><span class="function"><span class="params">    PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam, </span></span></span><br><span class="line"><span class="function"><span class="params">    PMINIDUMP_CALLBACK_INFORMATION CallbackParam</span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br></pre></td></tr></table></figure>
 
 <p>函数的具体用法可以参考<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms680360(v=vs.85).aspx">MSDN</a>, 想了解更多用法可以参考<a target="_blank" rel="noopener" href="http://www.debuginfo.com/articles/effminidumps.html#introduction">DebugInfo.com</a>。按照MSDN的说法：</p>
 <blockquote>
@@ -269,6 +270,7 @@
           
           <div class="post-tags">
               <a href="/tags/Windows/" rel="tag"><i class="fa fa-tag"></i> Windows</a>
+              <a href="/tags/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" rel="tag"><i class="fa fa-tag"></i> 系统设计</a>
               <a href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag"><i class="fa fa-tag"></i> 异常处理</a>
           </div>
 
@@ -368,12 +370,12 @@
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">92</span>
+        <span class="site-state-item-count">100</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

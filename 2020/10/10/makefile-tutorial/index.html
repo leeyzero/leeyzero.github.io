@@ -25,13 +25,13 @@
 
   <meta name="description" content="make是一个自动化构建工具，广泛应用于Unix及其类Unix系统中。make最先应用于编译C语言项目，不仅如此，只要某个文件发生变化就需要重新构建的项目都可以使用make工具进行构建。 Makefile是可以被make解析的特定格式的文本文件。其语法简单，当我们构建一个程序时，其工作原理大致为：make首先解析Makefile，查找构建应用的一系列依赖，并检查每个依赖文件是否过期（是否发生变化）">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Makefile入门">
+<meta property="og:title" content="Makefile简明教程">
 <meta property="og:url" content="https://leeyzero.github.io/2020/10/10/makefile-tutorial/index.html">
 <meta property="og:site_name" content="LeeYzero的博客">
 <meta property="og:description" content="make是一个自动化构建工具，广泛应用于Unix及其类Unix系统中。make最先应用于编译C语言项目，不仅如此，只要某个文件发生变化就需要重新构建的项目都可以使用make工具进行构建。 Makefile是可以被make解析的特定格式的文本文件。其语法简单，当我们构建一个程序时，其工作原理大致为：make首先解析Makefile，查找构建应用的一系列依赖，并检查每个依赖文件是否过期（是否发生变化）">
 <meta property="og:locale">
 <meta property="article:published_time" content="2020-10-10T15:48:19.000Z">
-<meta property="article:modified_time" content="2023-01-08T06:38:31.000Z">
+<meta property="article:modified_time" content="2024-10-20T06:11:07.809Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="Makefile">
 <meta property="article:tag" content="Linux">
@@ -50,7 +50,7 @@
   };
 </script>
 
-  <title>Makefile入门 | LeeYzero的博客</title>
+  <title>Makefile简明教程 | LeeYzero的博客</title>
   
 
 
@@ -184,7 +184,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Makefile入门
+          Makefile简明教程
         </h1>
 
         <div class="post-meta">
@@ -201,7 +201,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-01-08 14:38:31" itemprop="dateModified" datetime="2023-01-08T14:38:31+08:00">2023-01-08</time>
+                <time title="Modified: 2024-10-20 14:11:07" itemprop="dateModified" datetime="2024-10-20T14:11:07+08:00">2024-10-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -209,7 +209,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">开发工具</span></a>
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
                 </span>
             </span>
 
@@ -229,25 +229,28 @@
 <span id="more"></span>
 
 <h2 id="语法规则"><a href="#语法规则" class="headerlink" title="语法规则"></a>语法规则</h2><p>语法规则很简单，Makefile文件是由一系列规则(rule)组成，每个规则语法如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;target&gt; : &lt;prerequisites&gt; </span><br><span class="line">[tab]  &lt;commands&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;target&gt; : &lt;prerequisites&gt; </span><br><span class="line">[tab]  &lt;commands&gt;</span><br></pre></td></tr></table></figure>
 
 <p>对每个规则，target是必须的，prerequisites和commands是可选的，commands前面必须是一个tab。Makefile文件中至少有一个规则。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; cat Makefile</span><br><span class="line">tutorial:</span><br><span class="line">  echo &quot;this is Makefile tutorial&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">shell&gt;</span><span class="bash"> cat Makefile</span></span><br><span class="line">tutorial:</span><br><span class="line">  echo &quot;this is Makefile tutorial&quot;</span><br></pre></td></tr></table></figure>
 
 <p>我们可以通过make来执行上面规则:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; make tutorial</span><br><span class="line">echo &quot;this is Makefile tutorial&quot;</span><br><span class="line">this is Makefile tutorial</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">shell&gt;</span><span class="bash"> make tutorial</span></span><br><span class="line">echo &quot;this is Makefile tutorial&quot;</span><br><span class="line">this is Makefile tutorial</span><br></pre></td></tr></table></figure>
+
 <p>默认情况下，如果我们没有指定目标(target)，make命令会执行第一条规则。上面例子中，target为<code>tutorial</code>，前置条件（prerequisites）为空，命令（commands）为<code>echo &quot;this is Makefile tutorial&quot;</code>。我们发现上面例子中除了输出结果，还把命令也输出，这叫回显，可以在命令前加上<code>@</code>关闭回显，如：<code>@echo &quot;this is Makefile tutorial&quot;</code></p>
 <h3 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h3><p>一个目标即构成一条规则，目标通常是文件名，指明make命令要构建的对象。目标可以是一个文件名，也可以是多个文件名，中间用空格分隔。如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a.o b.o: a.h a.cpp a.h b.cpp</span><br><span class="line">  g++ -c a.cpp b.cpp</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a.o b.o: a.h a.cpp a.h b.cpp</span><br><span class="line">  g++ -c a.cpp b.cpp</span><br></pre></td></tr></table></figure>
 
 <p>除了文件名，目标还可以是某个操作的名字，如上面例子中的<code>tutorial</code>。</p>
 <h3 id="前置条件"><a href="#前置条件" class="headerlink" title="前置条件"></a>前置条件</h3><p>前置条件通常是一组文件名，之间用空格分隔。它指定了”目标”是否重新构建的判断标准：只要有一个前置文件不存在，或者有过更新（前置文件的last-modification时间戳比目标的时间戳新），”目标”就需要重新构建。下面规则是创建一个source.txt文件：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; cat Makefile</span><br><span class="line">source.txt:</span><br><span class="line">  echo &quot;this is source file&quot; &gt;&gt; source.txt</span><br><span class="line"></span><br><span class="line">result.txt: source.txt</span><br><span class="line">  cp source.txt result.txt</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">shell&gt;</span><span class="bash"> cat Makefile</span></span><br><span class="line">source.txt:</span><br><span class="line">  echo &quot;this is source file&quot; &gt;&gt; source.txt</span><br><span class="line"></span><br><span class="line">result.txt: source.txt</span><br><span class="line">  cp source.txt result.txt</span><br></pre></td></tr></table></figure>
 
 <p>第一次执行<code>make result.txt</code>，会创建source.txt，并将source.txt中的内容拷贝到result.txt中，当我们再次执行<code>make result.txt</code>时，终端会输出：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make: &#39;result.txt&#39; is up to date.</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make: &#x27;result.txt&#x27; is up to date.</span><br></pre></td></tr></table></figure>
+
 <p>这是由于source.txt已经创建，且没有变化，所以不会执行任何操作。如果我们修改一下source.txt，如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">touch source.txt</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">touch source.txt</span><br></pre></td></tr></table></figure>
+
 <p>再执行<code>make source.txt</code> 试试看。</p>
 <h3 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h3><p>命令（commands）表示如何更新目标文件，由一行或多行的shell命令组成。它是构建”目标”的具体指令，它的运行结果通常就是生成目标文件。</p>
 <p>需要注意的是：</p>
@@ -256,21 +259,23 @@
 <li>每行命令在一个单独的shell中执行。这些shell之间没有继承关系。</li>
 </ul>
 <p>如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var-lost:</span><br><span class="line">    export foo&#x3D;bar</span><br><span class="line">    echo &quot;foo&#x3D;[$$foo]&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var-lost:</span><br><span class="line">    export foo=bar</span><br><span class="line">    echo &quot;foo=[$$foo]&quot;</span><br></pre></td></tr></table></figure>
+
 <p>上面代码执行后<code>make var-lost</code>，取不到foo的值。因为两行命令在两个不同的进程执行。一个解决办法是将两行命令写在一行，中间用分号分隔。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var-kept:</span><br><span class="line">    export foo&#x3D;bar; echo &quot;foo&#x3D;[$$foo]&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var-kept:</span><br><span class="line">    export foo=bar; echo &quot;foo=[$$foo]&quot;</span><br></pre></td></tr></table></figure>
 
 <p>或在换行符前加反斜杠转义。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var-kept:</span><br><span class="line">    export foo&#x3D;bar; \</span><br><span class="line">    echo &quot;foo&#x3D;[$$foo]&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var-kept:</span><br><span class="line">    export foo=bar; \</span><br><span class="line">    echo &quot;foo=[$$foo]&quot;</span><br></pre></td></tr></table></figure>
 
 <h2 id="变量与注释"><a href="#变量与注释" class="headerlink" title="变量与注释"></a>变量与注释</h2><p>变量和注释不是必须的，但当Makefile文件比较大时，变量和注释将会非常有用，毕竟代码首先是给人读的。</p>
 <h3 id="自定义变量"><a href="#自定义变量" class="headerlink" title="自定义变量"></a>自定义变量</h3><p>Makefile中的变量没有类型，全是字符型，定义一个变量也比较简单，如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CFLAGS &#x3D; -g -Wall</span><br><span class="line">CC &#x3D; g++</span><br><span class="line">RM &#x3D; &#x2F;bin&#x2F;rm -f</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CFLAGS = -g -Wall</span><br><span class="line">CC = g++</span><br><span class="line">RM = /bin/rm -f</span><br></pre></td></tr></table></figure>
+
 <p>当定义好变量后，如果使用变量中存储的值呢？获取变量的值跟shell类似：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$&#123;varname&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">&#123;varname&#125;</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h3><p>注释只需要在前面加上<code>#</code>即可，如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#this is a comment</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">this is a comment</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="内置变量"><a href="#内置变量" class="headerlink" title="内置变量"></a>内置变量</h3><p>除了自定义的变量外，make命令提供一系列内置变量，比如，<code>$(CC)</code> 指向当前使用的编译器，<code>$(MAKE)</code> 指向当前使用的make工具。这主要是为了跨平台的兼容性，详细的内置变量清单见<a target="_blank" rel="noopener" href="https://www.gnu.org/software/make/manual/html_node/Implicit-Variables.html">手册</a>。</p>
 <h3 id="自动变量"><a href="#自动变量" class="headerlink" title="自动变量"></a>自动变量</h3><p>make命令还提供一些自动变量，它们的值与当前规则有关。主要有以下几个。</p>
@@ -278,7 +283,7 @@
 <li>$@</li>
 </ul>
 <p>指代当前目标，即make构建时指定的目标，如<code>make main</code>中<code>$@</code>为main。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">main: main.o</span><br><span class="line">	$&#123;CC&#125; $&#123;CFLAGS&#125; -o $@ $^</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">main: main.o</span><br><span class="line"><span class="meta">	$</span><span class="bash">&#123;CC&#125; <span class="variable">$&#123;CFLAGS&#125;</span> -o <span class="variable">$@</span> $^</span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>$&lt;</li>
@@ -290,7 +295,7 @@
 <li>$^</li>
 </ul>
 <p>指代所有前置条件，中间是空格隔开。如规则<code>rule: p1 p2</code>中的<code>$^</code>为p1 p2。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">main.o: main.cpp</span><br><span class="line">	$&#123;CC&#125; $&#123;CFLAGS&#125; -c $^</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">main.o: main.cpp</span><br><span class="line"><span class="meta">	$</span><span class="bash">&#123;CC&#125; <span class="variable">$&#123;CFLAGS&#125;</span> -c $^</span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>$?</li>
@@ -302,15 +307,16 @@
 <p>指代匹配符 % 匹配的部分， 比如% 匹配 f1.txt 中的f1 ，$* 就表示 f1。</p>
 <p>更多自动变更参考<a target="_blank" rel="noopener" href="http://www.gnu.org/software/make/manual/make.html#Automatic-Variables">Automatic-Variables</a>.</p>
 <h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p>我们以构建一个c++的hello world程序为例：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; cat main.cpp</span><br><span class="line">#include &lt;iostream&gt;</span><br><span class="line"></span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;hello world&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">shell&gt;</span><span class="bash"> cat main.cpp</span></span><br><span class="line"><span class="meta">#</span><span class="bash">include &lt;iostream&gt;</span></span><br><span class="line"></span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;hello world&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>Makefile内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; cat Makefile</span><br><span class="line">CFLAGS &#x3D; -g -Wall</span><br><span class="line">CC &#x3D; g++</span><br><span class="line">RM &#x3D; &#x2F;bin&#x2F;rm -f</span><br><span class="line"></span><br><span class="line">all: main</span><br><span class="line"></span><br><span class="line">main: main.o</span><br><span class="line">	$&#123;CC&#125; $&#123;CFLAGS&#125; -o $@ $^</span><br><span class="line"></span><br><span class="line">main.o: main.cpp</span><br><span class="line">	$&#123;CC&#125; $&#123;CFLAGS&#125; -c $^</span><br><span class="line"></span><br><span class="line">clean:</span><br><span class="line">	$&#123;RM&#125; *.o main</span><br></pre></td></tr></table></figure>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; cat Makefile</span><br><span class="line">CFLAGS = -g -Wall</span><br><span class="line">CC = g++</span><br><span class="line">RM = /bin/rm -f</span><br><span class="line"></span><br><span class="line"><span class="section">all: main</span></span><br><span class="line"></span><br><span class="line"><span class="section">main: main.o</span></span><br><span class="line">	$&#123;CC&#125; $&#123;CFLAGS&#125; -o <span class="variable">$@</span> <span class="variable">$^</span></span><br><span class="line"></span><br><span class="line"><span class="section">main.o: main.cpp</span></span><br><span class="line">	$&#123;CC&#125; $&#123;CFLAGS&#125; -c <span class="variable">$^</span></span><br><span class="line"></span><br><span class="line"><span class="section">clean:</span></span><br><span class="line">	$&#123;RM&#125; *.o main</span><br></pre></td></tr></table></figure>
 
 <p>接下来我们就可以利用make进行构建了：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; make</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">shell&gt;</span><span class="bash"> make</span></span><br></pre></td></tr></table></figure>
+
 <p>没有指定规则时，默认执行第一条规则，在这个例子中为<code>all</code>。<br>当需要清除产生的中间文件和可执行文件执行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; make clean</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">shell&gt;</span><span class="bash"> make clean</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="进一步学习"><a href="#进一步学习" class="headerlink" title="进一步学习"></a>进一步学习</h2><ul>
 <li>在实际项目中，项目文件成千上万个，而且分布在不同目录下，如果编写规则进行构建呢？</li>
@@ -429,12 +435,12 @@
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">92</span>
+        <span class="site-state-item-count">100</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

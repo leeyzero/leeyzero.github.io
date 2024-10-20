@@ -2,6 +2,17 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://leeyzero.github.io/2020/10/10/write-readable-code/</loc>
+    
+    <lastmod>2024-10-20T07:11:40.437Z</lastmod>
+    
+    <date>1602343926000</date>
+    <title>编写可读代码的艺术 | LeeYzero的博客</title>
+    
+    <desc>最近花了一个周的零星时间，看了《编写可读代码艺术》，收获颇多。虽然平时也经常使用书中提到的一些方法编写代码，但只是一种直观感觉认为这种方式是“正确”的。书中将这些方法提炼成一条条原则，并采用大量实例佐证这些原则。书中系统化的介绍了如何编写可读代码，并提出很多指导性原则，整本书不到200页，非常值得阅读。 基本原则何为好代码，何为坏代码，每个人的判断标准可能并不一样，但作者提了总的指导原则：代码应当</desc>
+  </url>
+  
+  <url>
     <loc>https://leeyzero.github.io/about/index.html</loc>
     
     <lastmod>2024-10-20T06:53:41.634Z</lastmod>
@@ -164,17 +175,6 @@
     <title>Charles简明教程 | LeeYzero的博客</title>
     
     <desc></desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2020/10/10/write-readable-code/</loc>
-    
-    <lastmod>2024-10-20T06:41:29.849Z</lastmod>
-    
-    <date>1602343926000</date>
-    <title>[读书笔记] 编写可读代码的艺术 | LeeYzero的博客</title>
-    
-    <desc>最近花了一个周的零星时间，看了《编写可读代码艺术》，收获颇多。虽然平时也经常使用书中提到的一些方法编写代码，但只是一种直观感觉认为这种方式是“正确”的。书中将这些方法提炼成一条条原则，并采用大量实例佐证这些原则。书中系统化的介绍了如何编写可读代码，并提出很多指导性原则，整本书不到200页，非常值得阅读。 基本原则何为好代码，何为坏代码，每个人的判断标准可能并不一样，但作者提了总的指导原则：代码应当</desc>
   </url>
   
   <url>

@@ -30,16 +30,16 @@
 <meta property="og:site_name" content="LeeYzero的博客">
 <meta property="og:description" content="本文介绍计算机科学先驱David. L. Parnas在1972发表论文 On the Criteria To Be Used in Decomposing Systems into Modules。这篇论文首次提出了信息隐藏(information hiding）的思想，这一思想为面向对象程序设计的发展奠定了基础。在这篇论文中，Parnas 通过一个简单的例子论证和说明，如何将一个复杂系统分解为">
 <meta property="og:locale">
-<meta property="og:image" content="https://leeyzero.github.io/2024/11/03/modular-design-criteria/images/modular-design-criteria/flowchart.png">
-<meta property="og:image" content="https://leeyzero.github.io/2024/11/03/modular-design-criteria/images/modular-design-criteria/information-hiding.png">
+<meta property="og:image" content="https://leeyzero.github.io/images/modular-design-criteria/flowchart.png">
+<meta property="og:image" content="https://leeyzero.github.io/images/modular-design-criteria/information-hiding.png">
 <meta property="article:published_time" content="2024-11-03T00:05:57.000Z">
-<meta property="article:modified_time" content="2024-11-17T09:51:25.540Z">
+<meta property="article:modified_time" content="2024-11-17T09:57:04.175Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="系统设计">
 <meta property="article:tag" content="软件工程">
 <meta property="article:tag" content="模块化">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://leeyzero.github.io/2024/11/03/modular-design-criteria/images/modular-design-criteria/flowchart.png">
+<meta name="twitter:image" content="https://leeyzero.github.io/images/modular-design-criteria/flowchart.png">
 
 <link rel="canonical" href="https://leeyzero.github.io/2024/11/03/modular-design-criteria/">
 
@@ -205,7 +205,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-11-17 17:51:25" itemprop="dateModified" datetime="2024-11-17T17:51:25+08:00">2024-11-17</time>
+                <time title="Modified: 2024-11-17 17:57:04" itemprop="dateModified" datetime="2024-11-17T17:57:04+08:00">2024-11-17</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -257,7 +257,8 @@
 <li>控制模块：控制以上四个模块，依次执行输入、移位、字母排序以及输出，最终得到结果</li>
 </ul>
 <p><strong>这是一种基于任务流程的分解方法，各个模块通过内存（Core）共享存储。计算组件和共享数据之间的通信是一种不受约束的读写协议，由控制模块协调保证了对数据的顺序访问</strong>。</p>
-<p><img src="images/modular-design-criteria/flowchart.png" alt="image"><br><em>图片来自<a target="_blank" rel="noopener" href="https://www.cs.cmu.edu/~ModProb/KWICsol1.html">这里</a></em></p>
+<p><img src="/images/modular-design-criteria/flowchart.png" alt="image"></p>
+<p><em>图片来自<a target="_blank" rel="noopener" href="https://www.cs.cmu.edu/~ModProb/KWICsol1.html">这里</a></em></p>
 <p>在这个方案中，计算虽然被隔离在不同模块中，但它们共享了存储，且存储的细节实现（characters are packed four to a word）对外暴露，一但数据存储格式发生改造，将会影响到所有模块。同样，算法的改变和系统功能的增强也不容易得到处理。</p>
 <p>在这个方案中，模块与存储，模块与模块都依赖于实现细节，存储格式和算法的变更都会传导到依赖模块中。正如 Parnas 所说，该方案在<strong>处理变化的能力方面</strong>存在许多严重的缺陷。那模块分解应该出现处理可能的变化呢？</p>
 <p><strong>分解二：基于信息隐藏的分解</strong><br>方案二表面上看起来和方案一类似，但多了一个行存储模块，且各模块之间通过抽象接口方法数据。它和方案一有两个重要区别：</p>
@@ -265,7 +266,8 @@
 <li>数据的访问通过一个行存储模块提供更加抽象的数据访问接口（如删除行、删除行单词等)，而不是将存储格式暴露给计算模块。</li>
 <li>模块之间的依赖关系从数据依赖转换为接口依赖，比如字母排序模块依赖于循环位移模块。另一种实现是模块之间通过事件解耦，比如循环位移模块发生变更后，抛出一个变更事件，字母排序模块监听该事件，自动触发排序。这两种实现的主要区别是前者是显示的，后者是隐匿的。基于事件的方案耦合度更低。</li>
 </ul>
-<p><img src="images/modular-design-criteria/information-hiding.png" alt="image"><br><em>图片来自<a target="_blank" rel="noopener" href="https://www.cs.cmu.edu/~ModProb/KWICsol3.html">这里</a></em></p>
+<p><img src="/images/modular-design-criteria/information-hiding.png" alt="image"></p>
+<p><em>图片来自<a target="_blank" rel="noopener" href="https://www.cs.cmu.edu/~ModProb/KWICsol3.html">这里</a></em></p>
 <p>对于这两种分解，最终的执行结果都是一样的，<strong>它们的主要区别体现在运行时模块之间职责划分与依赖关系</strong>。相比于分解一，该方案能够更好地应对存储格式的变化以及计算模块算法的变化。比如，数据存储格式的变化只会影响到行存储模块，排序算法的变化只能会影响到排序模块。另一方面，模块也具有更好的复用性。比如，可以通过注册新的模块以在某些事件上调用这些模块，新模块的功能可以很容易添加到系统中。</p>
 <h2 id="分层结构"><a href="#分层结构" class="headerlink" title="分层结构"></a>分层结构</h2><p>在讨论系统结构时，很容易将良好分解的好处与层次结构的好处混淆，Parnas 指出模块分解与层次结构相互独立的。关于层次结构，论文中引用了<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Edsger_W._Dijkstra">Dijkstra</a>在<a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/363095.363143">The structure of “THE”-multiprogramming system</a>中的定义，如果以模块为单元，可以描述为：</p>
 <p>1、如果一个模块不依赖任何模块，那么它处于Level 1。<br>2、如果一个模块依赖于Level 1，那么它处于Level 2，以此类推。</p>

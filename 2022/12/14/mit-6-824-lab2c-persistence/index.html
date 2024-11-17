@@ -31,7 +31,7 @@
 <meta property="og:description" content="上一篇 Lab2B: 日志复制 中介绍了Raft日志复制的实现，本篇介绍Raft持久化的原理和实现。实验二共包含四个子实验：  Lab2A: 选主 Lab2B: 日志复制 Lab2C: 持久化 Lab2D: 日志压缩    本文是第三个子实验，需要实现Raft持久化。持久化是指将Raft的部分状态存储到非易失的存储介质中，这样即便节点崩溃，也不至于丢失数据，当服务恢复后，可以从之前持久化的状态处开">
 <meta property="og:locale">
 <meta property="article:published_time" content="2022-12-14T01:09:45.000Z">
-<meta property="article:modified_time" content="2024-10-20T06:35:54.682Z">
+<meta property="article:modified_time" content="2024-10-20T15:38:50.877Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="分布式系统">
 <meta property="article:tag" content="MIT6.824">
@@ -202,7 +202,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-20 14:35:54" itemprop="dateModified" datetime="2024-10-20T14:35:54+08:00">2024-10-20</time>
+                <time title="Modified: 2024-10-20 23:38:50" itemprop="dateModified" datetime="2024-10-20T23:38:50+08:00">2024-10-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -381,7 +381,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">66</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -392,7 +392,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-count">103</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

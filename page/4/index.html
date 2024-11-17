@@ -166,7 +166,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/05/06/go-concurrency-in-action/">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/05/08/deploy-codeserver-on-centos/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -180,7 +180,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/05/06/go-concurrency-in-action/" class="post-title-link" itemprop="url">Go并发编程实践</a>
+            <a href="/2022/05/08/deploy-codeserver-on-centos/" class="post-title-link" itemprop="url">CentOS搭建CodeServer环境</a>
         </h2>
 
         <div class="post-meta">
@@ -190,14 +190,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2022-05-06 20:24:21" itemprop="dateCreated datePublished" datetime="2022-05-06T20:24:21+08:00">2022-05-06</time>
+              <time title="Created: 2022-05-08 21:20:20" itemprop="dateCreated datePublished" datetime="2022-05-08T21:20:20+08:00">2022-05-08</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-20 14:02:14" itemprop="dateModified" datetime="2024-10-20T14:02:14+08:00">2024-10-20</time>
+                <time title="Modified: 2024-10-20 23:57:35" itemprop="dateModified" datetime="2024-10-20T23:57:35+08:00">2024-10-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -205,7 +205,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+                  <a href="/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">开发工具</span></a>
                 </span>
             </span>
 
@@ -220,29 +220,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>之前写过一篇<a href="https://leeyzero.github.io/2021/07/02/go-concurrency-pattern/">Go并发编程模式</a>，相对比较片面。最近系统看了下<a target="_blank" rel="noopener" href="https://edu.anarcho-copy.org/Programming%20Languages/Go/Concurrency%20in%20Go.pdf">Concurrency in Go</a>, 结合自身的一些实践，形成本文，算是一个读书笔记吧。</p>
-<h3 id="为什么需要并发"><a href="#为什么需要并发" class="headerlink" title="为什么需要并发"></a>为什么需要并发</h3><blockquote>
-<p>Concurrency is the next major revolution in how we write software.</p>
-<p><em>—— The Free Lunch Is Over</em></p>
-</blockquote>
-<p>摘自 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Herb_Sutter">Herb Sutter</a> 2005年在Dr. Dobb’s 发表的文章：<a target="_blank" rel="noopener" href="http://www.gotw.ca/publications/concurrency-ddj.htm">The Free Lunch Is Over</a>。核心思想是说摩尔定律逐渐失效，但数据规模却在不断增长，我们需要充分挖掘多核计算机性能，而并发编程是编写软件方式的重大革命。</p>
-<p>那什么是并发呢？并发跟并行有什么区别？</p>
-<h3 id="并发与并行"><a href="#并发与并行" class="headerlink" title="并发与并行"></a>并发与并行</h3><p>并发（concurrency）和并行（parallelism）有相关性但却是截然不同的概念。<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Rob_Pike">Rob Pike</a>在<a target="_blank" rel="noopener" href="https://go.dev/blog/waza-talk">Concurrency is not parallelism</a>主题演讲中总结的非常好：</p>
-<blockquote>
-<p>Concurrency is about <strong>dealing with</strong> lots of things at once. Parallelism is about <strong>doing</strong> lots of things at once.</p>
-<p><em>—— Concurrency is not parallelism</em></p>
-</blockquote>
-<p>并发是指同时<strong>处理（dealing with）</strong>多件事，并行是指同时<strong>去做（doing）</strong>多件事；并发强调在<strong>逻辑上（logically）</strong>同时发生；并行强调在<strong>物理上（physically）</strong>同时发生。</p>
-<p>举个例子：单核CPU是可以并发的，但不能并行；多核CPU即可以并发，也可以并行。</p>
-<p float="left">
-    <img src="/images/go-concurrency-in-action/1.png" width="400" />
-    <img src="/images/go-concurrency-in-action/2.png" width="400" />
-</p>
-
-<p>但是，编写正确的并发程序是困难的！</p>
+          <p><a target="_blank" rel="noopener" href="https://github.com/cdr/code-server">Code Server</a>是一个基于<a target="_blank" rel="noopener" href="https://code.visualstudio.com/">VSCode</a>实现的开源的云端IDE，只要能联网，就可以通过浏览器进行访问，无需安装，十分方便。本文主要介绍如何在CentOS 8中安装Code Server。</p>
+<h2 id="依赖环境"><a href="#依赖环境" class="headerlink" title="依赖环境"></a>依赖环境</h2><ul>
+<li>2GB RAM</li>
+<li>需要root权限，对于非root账号，需要sudo权限</li>
+<li>需要安装nginx</li>
+</ul>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/05/06/go-concurrency-in-action/#more" rel="contents">
+              <a class="btn" href="/2022/05/08/deploy-codeserver-on-centos/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -359,6 +345,109 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/05/06/go-concurrency-in-action/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/05/06/go-concurrency-in-action/" class="post-title-link" itemprop="url">Go并发编程实践</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-05-06 20:24:21" itemprop="dateCreated datePublished" datetime="2022-05-06T20:24:21+08:00">2022-05-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-20 23:38:50" itemprop="dateModified" datetime="2024-10-20T23:38:50+08:00">2024-10-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>之前写过一篇<a href="https://leeyzero.github.io/2021/07/02/go-concurrency-pattern/">Go并发编程模式</a>，相对比较片面。最近系统看了下<a target="_blank" rel="noopener" href="https://edu.anarcho-copy.org/Programming%20Languages/Go/Concurrency%20in%20Go.pdf">Concurrency in Go</a>, 结合自身的一些实践，形成本文，算是一个读书笔记吧。</p>
+<h3 id="为什么需要并发"><a href="#为什么需要并发" class="headerlink" title="为什么需要并发"></a>为什么需要并发</h3><blockquote>
+<p>Concurrency is the next major revolution in how we write software.</p>
+<p><em>—— The Free Lunch Is Over</em></p>
+</blockquote>
+<p>摘自 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Herb_Sutter">Herb Sutter</a> 2005年在Dr. Dobb’s 发表的文章：<a target="_blank" rel="noopener" href="http://www.gotw.ca/publications/concurrency-ddj.htm">The Free Lunch Is Over</a>。核心思想是说摩尔定律逐渐失效，但数据规模却在不断增长，我们需要充分挖掘多核计算机性能，而并发编程是编写软件方式的重大革命。</p>
+<p>那什么是并发呢？并发跟并行有什么区别？</p>
+<h3 id="并发与并行"><a href="#并发与并行" class="headerlink" title="并发与并行"></a>并发与并行</h3><p>并发（concurrency）和并行（parallelism）有相关性但却是截然不同的概念。<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Rob_Pike">Rob Pike</a>在<a target="_blank" rel="noopener" href="https://go.dev/blog/waza-talk">Concurrency is not parallelism</a>主题演讲中总结的非常好：</p>
+<blockquote>
+<p>Concurrency is about <strong>dealing with</strong> lots of things at once. Parallelism is about <strong>doing</strong> lots of things at once.</p>
+<p><em>—— Concurrency is not parallelism</em></p>
+</blockquote>
+<p>并发是指同时<strong>处理（dealing with）</strong>多件事，并行是指同时<strong>去做（doing）</strong>多件事；并发强调在<strong>逻辑上（logically）</strong>同时发生；并行强调在<strong>物理上（physically）</strong>同时发生。</p>
+<p>举个例子：单核CPU是可以并发的，但不能并行；多核CPU即可以并发，也可以并行。</p>
+<p float="left">
+    <img src="/images/go-concurrency-in-action/1.png" width="400" />
+    <img src="/images/go-concurrency-in-action/2.png" width="400" />
+</p>
+
+<p>但是，编写正确的并发程序是困难的！</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/05/06/go-concurrency-in-action/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+
+  
+  
+  
+
+
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/02/20/mit-6-824-lab1-mapreduce/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -390,7 +479,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-20 14:35:40" itemprop="dateModified" datetime="2024-10-20T14:35:40+08:00">2024-10-20</time>
+                <time title="Modified: 2024-10-20 23:38:50" itemprop="dateModified" datetime="2024-10-20T23:38:50+08:00">2024-10-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -572,7 +661,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-20 14:24:42" itemprop="dateModified" datetime="2024-10-20T14:24:42+08:00">2024-10-20</time>
+                <time title="Modified: 2024-10-20 23:50:34" itemprop="dateModified" datetime="2024-10-20T23:50:34+08:00">2024-10-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -661,7 +750,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-20 14:13:39" itemprop="dateModified" datetime="2024-10-20T14:13:39+08:00">2024-10-20</time>
+                <time title="Modified: 2024-10-21 00:03:00" itemprop="dateModified" datetime="2024-10-21T00:03:00+08:00">2024-10-21</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -980,98 +1069,6 @@
 
 
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/07/02/go-concurrency-pattern/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/02/go-concurrency-pattern/" class="post-title-link" itemprop="url">Go并发编程模式</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-07-02 23:38:31" itemprop="dateCreated datePublished" datetime="2021-07-02T23:38:31+08:00">2021-07-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-20 14:01:29" itemprop="dateModified" datetime="2024-10-20T14:01:29+08:00">2024-10-20</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>并发是Go语言最重要的语言特性之一，是Go语言区别于其它语言的重要特征。Go语言原生支持并发，可以充分发挥多核CPU的机器性能，同时在语言层面上，Go以十分简洁的语法提供丰富的并发能力，让并发编程并得简单。本文总结Go语言并发编程的常用模式，模式也就是我们说的套路，先学会模仿，再学会融汇贯通，最后才能创造出新的模式，这就是所谓的无招胜有招吧。</p>
-<h2 id="Go对并发的支持"><a href="#Go对并发的支持" class="headerlink" title="Go对并发的支持"></a>Go对并发的支持</h2><p>对于桌面客户端应用程序，为了提升客户端的运行效率和简化多线程编程，通常的做法是在客户端启动时，启动三个常驻线程，分别是UI线程，逻辑线程和IO线程。每个线程维护一个事件循环，线程之间通信（数据传输）只能通过消息队列进行传递，消息队列是线程安全。</p>
-<p>这么做主要有两个好处，一是常驻线程避免创建和销毁线程的开销，多核情况下，通常没有线程上下文切换，线程运行效率高。二是通过消息队列传递数据，各个线程对数据进行操作时不用所以资源竞争问题，这极大降低了多线程编程的难度，并且设计出的程序也更简单，更容易理解。</p>
-<p>接触到Go之后，才知道这种编程模型其实就是C. A. R. Hoare的<a target="_blank" rel="noopener" href="http://www.usingcsp.com/">Communicating Sequential Processes, CSP</a>。Go语言原生支持并发（goroutine）和通道（channel），并且还提供了<a target="_blank" rel="noopener" href="https://golang.org/ref/spec#Select_statements">select</a>对多路通道进行控制，极大简化了并发编程的难度。</p>
-<p>接下来，本文将介绍Go并发编程的常用模式。本文并不适合没有Go语言基础的读者，在阅读以下内容前，请先查阅以下内容：</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://golang.org/ref/spec">The Go Programming Language Specification</a></li>
-<li><a target="_blank" rel="noopener" href="https://golang.org/doc/effective_go">Effective Go</a></li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/07/02/go-concurrency-pattern/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-
-  
-  
-  
-
-
-
 
   
   <nav class="pagination">
@@ -1142,7 +1139,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">66</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1153,7 +1150,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-count">103</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

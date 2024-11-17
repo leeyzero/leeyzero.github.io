@@ -31,7 +31,7 @@
 <meta property="og:description" content="缘起最近出现一例json.Unmarshal导致的精度丢失引发的线上问题，虽然这个问题在被及时发现，未对业务造成损失，但细挖这个问题的原因仍然比较有意思。这篇文章会从技术层面深入分析json.Unmarshal精度丢失的原因以及处理建议，以避免后续开发过程中再次踩坑。 在分析这个问题的过程中，发现涉及Go对浮点数数值的处理，又涉及IEEE-745标准中的一些细节，放在一篇文章中会增大文章的阅读难度">
 <meta property="og:locale">
 <meta property="article:published_time" content="2024-04-16T15:37:26.000Z">
-<meta property="article:modified_time" content="2024-10-20T06:04:32.871Z">
+<meta property="article:modified_time" content="2024-10-20T15:38:50.875Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="Go">
 <meta property="article:tag" content="JSON">
@@ -201,7 +201,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-20 14:04:32" itemprop="dateModified" datetime="2024-10-20T14:04:32+08:00">2024-10-20</time>
+                <time title="Modified: 2024-10-20 23:38:50" itemprop="dateModified" datetime="2024-10-20T23:38:50+08:00">2024-10-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -373,7 +373,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">66</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -384,7 +384,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-count">103</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

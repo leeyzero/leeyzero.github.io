@@ -166,6 +166,95 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2023/02/18/go-data-structure-channel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/18/go-data-structure-channel/" class="post-title-link" itemprop="url">Go数据结构之channel</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-18 16:53:42" itemprop="dateCreated datePublished" datetime="2023-02-18T16:53:42+08:00">2023-02-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-20 23:38:50" itemprop="dateModified" datetime="2024-10-20T23:38:50+08:00">2024-10-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>channel是一种数据结构，在Go语言中用于协程间通信，是Go语言区别于其它语言的重要特性。Go语言原生支持channel，配合Go语言原生对并发的支持，让并发编程变得简单。正如<a target="_blank" rel="noopener" href="https://go.dev/blog/codelab-share">Share Memory By Communicating</a>对Go并发编程的建议：</p>
+<blockquote>
+<p>Do not communicate by sharing memory; instead, share memory by communicating.</p>
+</blockquote>
+<p>和传统并发编程使用同步原语共享内存不同，Go并发编程强调通过channel在协程间通信来共享内存，这实际上是对<strong>CSP</strong><a target="_blank" rel="noopener" href="http://www.usingcsp.com/">(<strong>C</strong>ommunicating <strong>S</strong>equential <strong>P</strong>rocesses)</a>并发模型的一种实现。</p>
+<p>从应用层面来讲，channel和协程（goroutine）是配合使用的，本文主要从实现层面介绍channel的内部原理，但不会涉及太多协程管理调度相关的知识。本文先介绍channel的基本用法，然后介绍channel内部数据结构以及实现原理，最后介绍使用channel时应该注意的一些问题。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/02/18/go-data-structure-channel/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+
+  
+  
+  
+
+
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2023/02/13/go-data-structure-map/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -197,7 +286,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-20 14:04:13" itemprop="dateModified" datetime="2024-10-20T14:04:13+08:00">2024-10-20</time>
+                <time title="Modified: 2024-10-20 23:38:50" itemprop="dateModified" datetime="2024-10-20T23:38:50+08:00">2024-10-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -292,7 +381,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-20 14:04:02" itemprop="dateModified" datetime="2024-10-20T14:04:02+08:00">2024-10-20</time>
+                <time title="Modified: 2024-10-20 23:38:50" itemprop="dateModified" datetime="2024-10-20T23:38:50+08:00">2024-10-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -384,7 +473,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-20 14:04:21" itemprop="dateModified" datetime="2024-10-20T14:04:21+08:00">2024-10-20</time>
+                <time title="Modified: 2024-10-20 23:38:50" itemprop="dateModified" datetime="2024-10-20T23:38:50+08:00">2024-10-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -476,7 +565,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-20 14:04:17" itemprop="dateModified" datetime="2024-10-20T14:04:17+08:00">2024-10-20</time>
+                <time title="Modified: 2024-10-20 23:38:50" itemprop="dateModified" datetime="2024-10-20T23:38:50+08:00">2024-10-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -565,7 +654,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-20 14:35:56" itemprop="dateModified" datetime="2024-10-20T14:35:56+08:00">2024-10-20</time>
+                <time title="Modified: 2024-10-20 23:38:50" itemprop="dateModified" datetime="2024-10-20T23:38:50+08:00">2024-10-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -667,7 +756,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-20 14:35:54" itemprop="dateModified" datetime="2024-10-20T14:35:54+08:00">2024-10-20</time>
+                <time title="Modified: 2024-10-20 23:38:50" itemprop="dateModified" datetime="2024-10-20T23:38:50+08:00">2024-10-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -777,7 +866,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-20 14:35:51" itemprop="dateModified" datetime="2024-10-20T14:35:51+08:00">2024-10-20</time>
+                <time title="Modified: 2024-10-20 23:38:50" itemprop="dateModified" datetime="2024-10-20T23:38:50+08:00">2024-10-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -886,7 +975,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-20 14:35:49" itemprop="dateModified" datetime="2024-10-20T14:35:49+08:00">2024-10-20</time>
+                <time title="Modified: 2024-10-20 23:38:50" itemprop="dateModified" datetime="2024-10-20T23:38:50+08:00">2024-10-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -995,7 +1084,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-20 14:35:46" itemprop="dateModified" datetime="2024-10-20T14:35:46+08:00">2024-10-20</time>
+                <time title="Modified: 2024-10-20 23:38:50" itemprop="dateModified" datetime="2024-10-20T23:38:50+08:00">2024-10-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1035,97 +1124,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2022/12/14/mit-6-824-lab2-overview/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-
-  
-  
-  
-
-
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2022/11/28/understanding-rest-architecture-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/11/28/understanding-rest-architecture-1/" class="post-title-link" itemprop="url">[论文解读] Architectural Styles and the Design of Network-based Software Architectures - Part1</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-11-28 10:54:35" itemprop="dateCreated datePublished" datetime="2022-11-28T10:54:35+08:00">2022-11-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-20 14:23:49" itemprop="dateModified" datetime="2024-10-20T14:23:49+08:00">2024-10-20</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%BC%96%E7%A8%8B%E5%8C%A0%E8%89%BA/" itemprop="url" rel="index"><span itemprop="name">编程匠艺</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a target="_blank" rel="noopener" href="https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">Architectural Styles and the Design of Network-based Software Architectures</a>（架构风格与基于网络应用软件的架构设计）是 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Roy_Fielding">Roy Fielding</a> 在2000年发表的博士论文。这篇论文一经发表，就引起了关注，并且对互联网开发产生了深远的影响。论文中首次提出的REST架构风格基本上成为目前Web架构的指导规范，如果一个Web架构符合REST架构风格，我们称为RESTful架构。</p>
-<p>大部分人只看到这篇论文提出的REST架构风格，却忽略了REST架构风格提出的背景及方法论。这篇论文前半部分给出了一种通用的架构设计评估方法，我认为是更值得学习的地方。本来想用一文章来介绍这篇论文，发现篇幅有点收不住，于是拆分成两篇：</p>
-<ul>
-<li><a href="/2022/11/28/understanding-rest-architecture-1/" title="Part1">Part1</a>：主要介绍论文背景、架构风格的定义、评估应用软件架构设计的方法以及基于网络应用的架构属性与架构风格。</li>
-<li><a href="/2022/11/28/understanding-rest-architecture-1/" title="Part2">Part2</a>：主要介绍Web架构面临的问题、REST架构风格以及REST在Web架构中的应用。
-
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/11/28/understanding-rest-architecture-1/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -1218,7 +1216,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">66</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1229,7 +1227,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-count">103</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

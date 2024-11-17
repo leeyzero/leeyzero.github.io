@@ -2,6 +2,17 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://leeyzero.github.io/2024/11/03/modular-design-criteria/</loc>
+    
+    <lastmod>2024-11-17T09:49:12.988Z</lastmod>
+    
+    <date>1730592357000</date>
+    <title>关于将系统分解为模块所采用的标准 | LeeYzero的博客</title>
+    
+    <desc></desc>
+  </url>
+  
+  <url>
     <loc>https://leeyzero.github.io/2020/10/10/how-to-reading/</loc>
     
     <lastmod>2024-10-20T16:03:49.473Z</lastmod>
@@ -21,6 +32,28 @@
     <title>Makefile简明教程 | LeeYzero的博客</title>
     
     <desc>make是一个自动化构建工具，广泛应用于Unix及其类Unix系统中。make最先应用于编译C语言项目，不仅如此，只要某个文件发生变化就需要重新构建的项目都可以使用make工具进行构建。 Makefile是可以被make解析的特定格式的文本文件。其语法简单，当我们构建一个程序时，其工作原理大致为：make首先解析Makefile，查找构建应用的一系列依赖，并检查每个依赖文件是否过期（是否发生变化）</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2021/09/21/oauth2-intro/</loc>
+    
+    <lastmod>2024-10-20T16:03:00.844Z</lastmod>
+    
+    <date>1632237352000</date>
+    <title>OAuth2简明教程 | LeeYzero的博客</title>
+    
+    <desc>开放授权（OAuth, Open Authorization）是一个开放标准，允许用户让第三方应用访问该用户在某一网站上存储的私密的资源（如照片，视频，联系人列表等），而无需将用户名的密码提供给第三方应用。OAuth2.0是OAuth的2.0版本。本文主要介绍OAuth2的授权流程。 名词解释 Resource Owner：资源拥有者 Resource Server：资源服务器 Client：客户</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2020/10/10/osx-config-lrzsz/</loc>
+    
+    <lastmod>2024-10-20T16:02:51.191Z</lastmod>
+    
+    <date>1602343243000</date>
+    <title>MacOS下使用lrzsz传输文件 | LeeYzero的博客</title>
+    
+    <desc>在mac环境下，我们经常会使用iTerm2终端连接远程服务器，也经常会有本机和远程服务器之间进行文件共享的需求。这个时候lrzsz就派上用场了。 lrzsz是unix下的开源软件包，支持XMODEM, YMODEM ZMODEM文件传输协议。本文将会展示如何将lrzsz集成到iTerm2终端中，通过sz和rz命令和远程服务器传输文件。 其中，s表示send，r表示recieve，z表示使用的协议为</desc>
   </url>
   
   <url>
@@ -101,6 +134,28 @@
   </url>
   
   <url>
+    <loc>https://leeyzero.github.io/2020/10/09/hello-world/</loc>
+    
+    <lastmod>2024-10-20T16:01:04.641Z</lastmod>
+    
+    <date>1602255634000</date>
+    <title>Hello World | LeeYzero的博客</title>
+    
+    <desc></desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2021/07/02/go-concurrency-pattern/</loc>
+    
+    <lastmod>2024-10-20T16:00:51.932Z</lastmod>
+    
+    <date>1625240311000</date>
+    <title>Go并发编程模式 | LeeYzero的博客</title>
+    
+    <desc>简介并发是Go语言最重要的语言特性之一，是Go语言区别于其它语言的重要特征。Go语言原生支持并发，可以充分发挥多核CPU的机器性能，同时在语言层面上，Go以十分简洁的语法提供丰富的并发能力，让并发编程并得简单。本文总结Go语言并发编程的常用模式，模式也就是我们说的套路，先学会模仿，再学会融汇贯通，最后才能创造出新的模式，这就是所谓的无招胜有招吧。 Go对并发的支持对于桌面客户端应用程序，为了提升客</desc>
+  </url>
+  
+  <url>
     <loc>https://leeyzero.github.io/2021/08/29/gin-tutorial/</loc>
     
     <lastmod>2024-10-20T16:00:40.999Z</lastmod>
@@ -109,6 +164,28 @@
     <title>Gin简明教程 | LeeYzero的博客</title>
     
     <desc>Gin是一个用Go语言实现的高性能web框架，其API实现优雅，性能卓越，上手简单，而且比较轻量级，很容易引入到项目中。本文是一篇对Gin框架的学习笔记，不会对Gin框架的用法做面面俱到的，而是对Gin框架做一个整体上的认识与入门。 安装1、首先需要先安装Go，依赖版本为1.13+，执行下面命令安装Gin： 1$ go get -u github.com/gin-gonic/gin 2、在代码中引</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2022/11/26/free-certificates-for-https/</loc>
+    
+    <lastmod>2024-10-20T15:59:14.467Z</lastmod>
+    
+    <date>1669443805000</date>
+    <title>免费让网站启用HTTPS | LeeYzero的博客</title>
+    
+    <desc>之前搭建了一个 codeserver 的开发环境，但还遗留了配置HTTPS访问域名的问题。本周正好有空搞下，本来打算花钱买一个HTTPS证书，发现 Let’s Encrypt 提供了免费的HTTPS证书，而且还提供了配套的工具让网站开启HTTPS变得非常简单，本文记录下安装步骤。 在介绍安装步骤之前先简单介绍一下 HTTPS 的工作原理，不感兴趣的同学可以直接跳过。 简单来说，HTTPS 就是安全</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2020/10/10/exception-and-crash/</loc>
+    
+    <lastmod>2024-10-20T15:59:11.742Z</lastmod>
+    
+    <date>1602339182000</date>
+    <title>应用程序异常处理与崩溃收集 | LeeYzero的博客</title>
+    
+    <desc>对于Windows应用, 当应用发布出去之后，如果应用程序在用户机器上发生了崩溃，我们需要这样一种手段，即在程序崩溃的瞬间能够“记录”下崩溃时进程、线程、栈、栈上下文等信息，这些信息对我们分析崩溃原因非常有帮助。另外，由于客户端程序一般是运行在用户的机器上，当生成崩溃信息后，还需要将这些信息上报至服务器，以方便开发者能够快捷地拿到这些崩溃信息进行分析。一般来说客户端程序崩溃的收集与处理流程如下图：</desc>
   </url>
   
   <url>
@@ -123,6 +200,17 @@
   </url>
   
   <url>
+    <loc>https://leeyzero.github.io/2021/06/08/end-to-end-principle/</loc>
+    
+    <lastmod>2024-10-20T15:58:22.050Z</lastmod>
+    
+    <date>1623085277000</date>
+    <title>端到端设计原则 | LeeYzero的博客</title>
+    
+    <desc>最近又看了一遍 End-To-End Argument In System Design，有一些新的思考，但都集中在一些点上，不够系统，在此先记录下来，后续有新的想法再做补充和整理。 核心观点这篇论文在由MIT计算机科学实验室发表于1984年，是一篇非常经典的关于系统设计的论文。论文论证了分布式系统设计的一个事实：端到端的可靠通信只能由通信的两端（End-Point）来保证，而中间的媒介（如消息中</desc>
+  </url>
+  
+  <url>
     <loc>https://leeyzero.github.io/2021/05/23/dropbox-file-synchronization/</loc>
     
     <lastmod>2024-10-20T15:58:15.513Z</lastmod>
@@ -134,6 +222,39 @@
   </url>
   
   <url>
+    <loc>https://leeyzero.github.io/2021/04/02/deploy-hexo-on-centos/</loc>
+    
+    <lastmod>2024-10-20T15:57:40.607Z</lastmod>
+    
+    <date>1617354031000</date>
+    <title>搭建Hexo环境 | LeeYzero的博客</title>
+    
+    <desc></desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2022/05/08/deploy-codeserver-on-centos/</loc>
+    
+    <lastmod>2024-10-20T15:57:35.447Z</lastmod>
+    
+    <date>1652016020000</date>
+    <title>CentOS搭建CodeServer环境 | LeeYzero的博客</title>
+    
+    <desc>Code Server是一个基于VSCode实现的开源的云端IDE，只要能联网，就可以通过浏览器进行访问，无需安装，十分方便。本文主要介绍如何在CentOS 8中安装Code Server。 依赖环境 2GB RAM 需要root权限，对于非root账号，需要sudo权限 需要安装nginx</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2021/01/28/cpp-raii/</loc>
+    
+    <lastmod>2024-10-20T15:56:59.012Z</lastmod>
+    
+    <date>1611764411000</date>
+    <title>C++资源管理 | LeeYzero的博客</title>
+    
+    <desc>RAII作为C++资源管理的一种惯用法，是每一位C++程序员都应该掌握的基本技能。在google上搜索关键字RAII, 有二百多万条搜索结果。说明这个话题在网上已经被讨论过无数次，也发现了一些好文章给我不少启发，这篇文章主要是做个总结并谈谈自己的理解。 什么是RAII资源获取即初始化（Resource Acquisition Is Initialization），即RAII。RAII是一种C++编</desc>
+  </url>
+  
+  <url>
     <loc>https://leeyzero.github.io/2020/10/10/cef-windows-source/</loc>
     
     <lastmod>2024-10-20T15:56:42.522Z</lastmod>
@@ -142,6 +263,17 @@
     <title>CEF Windows环境源码编译 | LeeYzero的博客</title>
     
     <desc>由于项目需要用到内嵌浏览器，IE内核太依赖于操作系统，对H5的支持也不太好。CEF是基于chromium 项目的内嵌浏览器开源框架，已经应用到了很多产品中，而且有比较健全的论坛和官方支持，是项目的不二选择。由于客户端要运行到Windows XP系统，但Chome浏览器在49版本(对应CEF3版本为2623，以下说的CEF均指CEF3)后不再支持Win7以下系统。CEF二进制发布官网上并未包含262</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2020/10/10/cef-windows-bin/</loc>
+    
+    <lastmod>2024-10-20T15:55:59.135Z</lastmod>
+    
+    <date>1602340469000</date>
+    <title>CEF Windows环境二进制发布 | LeeYzero的博客</title>
+    
+    <desc>CEF(The Chromium Embedded Framework) 是Marshall Greenblatt于2008年基于 Google Chromium 项目创建由BSD开源协议授权的开源项目。它和Chromium项目不同之处在于，Chromium项目侧重于Google Chrome应用开发，而CEF侧重于使浏览器更容易内嵌到第三方应用中。CEF屏蔽了Chromium和 Blink代码的</desc>
   </url>
   
   <url>
@@ -255,6 +387,17 @@
   </url>
   
   <url>
+    <loc>https://leeyzero.github.io/2021/11/28/upload-multi-files-with-go/</loc>
+    
+    <lastmod>2024-10-20T15:50:34.347Z</lastmod>
+    
+    <date>1638073224000</date>
+    <title>使用Go实现批量文件上传 | LeeYzero的博客</title>
+    
+    <desc>在现在生活中，我们经常在使用文件上传功能，但我们很少会自己去做一个文件上传的服务，了解文件的上传原理有助于我们开发出更健壮的程序。利用Go语言以及其标准库的能力，用很少的代码量就可以实现一个文件上传服务器。本文以小工具的方式讲解如何实现一个简单的文件上传服务器，并假设读者对Go、HTTP、HTML有一定了解。 完整代码参考：github.com/leeyzero/go-tools/uploadse</desc>
+  </url>
+  
+  <url>
     <loc>https://leeyzero.github.io/2022/11/24/understanding-skip-list/</loc>
     
     <lastmod>2024-10-20T15:50:19.011Z</lastmod>
@@ -299,6 +442,17 @@
   </url>
   
   <url>
+    <loc>https://leeyzero.github.io/2022/11/28/understanding-rest-architecture-1/</loc>
+    
+    <lastmod>2024-10-20T15:47:50.627Z</lastmod>
+    
+    <date>1669604075000</date>
+    <title>[论文解读] Architectural Styles and the Design of Network-based Software Architectures - Part1 | LeeYzero的博客</title>
+    
+    <desc>Architectural Styles and the Design of Network-based Software Architectures（架构风格与基于网络应用软件的架构设计）是 Roy Fielding 在2000年发表的博士论文。这篇论文一经发表，就引起了关注，并且对互联网开发产生了深远的影响。论文中首次提出的REST架构风格基本上成为目前Web架构的指导规范，如果一个Web架构</desc>
+  </url>
+  
+  <url>
     <loc>https://leeyzero.github.io/2020/10/10/write-readable-code/</loc>
     
     <lastmod>2024-10-20T15:43:15.604Z</lastmod>
@@ -307,6 +461,281 @@
     <title>编写可读代码的艺术 | LeeYzero的博客</title>
     
     <desc>最近花了一个周的零星时间，看了《编写可读代码艺术》，收获颇多。虽然平时也经常使用书中提到的一些方法编写代码，但只是一种直观感觉认为这种方式是“正确”的。书中将这些方法提炼成一条条原则，并采用大量实例佐证这些原则。书中系统化的介绍了如何编写可读代码，并提出很多指导性原则，整本书不到200页，非常值得阅读。 基本原则何为好代码，何为坏代码，每个人的判断标准可能并不一样，但作者提了总的指导原则：代码应当</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/about/index.html</loc>
+    
+    <lastmod>2024-10-20T15:42:21.995Z</lastmod>
+    
+    <date>1602153624000</date>
+    <title>关于作者 | LeeYzero的博客</title>
+    
+    <desc></desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2024/09/13/time-clock-ordering-events-in-distributed-system/</loc>
+    
+    <lastmod>2024-10-20T15:41:17.879Z</lastmod>
+    
+    <date>1726204254000</date>
+    <title>分布式系统中的时间、时钟以及事件顺序 | LeeYzero的博客</title>
+    
+    <desc>Leslie Lamport 在1978年发表了一篇论文Time, Clocks, and the Ordering of Events in a Distributed System，对分布式系统领域产生的深远影响，这篇论文也成为分布系统领域引用最高的文献之一。 论文中定义了分布式系统中事件的”happen before”关系，并引入了逻辑时钟解决分布式系统中事件同步的问题。但由于系统之外的信息</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2024/04/27/vscode-go-debugging/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.881Z</lastmod>
+    
+    <date>1714207447000</date>
+    <title>vscode-go调试工具 | LeeYzero的博客</title>
+    
+    <desc>工欲善其事，必先利其器。作为一个曾经的资深vim党，在使用过CodeServer后，基本上不再使用vim了。CodeServer作为vscode的云端IDE，再也不用搭建本地开发环境了。之前介绍了 CentOS搭建CodeServer环境，只需要几步，就可以搭建自己的云端IDE，非常方便。 vscode-go是vscode中针对Go语言的扩展，提供了丰富的特性，包括： 智能感知（IntelliSe</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2024/04/06/thinking-about-solving-complicated-problem/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.879Z</lastmod>
+    
+    <date>1712374099000</date>
+    <title>解决复杂问题的一些思考 | LeeYzero的博客</title>
+    
+    <desc>最近半年主要在对一个10余年的商业化系统进行重构。对于商业化系统来讲，普遍存在状态多、链路长、业务逻辑复杂等特点。加上系统设计之初并未考虑到后续业务的发展形态，在承接业务需求时，不断打补丁，存在很多ad hoc方案，系统最终变成了一个”大泥球“，导致的问题是业务迭代效率低，代码变更故障率高。这篇文章主要对如何解决复杂问题谈谈自己的一些思考，供大家参考。 思考框架首先谈谈什么是复杂问题。复杂问题是一</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2024/05/26/regex-tutorial/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.878Z</lastmod>
+    
+    <date>1716736580000</date>
+    <title>正则表达式简明教程 | LeeYzero的博客</title>
+    
+    <desc>有些人在碰到问题时，就想：“我知道，我可以使用正则表达式。”现在，他们就有了两个问题。– by Jamie “jwz” Zawinski， 1997年 8月 什么是正则表达式正则表达式（Regular Expression），通常缩写为regex或regexp，是一种在文本中进行搜索和替换的模式描述语言。它使用单个字符串来描述、匹配一系列符合某个句法规则的字符串。正则表达式是由普通字符（例如：字母</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2024/10/06/software-design-philosophy/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.878Z</lastmod>
+    
+    <date>1728210873000</date>
+    <title>软件设计哲学 | LeeYzero的博客</title>
+    
+    <desc>最近本来想写一篇如何应对复杂系统的文章，偶然读到John Ousterhout的软件设计哲学，读完后，发现我没有必要再写了。这篇文章对原文做一个概要性总结并谈谈自己的理解和思考。 对于一个软件系统，需求可以粗略的分为两类： 功能性需求 非功能性需求 功能性需求是面向用户的，非功能性需求是面向系统的，但非功能性需求最终是服务于功能性需求。我们通常会用非功能性需求去评估一个系统的质量，比如扩展性、维护</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2c-persistence/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.877Z</lastmod>
+    
+    <date>1670980185000</date>
+    <title>MIT 6.824 Lab2C: 持久化 | LeeYzero的博客</title>
+    
+    <desc>上一篇 Lab2B: 日志复制 中介绍了Raft日志复制的实现，本篇介绍Raft持久化的原理和实现。实验二共包含四个子实验： Lab2A: 选主 Lab2B: 日志复制 Lab2C: 持久化 Lab2D: 日志压缩 本文是第三个子实验，需要实现Raft持久化。持久化是指将Raft的部分状态存储到非易失的存储介质中，这样即便节点崩溃，也不至于丢失数据，当服务恢复后，可以从之前持久化的状态处开始工作。</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2d-log-compaction/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.877Z</lastmod>
+    
+    <date>1670980209000</date>
+    <title>MIT 6.824 Lab2C: 日志压缩 | LeeYzero的博客</title>
+    
+    <desc>上一篇 Lab2C: 持久化 中介绍了Raft持久化的实现，本篇介绍Raft日志压缩原理和实现。实验二共包含四个子实验： Lab2A: 选主 Lab2B: 日志复制 Lab2C: 持久化 Lab2D: 日志压缩 本文是第四个子实验，需要实现Raft日志压缩，在开始实验前，先阅读以下材料： 阅读论文：In Search of an Understandable Consensus Algorithm</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2022/08/07/macos-terminal-configuration/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.876Z</lastmod>
+    
+    <date>1659886240000</date>
+    <title>配置macOS终端环境 | LeeYzero的博客</title>
+    
+    <desc>最近换了一台mac，配置了一下终端（terminal）环境，在此记录一下，以便后续查阅，同时给分享给网友作为参考。本文不会细无具细，只会列举出主要步骤和相关配置参考资料。主要包括以下四个部分： 安装 iTerm2 安装 oh-my-zsh 配置 powerlevel10k 配置插件 终端效果:</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2022/02/20/mit-6-824-lab1-mapreduce/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.876Z</lastmod>
+    
+    <date>1645323245000</date>
+    <title>MIT 6.824 Lab1: MapReduce | LeeYzero的博客</title>
+    
+    <desc>之前虽然看过很多分布式系统相关的书籍、论文和一些开源项目，但很少自己动手去实现。理论跟工程实现通常有非常大的差别，一个看似很简单的协议，在工程实现上可能非常困难。6.824是MIT开设的分布式系统课程，非常系统的讲解了分布式系统的主流技术，同时将理论和实践相结合，是一个非常好的课程。 本文是笔者在学习6.824 lec1课程的一些总结和思考，算是一个学习笔记。在看这篇文章之前，我希望读者先提前阅读</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2-overview/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.876Z</lastmod>
+    
+    <date>1670980055000</date>
+    <title>MIT 6.824 Lab2: 概述 | LeeYzero的博客</title>
+    
+    <desc>6.824 是MIT推出的一个分布式系统课程，讲师是大名鼎鼎的Robert Tappan Morris。Lab2 是课程中的第二个实验，实验要求需要用Go语言实现Raft。Raft是为可理解而设计的共识算法（consensus algorithm），它在性能和容错性上等价于Paxos，但结构却完全不一样。Raft通过减少状态空间和将问题分解为几个独立的子问题，使得Raft更容易理解，也更利于工程实</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2a-leader-election/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.876Z</lastmod>
+    
+    <date>1670980125000</date>
+    <title>MIT 6.824 Lab2A: 选主 | LeeYzero的博客</title>
+    
+    <desc>上一篇 Lab2: 概述 中简要介绍了Raft，本篇介绍Raft选主的原理和实现。实验二共包含四个子实验： Lab2A: 选主 Lab2B: 日志复制 Lab2C: 持久化 Lab2D: 日志压缩 本文是第一个子实验，需要实现Raft选主。Raft具有强领导人特性，也就是说Raft需要先选举出领导人后才能进行后续操作。在开始实验前，先阅读以下材料： 阅读论文：In Search of an Und</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2b-log-replication/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.876Z</lastmod>
+    
+    <date>1670980163000</date>
+    <title>MIT 6.824 Lab2A: 日志复制 | LeeYzero的博客</title>
+    
+    <desc>上一篇 Lab2A: 选主 中介绍了Raft选主的实现，本篇介绍Raft日志复制的原理和实现。实验二共包含四个子实验： Lab2A: 选主 Lab2B: 日志复制 Lab2C: 持久化 Lab2D: 日志压缩 本文是第二个子实验，需要实现Raft日志复制。由于Raft的强领导人特性，命令都是通过Leader顺序追回到日志中，然后通过Leader复制到各Follower中，由于Raft的日志安全特性</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2023/02/13/go-data-structure-map/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.875Z</lastmod>
+    
+    <date>1676301576000</date>
+    <title>Go数据结构之map | LeeYzero的博客</title>
+    
+    <desc>map又称映射表或关联数组，是一种常用的数据结构。它由一组&lt;key, value&gt;组成，每个key只出现一次。Go语言原生支持了map数据结构，正如 Go maps in action 中所说： One of the most useful data structures in computer science is the hash table. Many hash table im</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2022/12/25/go-data-structure-slice/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.875Z</lastmod>
+    
+    <date>1671962514000</date>
+    <title>Go数据结构之slice | LeeYzero的博客</title>
+    
+    <desc>在Go语言中，slice是一种非常重要的数据结构，用于描述数组存储的连续部分，它本质上是对数组的引用。slice是建立在数组基础上，是对数组的一种封装，它屏蔽了数组底层细节，但使用起来更方便、灵活，再配合内建函数append和copy使得slice具有更强的表现力。 如果不了解slice的内部实现原理，可能会写出低效的代码，甚至会写出一些让你意想不到的BUG。本文先介绍slice的实现原理，再介绍</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2023/01/08/go-data-structure-string/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.875Z</lastmod>
+    
+    <date>1673181314000</date>
+    <title>Go数据结构之string | LeeYzero的博客</title>
+    
+    <desc>在Go语言中，string是一种非常重要的数据结构。了解string的内部实现原理，有利于我们写出更高效的代码。本篇文章首先介绍string的实现原理，然后介绍string、bytes、runes和characters之间的关系，同时引出字符篇码Unicode和UTF-8，最后介绍使用string应该注意的一些问题。 先来看下面两个例子。 示例一 1234str := &quot;中文abc&qu</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2024/04/16/go-json-unmarshal-loss-precision-1/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.875Z</lastmod>
+    
+    <date>1713281846000</date>
+    <title>Go json.Unmarshal 精度丢失问题分析（1/2） | LeeYzero的博客</title>
+    
+    <desc>缘起最近出现一例json.Unmarshal导致的精度丢失引发的线上问题，虽然这个问题在被及时发现，未对业务造成损失，但细挖这个问题的原因仍然比较有意思。这篇文章会从技术层面深入分析json.Unmarshal精度丢失的原因以及处理建议，以避免后续开发过程中再次踩坑。 在分析这个问题的过程中，发现涉及Go对浮点数数值的处理，又涉及IEEE-745标准中的一些细节，放在一篇文章中会增大文章的阅读难度</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2024/04/17/go-json-unmarshal-loss-precision-2/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.875Z</lastmod>
+    
+    <date>1713368246000</date>
+    <title>Go json.Unmarshal 精度丢失问题分析（2/2） | LeeYzero的博客</title>
+    
+    <desc>缘起最近出现一例json.Unmarshal导致的精度丢失引发的线上问题，虽然这个问题在被及时发现，未对业务造成损失，但细挖这个问题的原因仍然比较有意思。这篇文章会从技术层面深入分析json.Unmarshal精度丢失的原因以及处理建议，以避免后续开发过程中再次踩坑。 在 Part1 中，我们着重说明了json.Unmarshal处理大整数可能出现精度丢失的问题，但遗留了一个问题，即大整数置换成浮</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2023/02/18/go-data-structure-channel/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.874Z</lastmod>
+    
+    <date>1676710422000</date>
+    <title>Go数据结构之channel | LeeYzero的博客</title>
+    
+    <desc>channel是一种数据结构，在Go语言中用于协程间通信，是Go语言区别于其它语言的重要特性。Go语言原生支持channel，配合Go语言原生对并发的支持，让并发编程变得简单。正如Share Memory By Communicating对Go并发编程的建议： Do not communicate by sharing memory; instead, share memory by commun</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2023/01/20/go-data-structure-interface/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.874Z</lastmod>
+    
+    <date>1674201540000</date>
+    <title>Go数据结构之interface | LeeYzero的博客</title>
+    
+    <desc>今年最后一天上班，下午没啥事，总结下Go语言的接口。接口是Go语言区别与其它语言的重要语言特性，也是我最喜欢的Go语言特性之一。Go的接口除了提供多态的能力外，它还是Go反射的基础。Go是一门静态语言，Go接口能够在编译期检查语法规则，同时具备像动态语言那样使用 ducking typing 实现接口。 我一直比较好奇Go的接口内部是如何实现。看了几篇文章，也看了runtime包中的部分实现。发现</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2022/05/06/go-concurrency-in-action/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.874Z</lastmod>
+    
+    <date>1651839861000</date>
+    <title>Go并发编程实践 | LeeYzero的博客</title>
+    
+    <desc>写在前面之前写过一篇Go并发编程模式，相对比较片面。最近系统看了下Concurrency in Go, 结合自身的一些实践，形成本文，算是一个读书笔记吧。 为什么需要并发 Concurrency is the next major revolution in how we write software. —— The Free Lunch Is Over 摘自 Herb Sutter 2005年在</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2024/01/10/charles-tutorial/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.873Z</lastmod>
+    
+    <date>1704898640000</date>
+    <title>Charles简明教程 | LeeYzero的博客</title>
+    
+    <desc></desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2024/04/14/deploy-php-on-centos/</loc>
+    
+    <lastmod>2024-10-20T15:38:50.873Z</lastmod>
+    
+    <date>1713079084000</date>
+    <title>CentOS搭建Nginx+PHP环境 | LeeYzero的博客</title>
+    
+    <desc>虽然PHP做业务后端逐步在被Go等语言替代，但使用PHP做简单业务封装和数据组装时，开发效率依然是比较高效的。使用Nginx运行PHP的常用方法是FastCGI模块。PHP-FPM (FastCGI进程管理器）极大地提高了你的Nginx+PHP环境的性能，所以这对高负载的网站很有用。本教程介绍在CentOS8上安装Nginx并配置PHP-FPM的步骤，以便后续参考。 依赖环境 CentOS8 拥有</desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/tags/index.html</loc>
+    
+    <lastmod>2024-10-20T15:38:46.459Z</lastmod>
+    
+    <date>1602153084000</date>
+    <title>标签 | LeeYzero的博客</title>
+    
+    <desc></desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/categories/index.html</loc>
+    
+    <lastmod>2024-10-20T15:38:46.418Z</lastmod>
+    
+    <date>1602153539000</date>
+    <title>分类 | LeeYzero的博客</title>
+    
+    <desc></desc>
   </url>
   
   <url>
@@ -329,424 +758,6 @@
     <title>Go并发编程实践 | LeeYzero的博客</title>
     
     <desc>写在前面之前写过一篇Go并发编程模式，相对比较片面。最近系统看了下Concurrency in Go, 结合自身的一些实践，形成本文，算是一个读书笔记吧。 为什么需要并发？摩尔定律逐渐失效，数据规模的不断增长需要充分挖掘多核计算机性能，而并发编程是利器： Concurrency is the next major revolution in how we write software. ——The</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/about/index.html</loc>
-    
-    <lastmod>2024-10-20T06:53:41.634Z</lastmod>
-    
-    <date>1602153624000</date>
-    <title>关于作者 | LeeYzero的博客</title>
-    
-    <desc></desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2020/10/10/cef-windows-bin/</loc>
-    
-    <lastmod>2024-10-20T06:43:46.402Z</lastmod>
-    
-    <date>1602340469000</date>
-    <title>CEF Windows环境二进制发布 | LeeYzero的博客</title>
-    
-    <desc>CEF(The Chromium Embedded Framework) 是Marshall Greenblatt于2008年基于 Google Chromium 项目创建由BSD开源协议授权的开源项目。它和Chromium项目不同之处在于，Chromium项目侧重于Google Chrome应用开发，而CEF侧重于使浏览器更容易内嵌到第三方应用中。CEF屏蔽了Chromium和 Blink代码的</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2024/04/27/vscode-go-debugging/</loc>
-    
-    <lastmod>2024-10-20T06:43:32.558Z</lastmod>
-    
-    <date>1714207447000</date>
-    <title>vscode-go调试工具 | LeeYzero的博客</title>
-    
-    <desc>工欲善其事，必先利其器。作为一个曾经的资深vim党，在使用过CodeServer后，基本上不再使用vim了。CodeServer作为vscode的云端IDE，再也不用搭建本地开发环境了。之前介绍了 CentOS搭建CodeServer环境，只需要几步，就可以搭建自己的云端IDE，非常方便。 vscode-go是vscode中针对Go语言的扩展，提供了丰富的特性，包括： 智能感知（IntelliSe</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2020/10/10/osx-config-lrzsz/</loc>
-    
-    <lastmod>2024-10-20T06:43:18.176Z</lastmod>
-    
-    <date>1602343243000</date>
-    <title>MacOS下使用lrzsz传输文件 | LeeYzero的博客</title>
-    
-    <desc>在mac环境下，我们经常会使用iTerm2终端连接远程服务器，也经常会有本机和远程服务器之间进行文件共享的需求。这个时候lrzsz就派上用场了。 lrzsz是unix下的开源软件包，支持XMODEM, YMODEM ZMODEM文件传输协议。本文将会展示如何将lrzsz集成到iTerm2终端中，通过sz和rz命令和远程服务器传输文件。 其中，s表示send，r表示recieve，z表示使用的协议为</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2022/08/07/macos-terminal-configuration/</loc>
-    
-    <lastmod>2024-10-20T06:43:14.644Z</lastmod>
-    
-    <date>1659886240000</date>
-    <title>配置macOS终端环境 | LeeYzero的博客</title>
-    
-    <desc>最近换了一台mac，配置了一下终端（terminal）环境，在此记录一下，以便后续查阅，同时给分享给网友作为参考。本文不会细无具细，只会列举出主要步骤和相关配置参考资料。主要包括以下四个部分： 安装 iTerm2 安装 oh-my-zsh 配置 powerlevel10k 配置插件 终端效果:</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2020/10/09/hello-world/</loc>
-    
-    <lastmod>2024-10-20T06:43:07.413Z</lastmod>
-    
-    <date>1602255634000</date>
-    <title>Hello World | LeeYzero的博客</title>
-    
-    <desc></desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2022/11/26/free-certificates-for-https/</loc>
-    
-    <lastmod>2024-10-20T06:42:59.382Z</lastmod>
-    
-    <date>1669443805000</date>
-    <title>免费让网站启用HTTPS | LeeYzero的博客</title>
-    
-    <desc>之前搭建了一个 codeserver 的开发环境，但还遗留了配置HTTPS访问域名的问题。本周正好有空搞下，本来打算花钱买一个HTTPS证书，发现 Let’s Encrypt 提供了免费的HTTPS证书，而且还提供了配套的工具让网站开启HTTPS变得非常简单，本文记录下安装步骤。 在介绍安装步骤之前先简单介绍一下 HTTPS 的工作原理，不感兴趣的同学可以直接跳过。 简单来说，HTTPS 就是安全</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2024/04/14/deploy-php-on-centos/</loc>
-    
-    <lastmod>2024-10-20T06:42:54.427Z</lastmod>
-    
-    <date>1713079084000</date>
-    <title>CentOS搭建Nginx+PHP环境 | LeeYzero的博客</title>
-    
-    <desc>虽然PHP做业务后端逐步在被Go等语言替代，但使用PHP做简单业务封装和数据组装时，开发效率依然是比较高效的。使用Nginx运行PHP的常用方法是FastCGI模块。PHP-FPM (FastCGI进程管理器）极大地提高了你的Nginx+PHP环境的性能，所以这对高负载的网站很有用。本教程介绍在CentOS8上安装Nginx并配置PHP-FPM的步骤，以便后续参考。 依赖环境 CentOS8 拥有</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2021/04/02/deploy-hexo-on-centos/</loc>
-    
-    <lastmod>2024-10-20T06:42:49.548Z</lastmod>
-    
-    <date>1617354031000</date>
-    <title>搭建Hexo环境 | LeeYzero的博客</title>
-    
-    <desc></desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2022/05/08/deploy-codeserver-on-centos/</loc>
-    
-    <lastmod>2024-10-20T06:42:44.868Z</lastmod>
-    
-    <date>1652016020000</date>
-    <title>CentOS搭建CodeServer环境 | LeeYzero的博客</title>
-    
-    <desc>Code Server是一个基于VSCode实现的开源的云端IDE，只要能联网，就可以通过浏览器进行访问，无需安装，十分方便。本文主要介绍如何在CentOS 8中安装Code Server。 依赖环境 2GB RAM 需要root权限，对于非root账号，需要sudo权限 需要安装nginx</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2024/01/10/charles-tutorial/</loc>
-    
-    <lastmod>2024-10-20T06:42:39.568Z</lastmod>
-    
-    <date>1704898640000</date>
-    <title>Charles简明教程 | LeeYzero的博客</title>
-    
-    <desc></desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2024/10/06/software-design-philosophy/</loc>
-    
-    <lastmod>2024-10-20T06:40:57.397Z</lastmod>
-    
-    <date>1728210873000</date>
-    <title>软件设计哲学 | LeeYzero的博客</title>
-    
-    <desc>最近本来想写一篇如何应对复杂系统的文章，偶然读到John Ousterhout的软件设计哲学，读完后，发现我没有必要再写了。这篇文章对原文做一个概要性总结并谈谈自己的理解和思考。 对于一个软件系统，需求可以粗略的分为两类： 功能性需求 非功能性需求 功能性需求是面向用户的，非功能性需求是面向系统的，但非功能性需求最终是服务于功能性需求。我们通常会用非功能性需求去评估一个系统的质量，比如扩展性、维护</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2024/09/13/time-clock-ordering-events-in-distributed-system/</loc>
-    
-    <lastmod>2024-10-20T06:36:52.336Z</lastmod>
-    
-    <date>1726204254000</date>
-    <title>分布式系统中的时间、时钟以及事件顺序 | LeeYzero的博客</title>
-    
-    <desc>Leslie Lamport 在1978年发表了一篇论文Time, Clocks, and the Ordering of Events in a Distributed System，对分布式系统领域产生的深远影响，这篇论文也成为分布系统领域引用最高的文献之一。 论文中定义了分布式系统中事件的”happen before”关系，并引入了逻辑时钟解决分布式系统中事件同步的问题。但由于系统之外的信息</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2d-log-compaction/</loc>
-    
-    <lastmod>2024-10-20T06:35:56.943Z</lastmod>
-    
-    <date>1670980209000</date>
-    <title>MIT 6.824 Lab2C: 日志压缩 | LeeYzero的博客</title>
-    
-    <desc>上一篇 Lab2C: 持久化 中介绍了Raft持久化的实现，本篇介绍Raft日志压缩原理和实现。实验二共包含四个子实验： Lab2A: 选主 Lab2B: 日志复制 Lab2C: 持久化 Lab2D: 日志压缩 本文是第四个子实验，需要实现Raft日志压缩，在开始实验前，先阅读以下材料： 阅读论文：In Search of an Understandable Consensus Algorithm</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2c-persistence/</loc>
-    
-    <lastmod>2024-10-20T06:35:54.682Z</lastmod>
-    
-    <date>1670980185000</date>
-    <title>MIT 6.824 Lab2C: 持久化 | LeeYzero的博客</title>
-    
-    <desc>上一篇 Lab2B: 日志复制 中介绍了Raft日志复制的实现，本篇介绍Raft持久化的原理和实现。实验二共包含四个子实验： Lab2A: 选主 Lab2B: 日志复制 Lab2C: 持久化 Lab2D: 日志压缩 本文是第三个子实验，需要实现Raft持久化。持久化是指将Raft的部分状态存储到非易失的存储介质中，这样即便节点崩溃，也不至于丢失数据，当服务恢复后，可以从之前持久化的状态处开始工作。</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2b-log-replication/</loc>
-    
-    <lastmod>2024-10-20T06:35:51.461Z</lastmod>
-    
-    <date>1670980163000</date>
-    <title>MIT 6.824 Lab2A: 日志复制 | LeeYzero的博客</title>
-    
-    <desc>上一篇 Lab2A: 选主 中介绍了Raft选主的实现，本篇介绍Raft日志复制的原理和实现。实验二共包含四个子实验： Lab2A: 选主 Lab2B: 日志复制 Lab2C: 持久化 Lab2D: 日志压缩 本文是第二个子实验，需要实现Raft日志复制。由于Raft的强领导人特性，命令都是通过Leader顺序追回到日志中，然后通过Leader复制到各Follower中，由于Raft的日志安全特性</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2a-leader-election/</loc>
-    
-    <lastmod>2024-10-20T06:35:49.042Z</lastmod>
-    
-    <date>1670980125000</date>
-    <title>MIT 6.824 Lab2A: 选主 | LeeYzero的博客</title>
-    
-    <desc>上一篇 Lab2: 概述 中简要介绍了Raft，本篇介绍Raft选主的原理和实现。实验二共包含四个子实验： Lab2A: 选主 Lab2B: 日志复制 Lab2C: 持久化 Lab2D: 日志压缩 本文是第一个子实验，需要实现Raft选主。Raft具有强领导人特性，也就是说Raft需要先选举出领导人后才能进行后续操作。在开始实验前，先阅读以下材料： 阅读论文：In Search of an Und</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2-overview/</loc>
-    
-    <lastmod>2024-10-20T06:35:46.251Z</lastmod>
-    
-    <date>1670980055000</date>
-    <title>MIT 6.824 Lab2: 概述 | LeeYzero的博客</title>
-    
-    <desc>6.824 是MIT推出的一个分布式系统课程，讲师是大名鼎鼎的Robert Tappan Morris。Lab2 是课程中的第二个实验，实验要求需要用Go语言实现Raft。Raft是为可理解而设计的共识算法（consensus algorithm），它在性能和容错性上等价于Paxos，但结构却完全不一样。Raft通过减少状态空间和将问题分解为几个独立的子问题，使得Raft更容易理解，也更利于工程实</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2022/02/20/mit-6-824-lab1-mapreduce/</loc>
-    
-    <lastmod>2024-10-20T06:35:40.720Z</lastmod>
-    
-    <date>1645323245000</date>
-    <title>MIT 6.824 Lab1: MapReduce | LeeYzero的博客</title>
-    
-    <desc>之前虽然看过很多分布式系统相关的书籍、论文和一些开源项目，但很少自己动手去实现。理论跟工程实现通常有非常大的差别，一个看似很简单的协议，在工程实现上可能非常困难。6.824是MIT开设的分布式系统课程，非常系统的讲解了分布式系统的主流技术，同时将理论和实践相结合，是一个非常好的课程。 本文是笔者在学习6.824 lec1课程的一些总结和思考，算是一个学习笔记。在看这篇文章之前，我希望读者先提前阅读</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2021/11/28/upload-multi-files-with-go/</loc>
-    
-    <lastmod>2024-10-20T06:24:42.806Z</lastmod>
-    
-    <date>1638073224000</date>
-    <title>使用Go实现批量文件上传 | LeeYzero的博客</title>
-    
-    <desc>在现在生活中，我们经常在使用文件上传功能，但我们很少会自己去做一个文件上传的服务，了解文件的上传原理有助于我们开发出更健壮的程序。利用Go语言以及其标准库的能力，用很少的代码量就可以实现一个文件上传服务器。本文以小工具的方式讲解如何实现一个简单的文件上传服务器，并假设读者对Go、HTTP、HTML有一定了解。 完整代码参考：github.com/leeyzero/go-tools/uploadse</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2022/11/28/understanding-rest-architecture-1/</loc>
-    
-    <lastmod>2024-10-20T06:23:49.152Z</lastmod>
-    
-    <date>1669604075000</date>
-    <title>[论文解读] Architectural Styles and the Design of Network-based Software Architectures - Part1 | LeeYzero的博客</title>
-    
-    <desc>Architectural Styles and the Design of Network-based Software Architectures（架构风格与基于网络应用软件的架构设计）是 Roy Fielding 在2000年发表的博士论文。这篇论文一经发表，就引起了关注，并且对互联网开发产生了深远的影响。论文中首次提出的REST架构风格基本上成为目前Web架构的指导规范，如果一个Web架构</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2024/04/06/thinking-about-solving-complicated-problem/</loc>
-    
-    <lastmod>2024-10-20T06:19:53.230Z</lastmod>
-    
-    <date>1712374099000</date>
-    <title>解决复杂问题的一些思考 | LeeYzero的博客</title>
-    
-    <desc>最近半年主要在对一个10余年的商业化系统进行重构。对于商业化系统来讲，普遍存在状态多、链路长、业务逻辑复杂等特点。加上系统设计之初并未考虑到后续业务的发展形态，在承接业务需求时，不断打补丁，存在很多ad hoc方案，系统最终变成了一个”大泥球“，导致的问题是业务迭代效率低，代码变更故障率高。这篇文章主要对如何解决复杂问题谈谈自己的一些思考，供大家参考。 思考框架首先谈谈什么是复杂问题。复杂问题是一</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2024/05/26/regex-tutorial/</loc>
-    
-    <lastmod>2024-10-20T06:16:10.359Z</lastmod>
-    
-    <date>1716736580000</date>
-    <title>正则表达式简明教程 | LeeYzero的博客</title>
-    
-    <desc>有些人在碰到问题时，就想：“我知道，我可以使用正则表达式。”现在，他们就有了两个问题。– by Jamie “jwz” Zawinski， 1997年 8月 什么是正则表达式正则表达式（Regular Expression），通常缩写为regex或regexp，是一种在文本中进行搜索和替换的模式描述语言。它使用单个字符串来描述、匹配一系列符合某个句法规则的字符串。正则表达式是由普通字符（例如：字母</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2021/09/21/oauth2-intro/</loc>
-    
-    <lastmod>2024-10-20T06:13:39.231Z</lastmod>
-    
-    <date>1632237352000</date>
-    <title>OAuth2简明教程 | LeeYzero的博客</title>
-    
-    <desc>开放授权（OAuth, Open Authorization）是一个开放标准，允许用户让第三方应用访问该用户在某一网站上存储的私密的资源（如照片，视频，联系人列表等），而无需将用户名的密码提供给第三方应用。OAuth2.0是OAuth的2.0版本。本文主要介绍OAuth2的授权流程。 名词解释 Resource Owner：资源拥有者 Resource Server：资源服务器 Client：客户</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2024/04/17/go-json-unmarshal-loss-precision-2/</loc>
-    
-    <lastmod>2024-10-20T06:04:37.599Z</lastmod>
-    
-    <date>1713368246000</date>
-    <title>Go json.Unmarshal 精度丢失问题分析（2/2） | LeeYzero的博客</title>
-    
-    <desc>缘起最近出现一例json.Unmarshal导致的精度丢失引发的线上问题，虽然这个问题在被及时发现，未对业务造成损失，但细挖这个问题的原因仍然比较有意思。这篇文章会从技术层面深入分析json.Unmarshal精度丢失的原因以及处理建议，以避免后续开发过程中再次踩坑。 在 Part1 中，我们着重说明了json.Unmarshal处理大整数可能出现精度丢失的问题，但遗留了一个问题，即大整数置换成浮</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2024/04/16/go-json-unmarshal-loss-precision-1/</loc>
-    
-    <lastmod>2024-10-20T06:04:32.871Z</lastmod>
-    
-    <date>1713281846000</date>
-    <title>Go json.Unmarshal 精度丢失问题分析（1/2） | LeeYzero的博客</title>
-    
-    <desc>缘起最近出现一例json.Unmarshal导致的精度丢失引发的线上问题，虽然这个问题在被及时发现，未对业务造成损失，但细挖这个问题的原因仍然比较有意思。这篇文章会从技术层面深入分析json.Unmarshal精度丢失的原因以及处理建议，以避免后续开发过程中再次踩坑。 在分析这个问题的过程中，发现涉及Go对浮点数数值的处理，又涉及IEEE-745标准中的一些细节，放在一篇文章中会增大文章的阅读难度</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2023/01/08/go-data-structure-string/</loc>
-    
-    <lastmod>2024-10-20T06:04:21.382Z</lastmod>
-    
-    <date>1673181314000</date>
-    <title>Go数据结构之string | LeeYzero的博客</title>
-    
-    <desc>在Go语言中，string是一种非常重要的数据结构。了解string的内部实现原理，有利于我们写出更高效的代码。本篇文章首先介绍string的实现原理，然后介绍string、bytes、runes和characters之间的关系，同时引出字符篇码Unicode和UTF-8，最后介绍使用string应该注意的一些问题。 先来看下面两个例子。 示例一 1234str := &quot;中文abc&qu</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2022/12/25/go-data-structure-slice/</loc>
-    
-    <lastmod>2024-10-20T06:04:17.340Z</lastmod>
-    
-    <date>1671962514000</date>
-    <title>Go数据结构之slice | LeeYzero的博客</title>
-    
-    <desc>在Go语言中，slice是一种非常重要的数据结构，用于描述数组存储的连续部分，它本质上是对数组的引用。slice是建立在数组基础上，是对数组的一种封装，它屏蔽了数组底层细节，但使用起来更方便、灵活，再配合内建函数append和copy使得slice具有更强的表现力。 如果不了解slice的内部实现原理，可能会写出低效的代码，甚至会写出一些让你意想不到的BUG。本文先介绍slice的实现原理，再介绍</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2023/02/13/go-data-structure-map/</loc>
-    
-    <lastmod>2024-10-20T06:04:13.915Z</lastmod>
-    
-    <date>1676301576000</date>
-    <title>Go数据结构之map | LeeYzero的博客</title>
-    
-    <desc>map又称映射表或关联数组，是一种常用的数据结构。它由一组&lt;key, value&gt;组成，每个key只出现一次。Go语言原生支持了map数据结构，正如 Go maps in action 中所说： One of the most useful data structures in computer science is the hash table. Many hash table im</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2023/01/20/go-data-structure-interface/</loc>
-    
-    <lastmod>2024-10-20T06:04:02.492Z</lastmod>
-    
-    <date>1674201540000</date>
-    <title>Go数据结构之interface | LeeYzero的博客</title>
-    
-    <desc>今年最后一天上班，下午没啥事，总结下Go语言的接口。接口是Go语言区别与其它语言的重要语言特性，也是我最喜欢的Go语言特性之一。Go的接口除了提供多态的能力外，它还是Go反射的基础。Go是一门静态语言，Go接口能够在编译期检查语法规则，同时具备像动态语言那样使用 ducking typing 实现接口。 我一直比较好奇Go的接口内部是如何实现。看了几篇文章，也看了runtime包中的部分实现。发现</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2022/05/06/go-concurrency-in-action/</loc>
-    
-    <lastmod>2024-10-20T06:02:14.318Z</lastmod>
-    
-    <date>1651839861000</date>
-    <title>Go并发编程实践 | LeeYzero的博客</title>
-    
-    <desc>写在前面之前写过一篇Go并发编程模式，相对比较片面。最近系统看了下Concurrency in Go, 结合自身的一些实践，形成本文，算是一个读书笔记吧。 为什么需要并发 Concurrency is the next major revolution in how we write software. —— The Free Lunch Is Over 摘自 Herb Sutter 2005年在</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2021/07/02/go-concurrency-pattern/</loc>
-    
-    <lastmod>2024-10-20T06:01:29.827Z</lastmod>
-    
-    <date>1625240311000</date>
-    <title>Go并发编程模式 | LeeYzero的博客</title>
-    
-    <desc>简介并发是Go语言最重要的语言特性之一，是Go语言区别于其它语言的重要特征。Go语言原生支持并发，可以充分发挥多核CPU的机器性能，同时在语言层面上，Go以十分简洁的语法提供丰富的并发能力，让并发编程并得简单。本文总结Go语言并发编程的常用模式，模式也就是我们说的套路，先学会模仿，再学会融汇贯通，最后才能创造出新的模式，这就是所谓的无招胜有招吧。 Go对并发的支持对于桌面客户端应用程序，为了提升客</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2020/10/10/exception-and-crash/</loc>
-    
-    <lastmod>2024-10-20T06:00:24.110Z</lastmod>
-    
-    <date>1602339182000</date>
-    <title>应用程序异常处理与崩溃收集 | LeeYzero的博客</title>
-    
-    <desc>对于Windows应用, 当应用发布出去之后，如果应用程序在用户机器上发生了崩溃，我们需要这样一种手段，即在程序崩溃的瞬间能够“记录”下崩溃时进程、线程、栈、栈上下文等信息，这些信息对我们分析崩溃原因非常有帮助。另外，由于客户端程序一般是运行在用户的机器上，当生成崩溃信息后，还需要将这些信息上报至服务器，以方便开发者能够快捷地拿到这些崩溃信息进行分析。一般来说客户端程序崩溃的收集与处理流程如下图：</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2021/06/08/end-to-end-principle/</loc>
-    
-    <lastmod>2024-10-20T05:53:27.892Z</lastmod>
-    
-    <date>1623085277000</date>
-    <title>端到端设计原则 | LeeYzero的博客</title>
-    
-    <desc>最近又看了一遍 End-To-End Argument In System Design，有一些新的思考，但都集中在一些点上，不够系统，在此先记录下来，后续有新的想法再做补充和整理。 核心观点这篇论文在由MIT计算机科学实验室发表于1984年，是一篇非常经典的关于系统设计的论文。论文论证了分布式系统设计的一个事实：端到端的可靠通信只能由通信的两端（End-Point）来保证，而中间的媒介（如消息中</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2021/01/28/cpp-raii/</loc>
-    
-    <lastmod>2024-10-20T05:45:52.160Z</lastmod>
-    
-    <date>1611764411000</date>
-    <title>C++资源管理 | LeeYzero的博客</title>
-    
-    <desc>RAII作为C++资源管理的一种惯用法，是每一位C++程序员都应该掌握的基本技能。在google上搜索关键字RAII, 有二百多万条搜索结果。说明这个话题在网上已经被讨论过无数次，也发现了一些好文章给我不少启发，这篇文章主要是做个总结并谈谈自己的理解。 什么是RAII资源获取即初始化（Resource Acquisition Is Initialization），即RAII。RAII是一种C++编</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2023/02/18/go-data-structure-channel/</loc>
-    
-    <lastmod>2023-02-19T16:11:11.000Z</lastmod>
-    
-    <date>1676710422000</date>
-    <title>Go数据结构之channel | LeeYzero的博客</title>
-    
-    <desc>channel是一种数据结构，在Go语言中用于协程间通信，是Go语言区别于其它语言的重要特性。Go语言原生支持channel，配合Go语言原生对并发的支持，让并发编程变得简单。正如Share Memory By Communicating对Go并发编程的建议： Do not communicate by sharing memory; instead, share memory by commun</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/categories/index.html</loc>
-    
-    <lastmod>2021-04-02T07:41:11.000Z</lastmod>
-    
-    <date>1602153539000</date>
-    <title>分类 | LeeYzero的博客</title>
-    
-    <desc></desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/tags/index.html</loc>
-    
-    <lastmod>2021-04-02T07:41:11.000Z</lastmod>
-    
-    <date>1602153084000</date>
-    <title>标签 | LeeYzero的博客</title>
-    
-    <desc></desc>
   </url>
   
 </urlset>

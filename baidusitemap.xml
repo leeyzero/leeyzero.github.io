@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://leeyzero.github.io/2024/11/03/modular-design-criteria/</loc>
+    <lastmod>2024-11-17</lastmod>
+  </url>
+  <url>
     <loc>https://leeyzero.github.io/2020/10/10/how-to-reading/</loc>
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
     <loc>https://leeyzero.github.io/2020/10/10/makefile-tutorial/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2021/09/21/oauth2-intro/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2020/10/10/osx-config-lrzsz/</loc>
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
@@ -37,7 +49,23 @@
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
+    <loc>https://leeyzero.github.io/2020/10/09/hello-world/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2021/07/02/go-concurrency-pattern/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
     <loc>https://leeyzero.github.io/2021/08/29/gin-tutorial/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2022/11/26/free-certificates-for-https/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2020/10/10/exception-and-crash/</loc>
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
@@ -45,11 +73,31 @@
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
+    <loc>https://leeyzero.github.io/2021/06/08/end-to-end-principle/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
     <loc>https://leeyzero.github.io/2021/05/23/dropbox-file-synchronization/</loc>
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
+    <loc>https://leeyzero.github.io/2021/04/02/deploy-hexo-on-centos/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2022/05/08/deploy-codeserver-on-centos/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2021/01/28/cpp-raii/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
     <loc>https://leeyzero.github.io/2020/10/10/cef-windows-source/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2020/10/10/cef-windows-bin/</loc>
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
@@ -93,6 +141,10 @@
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
+    <loc>https://leeyzero.github.io/2021/11/28/upload-multi-files-with-go/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
     <loc>https://leeyzero.github.io/2022/11/24/understanding-skip-list/</loc>
     <lastmod>2024-10-20</lastmod>
   </url>
@@ -109,59 +161,11 @@
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
+    <loc>https://leeyzero.github.io/2022/11/28/understanding-rest-architecture-1/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
     <loc>https://leeyzero.github.io/2020/10/10/write-readable-code/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2022/02/20/mr-impl/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2022/05/06/go-concurrency-in-action-md/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2020/10/10/cef-windows-bin/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2024/04/27/vscode-go-debugging/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2020/10/10/osx-config-lrzsz/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2022/08/07/macos-terminal-configuration/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2020/10/09/hello-world/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2022/11/26/free-certificates-for-https/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2024/04/14/deploy-php-on-centos/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2021/04/02/deploy-hexo-on-centos/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2022/05/08/deploy-codeserver-on-centos/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2024/01/10/charles-tutorial/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2024/10/06/software-design-philosophy/</loc>
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
@@ -169,35 +173,7 @@
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
-    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2d-log-compaction/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2c-persistence/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2b-log-replication/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2a-leader-election/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2-overview/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2022/02/20/mit-6-824-lab1-mapreduce/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2021/11/28/upload-multi-files-with-go/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2022/11/28/understanding-rest-architecture-1/</loc>
+    <loc>https://leeyzero.github.io/2024/04/27/vscode-go-debugging/</loc>
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
@@ -209,19 +185,39 @@
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
-    <loc>https://leeyzero.github.io/2021/09/21/oauth2-intro/</loc>
+    <loc>https://leeyzero.github.io/2024/10/06/software-design-philosophy/</loc>
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
-    <loc>https://leeyzero.github.io/2024/04/17/go-json-unmarshal-loss-precision-2/</loc>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2c-persistence/</loc>
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
-    <loc>https://leeyzero.github.io/2024/04/16/go-json-unmarshal-loss-precision-1/</loc>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2d-log-compaction/</loc>
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
-    <loc>https://leeyzero.github.io/2023/01/08/go-data-structure-string/</loc>
+    <loc>https://leeyzero.github.io/2022/08/07/macos-terminal-configuration/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2022/02/20/mit-6-824-lab1-mapreduce/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2-overview/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2a-leader-election/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2022/12/14/mit-6-824-lab2b-log-replication/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2023/02/13/go-data-structure-map/</loc>
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
@@ -229,7 +225,19 @@
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
-    <loc>https://leeyzero.github.io/2023/02/13/go-data-structure-map/</loc>
+    <loc>https://leeyzero.github.io/2023/01/08/go-data-structure-string/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2024/04/16/go-json-unmarshal-loss-precision-1/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2024/04/17/go-json-unmarshal-loss-precision-2/</loc>
+    <lastmod>2024-10-20</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2023/02/18/go-data-structure-channel/</loc>
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
@@ -241,23 +249,19 @@
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
-    <loc>https://leeyzero.github.io/2021/07/02/go-concurrency-pattern/</loc>
+    <loc>https://leeyzero.github.io/2024/01/10/charles-tutorial/</loc>
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
-    <loc>https://leeyzero.github.io/2020/10/10/exception-and-crash/</loc>
+    <loc>https://leeyzero.github.io/2024/04/14/deploy-php-on-centos/</loc>
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
-    <loc>https://leeyzero.github.io/2021/06/08/end-to-end-principle/</loc>
+    <loc>https://leeyzero.github.io/2022/02/20/mr-impl/</loc>
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>
-    <loc>https://leeyzero.github.io/2021/01/28/cpp-raii/</loc>
+    <loc>https://leeyzero.github.io/2022/05/06/go-concurrency-in-action-md/</loc>
     <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2023/02/18/go-data-structure-channel/</loc>
-    <lastmod>2023-02-19</lastmod>
   </url>
 </urlset> 

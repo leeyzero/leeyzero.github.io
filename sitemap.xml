@@ -4,12 +4,12 @@
   <url>
     <loc>https://leeyzero.github.io/2024/11/03/modular-design-criteria/</loc>
     
-    <lastmod>2024-11-17T09:49:12.988Z</lastmod>
+    <lastmod>2024-11-17T09:51:25.540Z</lastmod>
     
     <date>1730592357000</date>
     <title>关于将系统分解为模块所采用的标准 | LeeYzero的博客</title>
     
-    <desc></desc>
+    <desc>本文介绍计算机科学先驱David. L. Parnas在1972发表论文 On the Criteria To Be Used in Decomposing Systems into Modules。这篇论文首次提出了信息隐藏(information hiding）的思想，这一思想为面向对象程序设计的发展奠定了基础。在这篇论文中，Parnas 通过一个简单的例子论证和说明，如何将一个复杂系统分解为</desc>
   </url>
   
   <url>

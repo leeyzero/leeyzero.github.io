@@ -166,98 +166,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/07/02/go-concurrency-pattern/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/02/go-concurrency-pattern/" class="post-title-link" itemprop="url">Go并发编程模式</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-07-02 23:38:31" itemprop="dateCreated datePublished" datetime="2021-07-02T23:38:31+08:00">2021-07-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-21 00:00:51" itemprop="dateModified" datetime="2024-10-21T00:00:51+08:00">2024-10-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>并发是Go语言最重要的语言特性之一，是Go语言区别于其它语言的重要特征。Go语言原生支持并发，可以充分发挥多核CPU的机器性能，同时在语言层面上，Go以十分简洁的语法提供丰富的并发能力，让并发编程并得简单。本文总结Go语言并发编程的常用模式，模式也就是我们说的套路，先学会模仿，再学会融汇贯通，最后才能创造出新的模式，这就是所谓的无招胜有招吧。</p>
-<h2 id="Go对并发的支持"><a href="#Go对并发的支持" class="headerlink" title="Go对并发的支持"></a>Go对并发的支持</h2><p>对于桌面客户端应用程序，为了提升客户端的运行效率和简化多线程编程，通常的做法是在客户端启动时，启动三个常驻线程，分别是UI线程，逻辑线程和IO线程。每个线程维护一个事件循环，线程之间通信（数据传输）只能通过消息队列进行传递，消息队列是线程安全。</p>
-<p>这么做主要有两个好处，一是常驻线程避免创建和销毁线程的开销，多核情况下，通常没有线程上下文切换，线程运行效率高。二是通过消息队列传递数据，各个线程对数据进行操作时不用所以资源竞争问题，这极大降低了多线程编程的难度，并且设计出的程序也更简单，更容易理解。</p>
-<p>接触到Go之后，才知道这种编程模型其实就是C. A. R. Hoare的<a target="_blank" rel="noopener" href="http://www.usingcsp.com/">Communicating Sequential Processes, CSP</a>。Go语言原生支持并发（goroutine）和通道（channel），并且还提供了<a target="_blank" rel="noopener" href="https://golang.org/ref/spec#Select_statements">select</a>对多路通道进行控制，极大简化了并发编程的难度。</p>
-<p>接下来，本文将介绍Go并发编程的常用模式。本文并不适合没有Go语言基础的读者，在阅读以下内容前，请先查阅以下内容：</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://golang.org/ref/spec">The Go Programming Language Specification</a></li>
-<li><a target="_blank" rel="noopener" href="https://golang.org/doc/effective_go">Effective Go</a></li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/07/02/go-concurrency-pattern/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-
-  
-  
-  
-
-
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/06/08/end-to-end-principle/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1074,6 +982,95 @@
 
 
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/01/24/redis-distribute-lock/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/24/redis-distribute-lock/" class="post-title-link" itemprop="url">基于Redis的分布式锁</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-01-24 09:10:54" itemprop="dateCreated datePublished" datetime="2021-01-24T09:10:54+08:00">2021-01-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-20 23:53:52" itemprop="dateModified" datetime="2024-10-20T23:53:52+08:00">2024-10-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式系统</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>在计算机中，锁是用于解决资源竞争问题。在单机（单进程）环境下, 锁可以使用操作系统提供的同步原语实现。 但在分布式环境下，操作系统提供的同步原语就失效了, 需要一个分布式锁。其原理是需要一个<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Distributed_lock_manager">分布式锁管理器</a>[1]，提供进程级别访问共享资源的互斥性。本文主要讨论基于Redis实现的分布式锁。</p>
+<h2 id="分布式锁的使用场景"><a href="#分布式锁的使用场景" class="headerlink" title="分布式锁的使用场景"></a>分布式锁的使用场景</h2><p><a target="_blank" rel="noopener" href="https://martin.kleppmann.com/">Martin Kleppmann</a> 在他的博客 <a target="_blank" rel="noopener" href="https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html">How to do distributed locking</a>[2] 中对分布式锁的使用场景做了非常好的概括。从一个更高层次来讲，在一个分布式应用中，使用分布式锁主要有两个原因：效率和正确性。</p>
+<ul>
+<li><strong>效率</strong>：获取分布式锁可以避免相同的任务被处理两次。如果锁失败，带来的结果就是对某一个子任务多做了一次，其影响完全取决于具体业务场景。比如为了提高消息PUSH效率，需要按用户进行分片，然后每个任务获取一个锁后处理对应的分片，如果锁失败，会造成重复给用户PUSH。</li>
+<li><strong>正确性</strong>：获取分布式锁是为了防止进程对分布式系统中的资源并发访问而导致系统的状态出现混乱。如果锁失败，两个节点并发的访问同一个共享资源，可能造成数据的不一致性，如文件损坏或数据丢失等。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/01/24/redis-distribute-lock/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+
+  
+  
+  
+
+
+
 
   
   <nav class="pagination">
@@ -1144,7 +1141,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-count">65</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

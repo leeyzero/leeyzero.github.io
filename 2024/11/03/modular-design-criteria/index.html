@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://leeyzero.github.io/images/modular-design-criteria/flowchart.png">
 <meta property="og:image" content="https://leeyzero.github.io/images/modular-design-criteria/information-hiding.png">
 <meta property="article:published_time" content="2024-11-03T00:05:57.000Z">
-<meta property="article:modified_time" content="2024-11-17T09:57:04.175Z">
+<meta property="article:modified_time" content="2024-11-17T10:48:05.821Z">
 <meta property="article:author" content="LeeYzero">
 <meta property="article:tag" content="系统设计">
 <meta property="article:tag" content="软件工程">
@@ -205,7 +205,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-11-17 17:57:04" itemprop="dateModified" datetime="2024-11-17T17:57:04+08:00">2024-11-17</time>
+                <time title="Modified: 2024-11-17 18:48:05" itemprop="dateModified" datetime="2024-11-17T18:48:05+08:00">2024-11-17</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -278,7 +278,7 @@
 <p>分层结构与模块分解是递归的。如果一个模块的内部实现过于复杂，也可以采用相同的策略进行分层、分模块。这里的模块可能是包，层可能是包之间的依赖关系，它们都应该遵循分层、分模块原则。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>软件开发人员在面临需求时，通常会按照任务流程去做系统分解，这也是软件开发人员一贯的作法，这是最常见的一种系统分解方法。但 Parnas 告诉我们，当面临一个复杂系统时，这种分解通常是错误的，引用论文中的最后的一句：</p>
 <blockquote>
-<p>We have tried to demonstrate by these examples that it is almost always incorrect to begin the decomposition of a system into modules on the basis of a flowchart. We propose instead that one begins with a list of difficult design decisions or design decisions which are likely to change. Each module is then designed to hide such a decision from the others. Since, in most cases, design decisions transcend time of execution, modules will not correspond to steps in the processing.</p>
+<p>We have tried to demonstrate by these examples that it is almost always incorrect to begin the decomposition of a system into modules on the basis of a flowchart. We propose instead that one begins with a list of difficult design decisions or design decisions which are likely to change. Eachc module is then designed to hide such a decision from the others. Since, in most cases, design decisions transcend time of execution, modules will not correspond to steps in the processing.</p>
 <p><strong>我们通过这些例子试图说明，基于流程图对系统进行模块分解几乎总是错误的。相反，我们建议从列出难以设计或可能发生变化的设计决策开始，然后，设计每个模块以向其它模块隐藏这些设计决策。因为在大多数情况下，设计决策超越了执行时间，因此模块运行不会与处理步骤相对应。</strong></p>
 </blockquote>
 <p>谈谈对最后一句话的理解，在软件开发的整个生命周期中，开发时间占比是非常少的，80%以上的时候都是在做维护（比如增加新功能、修复BUG等）。因此，我们在做模块分解时，应该更多面向可能发生的变化，并通过信息隐藏的方式将这些变化隐藏到稳定的接口后面，这样后续在面临变更时，变更的范围可以被缩小到单个模块内部，进而提高我们变更软件的效率以及减少问题出现的机率。</p>
@@ -389,7 +389,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-count">65</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

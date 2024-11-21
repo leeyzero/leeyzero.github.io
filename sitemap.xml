@@ -4,7 +4,7 @@
   <url>
     <loc>https://leeyzero.github.io/2024/11/03/modular-design-criteria/</loc>
     
-    <lastmod>2024-11-17T09:57:04.175Z</lastmod>
+    <lastmod>2024-11-17T10:48:05.821Z</lastmod>
     
     <date>1730592357000</date>
     <title>关于将系统分解为模块所采用的标准 | LeeYzero的博客</title>
@@ -736,17 +736,6 @@
     <title>分类 | LeeYzero的博客</title>
     
     <desc></desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2022/02/20/mr-impl/</loc>
-    
-    <lastmod>2024-10-20T15:38:46.415Z</lastmod>
-    
-    <date>1645323245000</date>
-    <title>6.824 lab1-mapreduce | LeeYzero的博客</title>
-    
-    <desc>写在前面之前虽然看过很多分布式系统相关的书籍、论文和一些开源项目，但很少自己动手去实现。理论跟工程实现通常有非常大的差别，一个看似很简单的协议，在工程实现上可能非常困难。6.824是MIT开设的分布式系统课程，非常系统的讲解了分布式系统的主流技术，同时将理论和实践相结合，是一个非常好的课程。 本文是笔者在学习6.824 lec1课程的一些总结和思考，算是一个学习笔记。在看这篇文章之前，我希望读者先</desc>
   </url>
   
   <url>

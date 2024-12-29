@@ -2,6 +2,17 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://leeyzero.github.io/2024/12/29/working-effectively-with-legacy-code/</loc>
+    
+    <lastmod>2024-12-29T04:49:08.096Z</lastmod>
+    
+    <date>1735438517000</date>
+    <title>修改代码的艺术 | LeeYzero的博客</title>
+    
+    <desc>这篇文章基于最近在团队内做了一次分享，并做了一些简单修改，仅供各位网友参考，观点不一定成熟，但都是结合实际问题的一些反思与总结，欢迎讨论。 在软件的整个生命周期中，80%以上的时间是在维护软件，这也是开发者每天面临的最主要的工作。如果对代码的变更没有“章法”，随着时间流逝，软件就会不可避免地渐渐变得复杂、难以理解，最终拖慢产品迭代效率，甚至频繁引入线上故障，导致业务损失。 对于这个主题，Worki</desc>
+  </url>
+  
+  <url>
     <loc>https://leeyzero.github.io/2024/11/03/modular-design-criteria/</loc>
     
     <lastmod>2024-11-17T10:48:05.821Z</lastmod>

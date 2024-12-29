@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://leeyzero.github.io/2024/12/29/working-effectively-with-legacy-code/</loc>
+    <lastmod>2024-12-29</lastmod>
+  </url>
+  <url>
     <loc>https://leeyzero.github.io/2024/11/03/modular-design-criteria/</loc>
     <lastmod>2024-11-17</lastmod>
   </url>

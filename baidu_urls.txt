@@ -1,1 +1,1 @@
-https://leeyzero.github.io/2024/11/03/modular-design-criteria/
+https://leeyzero.github.io/2024/12/29/working-effectively-with-legacy-code/

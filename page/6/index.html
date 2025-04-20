@@ -166,6 +166,91 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/01/28/cpp-raii/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="LeeYzero">
+      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LeeYzero的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/28/cpp-raii/" class="post-title-link" itemprop="url">C++资源管理</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-01-28 00:20:11" itemprop="dateCreated datePublished" datetime="2021-01-28T00:20:11+08:00">2021-01-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-10-20 23:56:59" itemprop="dateModified" datetime="2024-10-20T23:56:59+08:00">2024-10-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>RAII作为C++资源管理的一种惯用法，是每一位C++程序员都应该掌握的基本技能。在google上搜索关键字RAII,  有二百多万条搜索结果。说明这个话题在网上已经被讨论过无数次，也发现了一些好文章给我不少启发，这篇文章主要是做个总结并谈谈自己的理解。</p>
+<h2 id="什么是RAII"><a href="#什么是RAII" class="headerlink" title="什么是RAII"></a>什么是RAII</h2><p>资源获取即初始化（<em>Resource Acquisition Is Initialization</em>），即<strong>RAII</strong>。RAII是一种C++编程技术。<strong>它利用栈对象在离开作用域后自动析构的语言特点，将受限资源的生命周期绑定到该对象上，当对象析构时以达到自动释放资源的目的</strong>。 这里说的资源都是指的受限资源，比如堆上分配的内存、文件句柄、线程、数据库连接、网络连接等。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/01/28/cpp-raii/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+
+  
+  
+  
+
+
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2021/01/24/redis-distribute-lock/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -956,95 +1041,6 @@
 
 
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://leeyzero.github.io/2020/10/10/windows-message-architecture/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="LeeYzero">
-      <meta itemprop="description" content="众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LeeYzero的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/10/windows-message-architecture/" class="post-title-link" itemprop="url">[译] Windows消息体系</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-10-10 22:57:21" itemprop="dateCreated datePublished" datetime="2020-10-10T22:57:21+08:00">2020-10-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-10-20 23:48:28" itemprop="dateModified" datetime="2024-10-20T23:48:28+08:00">2024-10-20</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%BC%96%E7%A8%8B%E5%8C%A0%E8%89%BA/" itemprop="url" rel="index"><span itemprop="name">编程匠艺</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>原文出自：<a target="_blank" rel="noopener" href="https://xavierantony.wordpress.com/2010/08/24/windows-messaging-architecture/">Windows Messaging Architecture</a></p>
-<blockquote>
-<p><em>Most of the fresh software engineers and .NET developers may not know what really happens inside the Windows operating system when they implement and run a Windows application. This article explains the Windows Messaging Architecture of the Windows operating system.</em></p>
-</blockquote>
-<p>很多新手软件工程师和.NET开发者在编写并运行一个Windows应用时，他们并不清楚其在操作系统中的运作原理。这篇文件将阐述Windows操作系统的消息体系。</p>
-<p><img src="/images/windows-message-architecture/1.png" alt="Windows消息体系结构图"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/10/10/windows-message-architecture/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-
-  
-  
-  
-
-
-
 
   
   <nav class="pagination">
@@ -1115,18 +1111,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-count">67</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">104</span>
+        <span class="site-state-item-count">107</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -1192,7 +1188,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2024</span>
+  <span itemprop="copyrightYear">2025</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

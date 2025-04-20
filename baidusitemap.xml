@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://leeyzero.github.io/2025/03/30/ml-intro/</loc>
+    <lastmod>2025-04-20</lastmod>
+  </url>
+  <url>
+    <loc>https://leeyzero.github.io/2024/01/10/charles-tutorial/</loc>
+    <lastmod>2025-01-11</lastmod>
+  </url>
+  <url>
     <loc>https://leeyzero.github.io/2024/12/29/working-effectively-with-legacy-code/</loc>
     <lastmod>2024-12-29</lastmod>
   </url>
@@ -250,10 +258,6 @@
   </url>
   <url>
     <loc>https://leeyzero.github.io/2022/05/06/go-concurrency-in-action/</loc>
-    <lastmod>2024-10-20</lastmod>
-  </url>
-  <url>
-    <loc>https://leeyzero.github.io/2024/01/10/charles-tutorial/</loc>
     <lastmod>2024-10-20</lastmod>
   </url>
   <url>

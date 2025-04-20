@@ -2,6 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://leeyzero.github.io/2025/03/30/ml-intro/</loc>
+    
+    <lastmod>2025-04-20T05:35:31.027Z</lastmod>
+    
+    <date>1743323872000</date>
+    <title>机器学习之基本概念 | LeeYzero的博客</title>
+    
+    <desc></desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/about/index.html</loc>
+    
+    <lastmod>2025-04-20T02:06:07.213Z</lastmod>
+    
+    <date>1602153624000</date>
+    <title>关于作者 | LeeYzero的博客</title>
+    
+    <desc></desc>
+  </url>
+  
+  <url>
+    <loc>https://leeyzero.github.io/2024/01/10/charles-tutorial/</loc>
+    
+    <lastmod>2025-01-11T06:36:55.197Z</lastmod>
+    
+    <date>1704898640000</date>
+    <title>Charles简明教程 | LeeYzero的博客</title>
+    
+    <desc></desc>
+  </url>
+  
+  <url>
     <loc>https://leeyzero.github.io/2024/12/29/working-effectively-with-legacy-code/</loc>
     
     <lastmod>2024-12-29T04:52:10.220Z</lastmod>
@@ -475,17 +508,6 @@
   </url>
   
   <url>
-    <loc>https://leeyzero.github.io/about/index.html</loc>
-    
-    <lastmod>2024-10-20T15:42:21.995Z</lastmod>
-    
-    <date>1602153624000</date>
-    <title>关于作者 | LeeYzero的博客</title>
-    
-    <desc></desc>
-  </url>
-  
-  <url>
     <loc>https://leeyzero.github.io/2024/09/13/time-clock-ordering-events-in-distributed-system/</loc>
     
     <lastmod>2024-10-20T15:41:17.879Z</lastmod>
@@ -703,17 +725,6 @@
     <title>Go并发编程实践 | LeeYzero的博客</title>
     
     <desc>写在前面之前写过一篇Go并发编程模式，相对比较片面。最近系统看了下Concurrency in Go, 结合自身的一些实践，形成本文，算是一个读书笔记吧。 为什么需要并发 Concurrency is the next major revolution in how we write software. —— The Free Lunch Is Over 摘自 Herb Sutter 2005年在</desc>
-  </url>
-  
-  <url>
-    <loc>https://leeyzero.github.io/2024/01/10/charles-tutorial/</loc>
-    
-    <lastmod>2024-10-20T15:38:50.873Z</lastmod>
-    
-    <date>1704898640000</date>
-    <title>Charles简明教程 | LeeYzero的博客</title>
-    
-    <desc></desc>
   </url>
   
   <url>

@@ -116,11 +116,11 @@ darkmode: true
 # When running the site in a subdirectory (e.g. yoursite.com/blog), remove the leading slash from link value (/archives -> archives).
 # External url should start with http:// or https://
 menu:
-  首页: / || fa fa-home
-  分类: /categories || fa fa-th
-  标签: /tags || fa fa-tags
-  归档: /archives || fa fa-archive
-  关于: /about || fa fa-user
+  home: / || fa fa-home
+  categories: /categories || fa fa-th
+  tags: /tags || fa fa-tags
+  archives: /archives || fa fa-archive
+  about: /about || fa fa-user
   # schedule: /schedule/ || fa fa-calendar
   # sitemap: /sitemap.xml || fa fa-sitemap
   # commonweal: /404/ || fa fa-heartbeat
@@ -396,7 +396,7 @@ bookmark:
 
 # `Follow me on GitHub` banner in the top-right corner.
 github_banner:
-  enable: true
+  enable: false
   permalink: https://github.com/leeyzero
   title: Follow me on GitHub
 
@@ -1004,4 +1004,3 @@ vendors:
 css: css
 js: js
 images: images
-

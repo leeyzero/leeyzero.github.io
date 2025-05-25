@@ -9,9 +9,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # 允许向仓库推送代码
-      pages: write     # 允许更新 GitHub Pages
-      id-token: write  # 允许 OIDC 身份验证
+      contents: read
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -53,10 +51,10 @@ jobs:
           exit 1
         fi
 
-    - name: Deploy to gh-pages
-      uses: peaceiris/actions-gh-pages@v3
+    - name: Upload Pages Artifact
+      uses: actions/upload-pages-artifact@v2
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./public  # Hexo 默认生成目录
-        publish_branch: gh-pages  # 部署分支
-        force_orphan: true  # 清理旧文件（可选）
+        path: ./public
+    
+    - name: Deploy to GitHub Pages
+      uses: actions/deploy-pages@v3

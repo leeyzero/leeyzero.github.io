@@ -1,0 +1,45 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # 监听 main 分支的推送
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: main  # 拉取源码分支
+        submodules: true  # 递归拉取子模块
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20' # 根据你的需求调整版本
+
+    - name: Install dependencies
+      run: |
+        npm install hexo-cli -g
+        npm install
+
+    - name: Inject Secrets into Config
+      run: |
+        cp _config.yml.template _config.yml
+        cp source/_scripts/gitalk-auto-init.js.template source/_scripts/gitalk-auto-init.js
+        sed -i "s|\${{ BAIDU_URL_SUBMIT_TOKEN }}|${{ secrets.BAIDU_URL_SUBMIT_TOKEN }}|g" _config.yml
+        sed -i "s|\${{ GITALK_TOKEN }}|${{ secrets.GITALK_TOKEN }}|g" source/_scripts/gitalk-auto-init.js
+  
+    - name: Generate static files
+      run: |
+        hexo clean
+        hexo generate
+
+    - name: Deploy to gh-pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public  # Hexo 默认生成目录
+        publish_branch: gh-pages  # 部署分支

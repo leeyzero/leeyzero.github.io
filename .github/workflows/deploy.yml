@@ -40,9 +40,7 @@ jobs:
         if [ ! -f "source/_scripts/gitalk-auto-init.js.template" ]; then
           echo "❌ Error: gitalk template missing!"
           exit 1
-        figit add .github/workflows/deploy.yml
-git commit -m "fix: add required permissions"
-git push origin main
+        fi
         cp _config.yml.template _config.yml
         cp source/_scripts/gitalk-auto-init.js.template source/_scripts/gitalk-auto-init.js
         sed -i "s|__BAIDU_URL_SUBMIT_TOKEN__|${{ secrets.BAIDU_URL_SUBMIT_TOKEN }}|g" _config.yml

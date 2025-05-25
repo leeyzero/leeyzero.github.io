@@ -29,8 +29,8 @@ jobs:
       run: |
         cp _config.yml.template _config.yml
         cp source/_scripts/gitalk-auto-init.js.template source/_scripts/gitalk-auto-init.js
-        sed -i "s|\${{ BAIDU_URL_SUBMIT_TOKEN }}|${{ secrets.BAIDU_URL_SUBMIT_TOKEN }}|g" _config.yml
-        sed -i "s|\${{ GITALK_TOKEN }}|${{ secrets.GITALK_TOKEN }}|g" source/_scripts/gitalk-auto-init.js
+        sed -i "s|__BAIDU_URL_SUBMIT_TOKEN__|${{ secrets.BAIDU_URL_SUBMIT_TOKEN }}|g" _config.yml
+        sed -i "s|__GITALK_TOKEN__|${{ secrets.GITALK_TOKEN }}|g" source/_scripts/gitalk-auto-init.js
   
     - name: Generate static files
       run: |

@@ -8,6 +8,10 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 允许向仓库推送代码
+      pages: write     # 允许更新 GitHub Pages
+      id-token: write  # 允许 OIDC 身份验证
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -19,6 +23,7 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20' # 根据你的需求调整版本
+        cache: 'npm'  # 启用 npm 缓存加速
 
     - name: Install dependencies
       run: |
@@ -27,6 +32,12 @@ jobs:
 
     - name: Inject Secrets into Config
       run: |
+        # 检查模板文件是否存在
+        if [ ! -f "_config.yml.template" ]; then
+          echo "❌ Error: _config.yml.template missing!"
+          exit 1
+        fi
+        # 替换占位符
         cp _config.yml.template _config.yml
         cp source/_scripts/gitalk-auto-init.js.template source/_scripts/gitalk-auto-init.js
         sed -i "s|__BAIDU_URL_SUBMIT_TOKEN__|${{ secrets.BAIDU_URL_SUBMIT_TOKEN }}|g" _config.yml
@@ -36,6 +47,11 @@ jobs:
       run: |
         hexo clean
         hexo generate
+        # 验证生成的 public 目录
+        if [ ! -f "public/index.html" ]; then
+          echo "❌ Error: Static files not generated!"
+          exit 1
+        fi
 
     - name: Deploy to gh-pages
       uses: peaceiris/actions-gh-pages@v3
@@ -43,3 +59,4 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./public  # Hexo 默认生成目录
         publish_branch: gh-pages  # 部署分支
+        force_orphan: true  # 清理旧文件（可选）
